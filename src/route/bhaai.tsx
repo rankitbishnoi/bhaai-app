@@ -1,0 +1,146 @@
+import React, {useEffect, useState} from 'react';
+import {TouchableOpacity, View} from 'react-native';
+import {apiService} from '../services/api.service';
+import {IconButton, ListItem, Stack} from '@react-native-material/core';
+
+import useStyles from '../styles/bhaai';
+import {Bhaai as BhaaiType} from '../types/Bhaai';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import AddBhaai from '../components/addBhaai';
+import {Image} from 'react-native';
+import Baan from './baan';
+import ProgressBar from '../components/loader';
+import Search from './search';
+import MessagePopUp from '../components/messagePopUp';
+
+const Bhaai: React.FC = () => {
+  const styles = useStyles();
+  const [data, setData] = useState([] as any);
+  const [searchVisible, setSearchVisible] = useState(false);
+  const [addVisible, setAddVisible] = useState(false);
+  const [editVisible, setEditVisible] = useState(false);
+  const [baanVisible, setBaanVisible] = useState(false);
+  const [message, setMessage] = useState('');
+  const [messageVisible, setMessageVisible] = useState(false);
+  const [selectedBhaai, setSelectedBhaai] = useState({} as any);
+  const [loading, setLoading] = useState(false);
+
+  const getData = () => {
+    setLoading(true);
+    apiService.getBhaaiList().then(result => {
+      setData(result);
+      setLoading(false);
+      return result;
+    });
+  };
+
+  const editItem = (bhaai: BhaaiType) => {
+    setSelectedBhaai(bhaai);
+    setEditVisible(true);
+  };
+
+  const openItem = (bhaai: BhaaiType) => {
+    setSelectedBhaai(bhaai);
+    setBaanVisible(true);
+  };
+
+  useEffect(() => {
+    return getData();
+  }, []);
+
+  const reloadData = (reason: string) => {
+    if (reason === 'EDIT') {
+      setMessage('Bhaai has been updated');
+    } else if (reason === 'ADD') {
+      setMessage('Bhaai has been added');
+    } else if (reason === 'DELETE') {
+      setMessage('Bhaai has been deleted');
+    }
+    setMessageVisible(true);
+    getData();
+  };
+
+  return (
+    <>
+      {!baanVisible && !searchVisible && (
+        <View style={styles.container}>
+          {loading && (
+            <ProgressBar height={5} indeterminate backgroundColor="#4a0072" />
+          )}
+          {data &&
+            !baanVisible &&
+            data.map((bhaai: BhaaiType) => (
+              <ListItem
+                onPress={() => {
+                  openItem(bhaai);
+                }}
+                key={bhaai._id}
+                title={bhaai.marriage}
+                secondaryText={new Date(bhaai.date).toDateString()}
+                style={styles.list}
+                elevation={4}
+                leadingMode="image"
+                leading={
+                  <TouchableOpacity onPress={() => editItem(bhaai)}>
+                    <Image
+                      source={require('../assets/edit-icon.png')}
+                      style={{width: 50, height: 50}}
+                    />
+                  </TouchableOpacity>
+                }
+                trailing={props => (
+                  <Ionicons name="chevron-forward-outline" {...props} />
+                )}
+              />
+            ))}
+          <Stack fill bottom={1} right={1} spacing={4}>
+            <IconButton
+              onPress={() => {
+                setAddVisible(!addVisible);
+              }}
+              icon={props => <Ionicons name="add" {...props} />}
+              color="secondary"
+              style={styles.fab}
+            />
+            <IconButton
+              onPress={() => {
+                setSearchVisible(!addVisible);
+              }}
+              icon={props => <Ionicons name="search" {...props} />}
+              color="secondary"
+              style={styles.fabLeft}
+            />
+          </Stack>
+          {addVisible && (
+            <AddBhaai
+              visible={addVisible}
+              setVisible={setAddVisible}
+              type="ADD"
+              reloadList={reloadData}
+            />
+          )}
+          {editVisible && (
+            <AddBhaai
+              visible={editVisible}
+              setVisible={setEditVisible}
+              type="EDIT"
+              reloadList={reloadData}
+              data={selectedBhaai}
+            />
+          )}
+        </View>
+      )}
+      {baanVisible && (
+        <Baan bhaaiId={selectedBhaai._id} setBaanVisible={setBaanVisible} />
+      )}
+      {searchVisible && (
+        <Search setSearchVisible={setSearchVisible} reloadList={getData} />
+      )}
+      {messageVisible && (
+        <MessagePopUp setVisible={setMessageVisible} message={message} />
+      )}
+    </>
+  );
+};
+
+export default Bhaai;
