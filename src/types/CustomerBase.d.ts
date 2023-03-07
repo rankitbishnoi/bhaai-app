@@ -7,5 +7,6 @@
 
 export interface CustomerBase {
     email: string;
+    phoneNumber?: string;
     password: string;
 }

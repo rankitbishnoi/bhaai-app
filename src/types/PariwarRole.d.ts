@@ -5,14 +5,14 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
-export type Customer = Customer1 & Customer2;
-export type Customer1 = CustomerBase;
+export type PariwarRole = PariwarRole1 & PariwarRole2;
+export type PariwarRole1 = PariwarRoleBase;
 
-export interface CustomerBase {
-    email: string;
-    phoneNumber?: string;
-    password: string;
+export interface PariwarRoleBase {
+    role: string;
+    customerId?: string;
 }
-export interface Customer2 {
+export interface PariwarRole2 {
     _id: string;
+    pariwarId: string;
 }
