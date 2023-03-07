@@ -13,7 +13,7 @@ const App: React.FC = () => {
   const styles = useStyles();
   const [appSettings, setAppSettings] = useState({
     isLoggedIn: !!mmkv.loadJWT(),
-    error: null,
+    message: null,
   });
 
   return (
@@ -41,12 +41,12 @@ const App: React.FC = () => {
         <View style={styles.root}>
           <SafeAreaView style={styles.safeAreaView}>
             {appSettings.isLoggedIn ? <Main /> : <Auth />}
-            {appSettings?.error && (
+            {appSettings?.message && (
               <MessagePopUp
                 setVisible={() => {
-                  setAppSettings({...appSettings, error: null});
+                  setAppSettings({...appSettings, message: null});
                 }}
-                message={appSettings?.error}
+                message={appSettings?.message}
               />
             )}
           </SafeAreaView>

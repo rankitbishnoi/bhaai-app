@@ -1,6 +1,5 @@
 import React from 'react';
 
-import useStyles from '../styles/main';
 import {NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -10,8 +9,6 @@ import Profile from './profile';
 const Tab = createBottomTabNavigator();
 
 const Main: React.FC = () => {
-  const styles = useStyles();
-
   const screenoption = ({route}: any) => ({
     // eslint-disable-next-line react/no-unstable-nested-components
     tabBarIcon: ({focused, color, size}) => {

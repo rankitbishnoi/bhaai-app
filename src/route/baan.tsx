@@ -1,5 +1,5 @@
-import React, {useCallback, useEffect, useState} from 'react';
-import {TouchableOpacity, View} from 'react-native';
+import React, {useCallback, useContext, useEffect, useState} from 'react';
+import {ScrollView, TouchableOpacity, View} from 'react-native';
 import {apiService} from '../services/api.service';
 import {IconButton, ListItem, Stack, Text} from '@react-native-material/core';
 
@@ -9,7 +9,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import AddBaan from '../components/addBaan';
 import {Image} from 'react-native';
 import ProgressBar from '../components/loader';
-import MessagePopUp from '../components/messagePopUp';
+import AppContext from '../services/storage';
 
 interface BaanProps {
   setBaanVisible: (visiblity: boolean) => any;
@@ -17,13 +17,12 @@ interface BaanProps {
 }
 
 const Baan: React.FC<BaanProps> = ({bhaaiId, setBaanVisible}) => {
+  const myContext = useContext(AppContext);
   const styles = useStyles();
   const [data, setData] = useState({} as any);
   const [addVisible, setAddVisible] = useState(false);
   const [editVisible, setEditVisible] = useState(false);
   const [selectedBaan, setSelectedBaan] = useState({} as any);
-  const [message, setMessage] = useState('');
-  const [messageVisible, setMessageVisible] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const editItem = (baan: BaanType) => {
@@ -45,13 +44,21 @@ const Baan: React.FC<BaanProps> = ({bhaaiId, setBaanVisible}) => {
 
   const reloadData = (reason: string) => {
     if (reason === 'EDIT') {
-      setMessage('Baan has been updated');
+      myContext.setAppSettings({
+        ...myContext.appSettings,
+        message: 'Baan has been updated',
+      });
     } else if (reason === 'ADD') {
-      setMessage('Baan has been added');
+      myContext.setAppSettings({
+        ...myContext.appSettings,
+        message: 'Baan has been added',
+      });
     } else if (reason === 'DELETE') {
-      setMessage('Baan has been deleted');
+      myContext.setAppSettings({
+        ...myContext.appSettings,
+        message: 'Baan has been deleted',
+      });
     }
-    setMessageVisible(true);
     getData();
   };
 
@@ -70,29 +77,31 @@ const Baan: React.FC<BaanProps> = ({bhaaiId, setBaanVisible}) => {
           </Text>
         </Stack>
       )}
-      {data?.baanList &&
-        data.baanList.map((baan: BaanType) => (
-          <ListItem
-            key={baan._id}
-            title={`${baan.firstName} ${baan.lastName}${
-              baan.nickName ? '(' + baan.nickName + ')' : ''
-            } ${baan.fathersName ? 'S/O ' + baan.fathersName : ''}, ${
-              baan.address
-            }`}
-            secondaryText={`Rs: ${baan.amount}`}
-            style={styles.list}
-            elevation={4}
-            leadingMode="image"
-            leading={
-              <TouchableOpacity onPress={() => editItem(baan)}>
-                <Image
-                  source={require('../assets/edit-icon.png')}
-                  style={{width: 50, height: 50}}
-                />
-              </TouchableOpacity>
-            }
-          />
-        ))}
+      <ScrollView>
+        {data?.baanList &&
+          data.baanList.map((baan: BaanType) => (
+            <ListItem
+              key={baan._id}
+              title={`${baan.firstName} ${baan.lastName}${
+                baan.nickName ? '(' + baan.nickName + ')' : ''
+              } ${baan.fathersName ? 'S/O ' + baan.fathersName : ''}, ${
+                baan.address
+              }`}
+              secondaryText={`Rs: ${baan.amount}`}
+              style={styles.list}
+              elevation={4}
+              leadingMode="image"
+              leading={
+                <TouchableOpacity onPress={() => editItem(baan)}>
+                  <Image
+                    source={require('../assets/edit-icon.png')}
+                    style={{width: 50, height: 50}}
+                  />
+                </TouchableOpacity>
+              }
+            />
+          ))}
+      </ScrollView>
       <Stack fill bottom={1} right={1} spacing={4}>
         <IconButton
           onPress={() => {
@@ -129,9 +138,6 @@ const Baan: React.FC<BaanProps> = ({bhaaiId, setBaanVisible}) => {
           reloadList={reloadData}
           data={selectedBaan}
         />
-      )}
-      {messageVisible && (
-        <MessagePopUp setVisible={setMessageVisible} message={message} />
       )}
     </View>
   );

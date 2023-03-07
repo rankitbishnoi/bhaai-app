@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {TouchableOpacity, View} from 'react-native';
 import {apiService} from '../services/api.service';
 import {
@@ -14,7 +14,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import ProgressBar from '../components/loader';
 import {BaanBase} from '../types/BaanList';
 import GiveBaan from '../components/giveBaan';
-import MessagePopUp from '../components/messagePopUp';
+import AppContext from '../services/storage';
 
 interface SearchProps {
   setSearchVisible: (visiblity: boolean) => any;
@@ -22,13 +22,12 @@ interface SearchProps {
 }
 
 const Search: React.FC<SearchProps> = ({setSearchVisible, reloadList}) => {
+  const myContext = useContext(AppContext);
   const styles = useStyles();
   const [data, setData] = useState({} as any);
   const [loading, setLoading] = useState(false);
   const [giveBaanVisible, setGiveBaanVisible] = useState(false);
   const [searchText, setSearchText] = useState('');
-  const [message, setMessage] = useState('');
-  const [messageVisible, setMessageVisible] = useState(false);
   const [selectedBaan, setSelectedBaan] = useState({} as any);
 
   const search = async (input: string) => {
@@ -45,9 +44,11 @@ const Search: React.FC<SearchProps> = ({setSearchVisible, reloadList}) => {
 
   const showMessage = (reason: string) => {
     if (reason === 'GIVEN') {
-      setMessage('Baan has been given');
+      myContext.setAppSettings({
+        ...myContext.appSettings,
+        message: 'Baan has been given',
+      });
     }
-    setMessageVisible(true);
   };
 
   return (
@@ -105,9 +106,6 @@ const Search: React.FC<SearchProps> = ({setSearchVisible, reloadList}) => {
           showMessage={showMessage}
           data={selectedBaan}
         />
-      )}
-      {messageVisible && (
-        <MessagePopUp setVisible={setMessageVisible} message={message} />
       )}
     </View>
   );
