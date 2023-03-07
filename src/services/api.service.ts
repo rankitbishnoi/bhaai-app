@@ -6,6 +6,10 @@ import {BhaaiBase, Bhaai} from '../types/Bhaai';
 import {BhaaiList} from '../types/BhaaiList';
 import {BhaaiTotal} from '../types/BhaaiTotal';
 import {CustomerBase} from '../types/Customer';
+import {Nimta} from '../types/Nimta';
+import {NimtaBase, NimtaList} from '../types/NimtaList';
+import {Pariwar, PariwarBase} from '../types/Pariwar';
+import {Profile} from '../types/Profile';
 import mmkv from './mmkv';
 
 class ApiService {
@@ -183,6 +187,120 @@ class ApiService {
           amount,
           baanId,
         },
+        this.getHeaders(),
+      )
+      .then(response => {
+        return response.data;
+      })
+      .catch(error => {
+        console.log(error);
+        return {} as any;
+      });
+  }
+
+  async getProfile(): Promise<Profile> {
+    return axios
+      .get<Profile>(`${this.baseURL}/profile`, this.getHeaders())
+      .then(response => {
+        return response.data;
+      })
+      .catch(error => {
+        console.log(error);
+        return {} as any;
+      });
+  }
+
+  async createPariwar(pariwar: PariwarBase): Promise<Pariwar> {
+    return axios
+      .post<Pariwar>(`${this.baseURL}/pariwar`, pariwar, this.getHeaders())
+      .then(response => {
+        return response.data;
+      })
+      .catch(error => {
+        console.log(error);
+        return {} as any;
+      });
+  }
+
+  async updatePariwar(id: string, pariwar: PariwarBase): Promise<Pariwar> {
+    return axios
+      .put<Pariwar>(`${this.baseURL}/pariwar/${id}`, pariwar, this.getHeaders())
+      .then(response => {
+        return response.data;
+      })
+      .catch(error => {
+        console.log(error);
+        return {} as any;
+      });
+  }
+
+  async deletePariwar(id: string): Promise<void> {
+    return axios
+      .delete<void>(`${this.baseURL}/pariwar/${id}`, this.getHeaders())
+      .then(response => {
+        return response.data;
+      })
+      .catch(error => {
+        console.log(error);
+        return {} as any;
+      });
+  }
+
+  async getNimtaList(pariwarId: string): Promise<NimtaList> {
+    return axios
+      .get<NimtaList>(
+        `${this.baseURL}/pariwar/${pariwarId}/nimta`,
+        this.getHeaders(),
+      )
+      .then(response => {
+        return response.data;
+      })
+      .catch(error => {
+        console.log(error);
+        return [] as any;
+      });
+  }
+
+  async createNimta(pariwarId: string, nimta: NimtaBase): Promise<Nimta> {
+    return axios
+      .post<Nimta>(
+        `${this.baseURL}/pariwar/${pariwarId}/nimta`,
+        nimta,
+        this.getHeaders(),
+      )
+      .then(response => {
+        return response.data;
+      })
+      .catch(error => {
+        console.log(error);
+        return {} as any;
+      });
+  }
+
+  async updateNimta(
+    id: string,
+    pariwarId: string,
+    nimta: NimtaBase,
+  ): Promise<Nimta> {
+    return axios
+      .post<Nimta>(
+        `${this.baseURL}/pariwar/${pariwarId}/nimta/${id}`,
+        nimta,
+        this.getHeaders(),
+      )
+      .then(response => {
+        return response.data;
+      })
+      .catch(error => {
+        console.log(error);
+        return {} as any;
+      });
+  }
+
+  async deleteNimta(id: string, pariwarId: string): Promise<void> {
+    return axios
+      .delete<void>(
+        `${this.baseURL}/pariwar/${pariwarId}/nimta/${id}`,
         this.getHeaders(),
       )
       .then(response => {

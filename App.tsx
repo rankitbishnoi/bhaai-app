@@ -8,6 +8,7 @@ import AppContext from './src/services/storage';
 import mmkv from './src/services/mmkv';
 import Main from './src/route/main';
 import MessagePopUp from './src/components/messagePopUp';
+import {QueryClient, QueryClientProvider} from 'react-query';
 
 const App: React.FC = () => {
   const styles = useStyles();
@@ -15,6 +16,7 @@ const App: React.FC = () => {
     isLoggedIn: !!mmkv.loadJWT(),
     message: null,
   });
+  const queryClient = new QueryClient();
 
   return (
     <Provider
@@ -38,19 +40,21 @@ const App: React.FC = () => {
         },
       }}>
       <AppContext.Provider value={{appSettings, setAppSettings}}>
-        <View style={styles.root}>
-          <SafeAreaView style={styles.safeAreaView}>
-            {appSettings.isLoggedIn ? <Main /> : <Auth />}
-            {appSettings?.message && (
-              <MessagePopUp
-                setVisible={() => {
-                  setAppSettings({...appSettings, message: null});
-                }}
-                message={appSettings?.message}
-              />
-            )}
-          </SafeAreaView>
-        </View>
+        <QueryClientProvider client={queryClient}>
+          <View style={styles.root}>
+            <SafeAreaView style={styles.safeAreaView}>
+              {appSettings.isLoggedIn ? <Main /> : <Auth />}
+              {appSettings?.message && (
+                <MessagePopUp
+                  setVisible={() => {
+                    setAppSettings({...appSettings, message: null});
+                  }}
+                  message={appSettings?.message}
+                />
+              )}
+            </SafeAreaView>
+          </View>
+        </QueryClientProvider>
       </AppContext.Provider>
     </Provider>
   );

@@ -28,5 +28,16 @@ export default function useStyles() {
       paddingHorizontal: 16,
       paddingVertical: 32,
     },
+    list: {
+      backgroundColor: '#111',
+      color: '#ddd',
+    },
+    fab: {
+      width: 55,
+      height: 55,
+      position: 'absolute',
+      right: 10,
+      bottom: 10,
+    },
   });
 }

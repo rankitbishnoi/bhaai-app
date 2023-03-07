@@ -5,6 +5,7 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Bhaai from './bhaai';
 import Profile from './profile';
+import Nimta from './nimta';
 
 const Tab = createBottomTabNavigator();
 
@@ -18,6 +19,10 @@ const Main: React.FC = () => {
         iconName = focused
           ? 'ios-information-circle'
           : 'ios-information-circle-outline';
+      }
+
+      if (route.name === 'Nimta') {
+        iconName = focused ? 'mail-open-outline' : 'mail-outline';
       }
 
       return <Ionicons name={iconName} size={size} color={color} />;
@@ -40,6 +45,7 @@ const Main: React.FC = () => {
     <NavigationContainer>
       <Tab.Navigator screenOptions={screenoption}>
         <Tab.Screen name="Home" component={Bhaai} />
+        <Tab.Screen name="Nimta" component={Nimta} />
         <Tab.Screen name="Profile" component={Profile} />
       </Tab.Navigator>
     </NavigationContainer>
