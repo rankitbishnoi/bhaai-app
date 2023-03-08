@@ -12,9 +12,11 @@ import Login from '../components/login';
 import Signup from '../components/signup';
 
 import useStyles from '../styles/auth';
+import useButtonStyles from '../styles/button';
 
 const Auth: React.FC = () => {
   const styles = useStyles();
+  const buttonStyles = useButtonStyles();
   const [login, setLogin] = useState(true);
 
   const handleToggle = () => {
@@ -24,20 +26,22 @@ const Auth: React.FC = () => {
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={styles.content}>
-      <Text style={styles.title}>Welcome{login ? ' Back' : ''}!</Text>
+      <Text style={styles.title}>welcome{login ? ' Back' : ''}!</Text>
 
       <SizedBox height={8} />
 
       <Text style={styles.subtitle}>
-        Sign {login ? 'in' : 'up'} to your account
+        sign {login ? 'in' : 'up'} to your account
       </Text>
 
       <SizedBox height={32} />
       {login ? <Login /> : <Signup />}
       <SizedBox height={16} />
       <TouchableOpacity onPress={handleToggle}>
-        <View style={styles.buttonSecondary}>
-          <Text style={styles.buttonTitle}>{login ? 'Sign up' : 'login'}</Text>
+        <View style={buttonStyles.buttonSecondary}>
+          <Text style={buttonStyles.buttonTitle}>
+            {login ? 'sign up' : 'login'}
+          </Text>
         </View>
       </TouchableOpacity>
     </KeyboardAvoidingView>

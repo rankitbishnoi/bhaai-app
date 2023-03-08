@@ -61,7 +61,7 @@ const GiveBaan: React.FC<DialogOptions> = (props: DialogOptions) => {
         <DialogContent>
           <Pressable>
             <View style={styles.form}>
-              <Text style={styles.label}>Marriage</Text>
+              <Text style={styles.label}>amount</Text>
               <Controller
                 control={control}
                 name="amount"
@@ -85,13 +85,13 @@ const GiveBaan: React.FC<DialogOptions> = (props: DialogOptions) => {
         <DialogActions>
           <Button
             color="secondary"
-            title="Cancel"
+            title="cancel"
             compact
             variant="text"
             onPress={close}
           />
           <Button
-            title="Save"
+            title="save"
             compact
             variant="text"
             onPress={onSubmit}

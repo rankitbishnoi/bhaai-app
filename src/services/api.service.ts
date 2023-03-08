@@ -7,10 +7,12 @@ import {BhaaiList} from '../types/BhaaiList';
 import {BhaaiTotal} from '../types/BhaaiTotal';
 import {CustomerBase} from '../types/Customer';
 import {Nimta} from '../types/Nimta';
+import {Relative, RelativeBase} from '../types/Relative';
 import {NimtaBase, NimtaList} from '../types/NimtaList';
 import {Pariwar, PariwarBase} from '../types/Pariwar';
 import {Profile} from '../types/Profile';
 import mmkv from './mmkv';
+import {RelativeList} from '../types/RelativeList';
 
 class ApiService {
   baseURL =
@@ -46,6 +48,16 @@ class ApiService {
     return axios
       .get<BhaaiList>(`${this.baseURL}/bhaai`, this.getHeaders())
       .then(response => {
+        response.data.sort((a, b) => {
+          if (a.marriage < b.marriage) {
+            return -1;
+          }
+          if (a.marriage > b.marriage) {
+            return 1;
+          }
+          return 0;
+        });
+
         return response.data;
       })
       .catch(error => {
@@ -109,6 +121,16 @@ class ApiService {
     return axios
       .get<BaanList>(`${this.baseURL}/bhaai/${bhaaiId}/baan`, this.getHeaders())
       .then(response => {
+        response.data.sort((a, b) => {
+          if (a.firstName < b.firstName) {
+            return -1;
+          }
+          if (a.firstName > b.firstName) {
+            return 1;
+          }
+          return 0;
+        });
+
         return response.data;
       })
       .catch(error => {
@@ -135,7 +157,7 @@ class ApiService {
 
   async updateBaan(id: string, bhaaiId: string, baan: BaanBase): Promise<Baan> {
     return axios
-      .post<Baan>(
+      .put<Baan>(
         `${this.baseURL}/bhaai/${bhaaiId}/baan/${id}`,
         baan,
         this.getHeaders(),
@@ -283,7 +305,7 @@ class ApiService {
     nimta: NimtaBase,
   ): Promise<Nimta> {
     return axios
-      .post<Nimta>(
+      .put<Nimta>(
         `${this.baseURL}/pariwar/${pariwarId}/nimta/${id}`,
         nimta,
         this.getHeaders(),
@@ -301,6 +323,99 @@ class ApiService {
     return axios
       .delete<void>(
         `${this.baseURL}/pariwar/${pariwarId}/nimta/${id}`,
+        this.getHeaders(),
+      )
+      .then(response => {
+        return response.data;
+      })
+      .catch(error => {
+        console.log(error);
+        return {} as any;
+      });
+  }
+
+  async getRelativeList(
+    pariwarId: string,
+    by: RelativeBase = {} as any,
+  ): Promise<RelativeList> {
+    return axios
+      .get<RelativeList>(
+        `${this.baseURL}/pariwar/${pariwarId}/relative`,
+        this.getHeaders(),
+      )
+      .then(response => {
+        return response.data?.filter(a => {
+          let truthy = true;
+          if (by.firstName?.length) {
+            truthy = truthy && a.firstName.includes(by.firstName);
+          }
+          if (by.lastName?.length) {
+            truthy = truthy && a.lastName.includes(by.lastName);
+          }
+          if (by.address?.length) {
+            truthy = truthy && a.address.includes(by.address);
+          }
+          if (by.fathersName?.length) {
+            truthy = truthy && a.fathersName.includes(by.fathersName);
+          }
+          if (by.nickName?.length) {
+            truthy = truthy && a.nickName.includes(by.nickName);
+          }
+          if (by.phoneNumber?.length) {
+            truthy = truthy && a.phoneNumber.includes(by.phoneNumber);
+          }
+          return truthy;
+        });;
+      })
+      .catch(error => {
+        console.log(error);
+        return [] as any;
+      });
+  }
+
+  async createRelative(
+    pariwarId: string,
+    relative: RelativeBase,
+  ): Promise<Relative> {
+    return axios
+      .post<Relative>(
+        `${this.baseURL}/pariwar/${pariwarId}/relative`,
+        relative,
+        this.getHeaders(),
+      )
+      .then(response => {
+        return response.data;
+      })
+      .catch(error => {
+        console.log(error);
+        return {} as any;
+      });
+  }
+
+  async updateRelative(
+    id: string,
+    pariwarId: string,
+    relative: RelativeBase,
+  ): Promise<Relative> {
+    return axios
+      .put<Relative>(
+        `${this.baseURL}/pariwar/${pariwarId}/relative/${id}`,
+        relative,
+        this.getHeaders(),
+      )
+      .then(response => {
+        return response.data;
+      })
+      .catch(error => {
+        console.log(error);
+        return {} as any;
+      });
+  }
+
+  async deleteRelative(id: string, pariwarId: string): Promise<void> {
+    return axios
+      .delete<void>(
+        `${this.baseURL}/pariwar/${pariwarId}/relative/${id}`,
         this.getHeaders(),
       )
       .then(response => {

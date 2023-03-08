@@ -20,10 +20,10 @@ import {PariwarBase} from '../types/Pariwar';
 import SizedBox from './SizedBox';
 import useStyles from '../styles/bhaai';
 import {Pariwar} from '../types/PariwarList';
-import {useQueryClient} from 'react-query';
 
 interface DialogOptions {
   visible: boolean;
+  invalidateData: (key: number) => any;
   setVisible: (visiblity: boolean) => any;
   type?: 'EDIT' | 'ADD';
   data?: Pariwar;
@@ -33,7 +33,6 @@ const AddPariwar: React.FC<DialogOptions> = (props: DialogOptions) => {
   const [processingEdit, setProcessingEdit] = useState(false);
   const [processingDelete, setProcessingDelete] = useState(false);
   const styles = useStyles();
-  const queryClient = useQueryClient();
   const {control, handleSubmit} = useForm<PariwarBase>({
     defaultValues: props.data || {
       name: '',
@@ -45,7 +44,7 @@ const AddPariwar: React.FC<DialogOptions> = (props: DialogOptions) => {
     if (props.type === 'EDIT') {
       apiService.updatePariwar(props.data?._id as string, input).then(data => {
         if (data) {
-          queryClient.invalidateQueries('profile');
+          props.invalidateData(Date.now());
           setProcessingEdit(false);
           props.setVisible(false);
         }
@@ -53,7 +52,7 @@ const AddPariwar: React.FC<DialogOptions> = (props: DialogOptions) => {
     } else {
       apiService.createPariwar(input).then(data => {
         if (data) {
-          queryClient.invalidateQueries('profile');
+          props.invalidateData(Date.now());
           setProcessingEdit(false);
           props.setVisible(false);
         }
@@ -68,7 +67,7 @@ const AddPariwar: React.FC<DialogOptions> = (props: DialogOptions) => {
   const deletePariwar = () => {
     setProcessingDelete(true);
     apiService.deletePariwar(props.data?._id as string).then(() => {
-      queryClient.invalidateQueries('profile');
+      props.invalidateData(Date.now());
       setProcessingDelete(false);
       props.setVisible(false);
     });
@@ -79,12 +78,12 @@ const AddPariwar: React.FC<DialogOptions> = (props: DialogOptions) => {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <Dialog visible={props.visible} onDismiss={() => props.setVisible(false)}>
         <DialogHeader
-          title={`${props.type === 'ADD' ? 'Add' : 'Edit'} Pariwar`}
+          title={`${props.type === 'ADD' ? 'add' : 'edit'} pariwar`}
         />
         <DialogContent>
           <Pressable>
             <View style={styles.form}>
-              <Text style={styles.label}>Name</Text>
+              <Text style={styles.label}>name</Text>
               <Controller
                 control={control}
                 name="name"
@@ -110,7 +109,7 @@ const AddPariwar: React.FC<DialogOptions> = (props: DialogOptions) => {
           {props.type === 'EDIT' && (
             <Button
               color="error"
-              title="Delete"
+              title="delete"
               compact
               variant="text"
               loading={processingDelete}
@@ -120,13 +119,13 @@ const AddPariwar: React.FC<DialogOptions> = (props: DialogOptions) => {
           )}
           <Button
             color="secondary"
-            title="Cancel"
+            title="cancel"
             compact
             variant="text"
             onPress={close}
           />
           <Button
-            title="Save"
+            title="save"
             compact
             variant="text"
             onPress={onSubmit}

@@ -81,12 +81,12 @@ const AddBhaai: React.FC<DialogOptions> = (props: DialogOptions) => {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <Dialog visible={props.visible} onDismiss={() => props.setVisible(false)}>
         <DialogHeader
-          title={`${props.type === 'ADD' ? 'Add' : 'Edit'} Bhaai`}
+          title={`${props.type === 'ADD' ? 'add' : 'edit'} bhaai`}
         />
         <DialogContent>
           <Pressable>
             <View style={styles.form}>
-              <Text style={styles.label}>Marriage</Text>
+              <Text style={styles.label}>marriage</Text>
               <Controller
                 control={control}
                 name="marriage"
@@ -110,7 +110,7 @@ const AddBhaai: React.FC<DialogOptions> = (props: DialogOptions) => {
 
           <Pressable>
             <View style={styles.form}>
-              <Text style={styles.label}>Date</Text>
+              <Text style={styles.label}>date</Text>
               <Controller
                 control={control}
                 name="date"
@@ -152,7 +152,7 @@ const AddBhaai: React.FC<DialogOptions> = (props: DialogOptions) => {
           {props.type === 'EDIT' && (
             <Button
               color="error"
-              title="Delete"
+              title="delete"
               compact
               variant="text"
               loading={processingDelete}
@@ -162,13 +162,13 @@ const AddBhaai: React.FC<DialogOptions> = (props: DialogOptions) => {
           )}
           <Button
             color="secondary"
-            title="Cancel"
+            title="cancel"
             compact
             variant="text"
             onPress={close}
           />
           <Button
-            title="Save"
+            title="save"
             compact
             variant="text"
             onPress={onSubmit}

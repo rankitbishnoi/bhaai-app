@@ -9,19 +9,6 @@ export default function useStyles() {
     safeAreaView: {
       flex: 1,
     },
-    button: {
-      alignItems: 'center',
-      backgroundColor: 'rgb(93, 95, 222)',
-      borderRadius: 8,
-      height: 48,
-      justifyContent: 'center',
-    },
-    buttonTitle: {
-      color: '#FFFFFF',
-      fontSize: 17,
-      fontWeight: '600',
-      lineHeight: 22,
-    },
     content: {
       flex: 1,
       justifyContent: 'center',
@@ -31,13 +18,6 @@ export default function useStyles() {
     list: {
       backgroundColor: '#111',
       color: '#ddd',
-    },
-    fab: {
-      width: 55,
-      height: 55,
-      position: 'absolute',
-      right: 10,
-      bottom: 10,
     },
   });
 }

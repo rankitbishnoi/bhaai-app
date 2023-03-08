@@ -6,6 +6,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import Bhaai from './bhaai';
 import Profile from './profile';
 import Nimta from './nimta';
+import Relative from './relative';
 
 const Tab = createBottomTabNavigator();
 
@@ -15,14 +16,20 @@ const Main: React.FC = () => {
     tabBarIcon: ({focused, color, size}) => {
       let iconName = 'ios-list';
 
-      if (route.name === 'Home') {
-        iconName = focused
-          ? 'ios-information-circle'
-          : 'ios-information-circle-outline';
+      if (route.name === 'home') {
+        iconName = focused ? 'home' : 'home-outline';
       }
 
-      if (route.name === 'Nimta') {
-        iconName = focused ? 'mail-open-outline' : 'mail-outline';
+      if (route.name === 'nimta') {
+        iconName = focused ? 'mail-open' : 'mail-outline';
+      }
+
+      if (route.name === 'profile') {
+        iconName = focused ? 'person-circle' : 'person-circle-outline';
+      }
+
+      if (route.name === 'relative') {
+        iconName = focused ? 'people-circle' : 'people-circle-outline';
       }
 
       return <Ionicons name={iconName} size={size} color={color} />;
@@ -32,21 +39,16 @@ const Main: React.FC = () => {
     },
     tabBarActiveTintColor: 'rgb(93, 95, 222)',
     tabBarInactiveTintColor: 'white',
-    headerStyle: {
-      backgroundColor: 'black',
-    },
-    headerTintColor: '#fff',
-    headerTitleStyle: {
-      fontWeight: 'bold',
-    },
+    headerShown: false,
   });
 
   return (
     <NavigationContainer>
       <Tab.Navigator screenOptions={screenoption}>
-        <Tab.Screen name="Home" component={Bhaai} />
-        <Tab.Screen name="Nimta" component={Nimta} />
-        <Tab.Screen name="Profile" component={Profile} />
+        <Tab.Screen name="home" component={Bhaai} />
+        <Tab.Screen name="nimta" component={Nimta} />
+        <Tab.Screen name="relative" component={Relative} />
+        <Tab.Screen name="profile" component={Profile} />
       </Tab.Navigator>
     </NavigationContainer>
   );

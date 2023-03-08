@@ -15,20 +15,6 @@ export default function useStyles() {
       width: 100,
       height: 100,
     },
-    fab: {
-      width: 55,
-      height: 55,
-      position: 'absolute',
-      right: 10,
-      bottom: 10,
-    },
-    fabLeft: {
-      width: 55,
-      height: 55,
-      position: 'absolute',
-      left: 10,
-      bottom: 10,
-    },
     form: {
       alignItems: 'center',
       backgroundColor: 'rgb(58, 58, 60)',

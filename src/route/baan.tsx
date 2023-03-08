@@ -4,6 +4,7 @@ import {apiService} from '../services/api.service';
 import {IconButton, ListItem, Stack, Text} from '@react-native-material/core';
 
 import useStyles from '../styles/baan';
+import useStackBarStyles from '../styles/stackBar';
 import {Baan as BaanType} from '../types/Baan';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AddBaan from '../components/addBaan';
@@ -19,6 +20,7 @@ interface BaanProps {
 const Baan: React.FC<BaanProps> = ({bhaaiId, setBaanVisible}) => {
   const myContext = useContext(AppContext);
   const styles = useStyles();
+  const stackBarStyles = useStackBarStyles();
   const [data, setData] = useState({} as any);
   const [addVisible, setAddVisible] = useState(false);
   const [editVisible, setEditVisible] = useState(false);
@@ -102,22 +104,27 @@ const Baan: React.FC<BaanProps> = ({bhaaiId, setBaanVisible}) => {
             />
           ))}
       </ScrollView>
-      <Stack fill bottom={1} right={1} spacing={4}>
-        <IconButton
-          onPress={() => {
-            setAddVisible(!addVisible);
-          }}
-          icon={props => <Ionicons name="add" {...props} />}
-          color="secondary"
-          style={styles.fab}
-        />
+      <Stack
+        style={stackBarStyles.stackBar}
+        fill
+        bottom={1}
+        right={1}
+        spacing={4}>
         <IconButton
           onPress={() => {
             setBaanVisible(false);
           }}
           icon={props => <Ionicons name="arrow-back-outline" {...props} />}
           color="secondary"
-          style={styles.fabLeft}
+          style={stackBarStyles.fab}
+        />
+        <IconButton
+          onPress={() => {
+            setAddVisible(!addVisible);
+          }}
+          icon={props => <Ionicons name="add" {...props} />}
+          color="secondary"
+          style={stackBarStyles.fab}
         />
       </Stack>
       {addVisible && (

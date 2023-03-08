@@ -10,13 +10,6 @@ export default function useStyles() {
       backgroundColor: '#111',
       color: '#ddd',
     },
-    fab: {
-      width: 55,
-      height: 55,
-      position: 'absolute',
-      right: 10,
-      bottom: 10,
-    },
     labelContainer: {
       flexDirection: 'row',
       justifyContent: 'space-between',
@@ -40,20 +33,6 @@ export default function useStyles() {
       textAlign: 'right',
       fontSize: 16,
       lineHeight: 20,
-    },
-    button: {
-      alignItems: 'center',
-      backgroundColor: 'rgb(93, 95, 222)',
-      borderRadius: 8,
-      height: 48,
-      justifyContent: 'center',
-      marginVertical: 8,
-    },
-    buttonTitle: {
-      color: '#FFFFFF',
-      fontSize: 17,
-      fontWeight: '600',
-      lineHeight: 22,
     },
   });
 }

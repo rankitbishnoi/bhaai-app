@@ -15,7 +15,7 @@ export interface RelativeBase {
     fathersName: string;
     address: string;
     nickName: string;
-    phoneNumber: number;
+    phoneNumber: string;
     details: string;
     assignTo: string;
 }

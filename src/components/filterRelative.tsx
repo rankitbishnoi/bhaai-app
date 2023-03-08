@@ -5,87 +5,57 @@ import {
   DialogActions,
   Button,
 } from '@react-native-material/core';
-import React, {useState} from 'react';
+import React from 'react';
 import {Controller, useForm} from 'react-hook-form';
 import {
   KeyboardAvoidingView,
   Platform,
   Pressable,
   Text,
-  View,
   TextInput,
+  View,
 } from 'react-native';
-import {apiService} from '../services/api.service';
-import {BaanBase} from '../types/Baan';
+import useStyles from '../styles/relative';
+import {RelativeBase} from '../types/Relative';
 import SizedBox from './SizedBox';
-import useStyles from '../styles/baan';
-import {Baan} from '../types/BaanList';
 
 interface DialogOptions {
-  visible: boolean;
-  setVisible: (visiblity: boolean) => any;
-  reloadList?: (reason: string) => any;
-  bhaaiId: string;
-  type?: 'EDIT' | 'ADD';
-  data?: Baan;
+  visible: string;
+  setVisible: (visiblity: string) => any;
+  setFilterBy: (by: RelativeBase) => any;
+  filterBy: RelativeBase;
 }
 
-const AddBaan: React.FC<DialogOptions> = (props: DialogOptions) => {
+const FilterRelative: React.FC<DialogOptions> = (props: DialogOptions) => {
   const styles = useStyles();
-  const [processingEdit, setProcessingEdit] = useState(false);
-  const [processingDelete, setProcessingDelete] = useState(false);
-  const {control, handleSubmit} = useForm<BaanBase>({
-    defaultValues: props.data || {
+  const {control, handleSubmit} = useForm<RelativeBase>({
+    defaultValues: props.filterBy || {
       firstName: '',
       lastName: '',
       nickName: '',
       fathersName: '',
       address: '',
-      amount: 0,
+      phoneNumber: '',
     },
   });
 
-  const onSubmit = handleSubmit((input: BaanBase) => {
-    setProcessingEdit(true);
-    if (props.type === 'EDIT') {
-      apiService
-        .updateBaan(props.data?._id as string, props.bhaaiId, input)
-        .then(data => {
-          if (data) {
-            props.reloadList && props.reloadList('EDIT');
-            setProcessingEdit(false);
-            props.setVisible(false);
-          }
-        });
-    } else {
-      apiService.createBaan(props.bhaaiId, input).then(data => {
-        if (data) {
-          props.reloadList && props.reloadList('ADD');
-          setProcessingEdit(false);
-          props.setVisible(false);
-        }
-      });
-    }
+  const onSubmit = handleSubmit((input: RelativeBase) => {
+    props.setFilterBy(input);
+    props.setVisible('');
   });
 
   const close = () => {
-    props.setVisible(false);
-  };
-
-  const deleteBaan = () => {
-    setProcessingDelete(true);
-    apiService.deleteBaan(props.data?._id as string, props.bhaaiId).then(() => {
-      props.reloadList && props.reloadList('DELETE');
-      setProcessingDelete(false);
-      props.setVisible(false);
-    });
+    props.setFilterBy({} as any);
+    props.setVisible('');
   };
 
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-      <Dialog visible={props.visible} onDismiss={() => props.setVisible(false)}>
-        <DialogHeader title={`${props.type === 'ADD' ? 'add' : 'edit'} baan`} />
+      <Dialog
+        visible={props.visible === 'filter'}
+        onDismiss={() => props.setVisible('')}>
+        <DialogHeader title={'sort'} />
         <DialogContent>
           <Pressable>
             <View style={styles.form}>
@@ -202,21 +172,25 @@ const AddBaan: React.FC<DialogOptions> = (props: DialogOptions) => {
           </Pressable>
 
           <SizedBox height={16} />
+
           <Pressable>
             <View style={styles.form}>
-              <Text style={styles.label}>amount</Text>
+              <Text style={styles.label}>phone number</Text>
               <Controller
                 control={control}
-                name="amount"
+                name="phoneNumber"
                 render={({field}) => (
                   <TextInput
                     {...field}
+                    autoCapitalize="none"
+                    autoComplete="tel"
                     autoCorrect={false}
                     keyboardType="number-pad"
                     returnKeyType="next"
                     style={styles.textInput}
+                    textContentType="telephoneNumber"
                     onChangeText={value => field.onChange(value)}
-                    value={field.value + ''}
+                    value={field.value}
                   />
                 )}
               />
@@ -226,17 +200,6 @@ const AddBaan: React.FC<DialogOptions> = (props: DialogOptions) => {
           <SizedBox height={16} />
         </DialogContent>
         <DialogActions>
-          {props.type === 'EDIT' && (
-            <Button
-              color="error"
-              title="delete"
-              compact
-              variant="text"
-              onPress={deleteBaan}
-              loading={processingDelete}
-              disabled={processingDelete}
-            />
-          )}
           <Button
             color="secondary"
             title="cancel"
@@ -244,18 +207,11 @@ const AddBaan: React.FC<DialogOptions> = (props: DialogOptions) => {
             variant="text"
             onPress={close}
           />
-          <Button
-            title="save"
-            compact
-            variant="text"
-            onPress={onSubmit}
-            loading={processingEdit}
-            disabled={processingEdit}
-          />
+          <Button title="apply" compact variant="text" onPress={onSubmit} />
         </DialogActions>
       </Dialog>
     </KeyboardAvoidingView>
   );
 };
 
-export default AddBaan;
+export default FilterRelative;

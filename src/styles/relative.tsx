@@ -12,16 +12,8 @@ export default function useStyles() {
       color: '#ddd',
     },
     loader: {
-      width: 1000,
-      height: 1000,
-      zIndex: 999,
-      position: 'absolute',
-      right: 50,
-      bottom: 50,
-    },
-    heading: {
-      textAlign: 'center',
-      color: 'rgb(93, 95, 222)',
+      width: 100,
+      height: 100,
     },
     form: {
       alignItems: 'center',
@@ -53,6 +45,10 @@ export default function useStyles() {
     textInput: {
       color: '#FFFFFF',
       flex: 1,
+    },
+    sortFilter: {
+      width: 140,
+      height: 32,
     },
   });
 }

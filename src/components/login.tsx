@@ -6,6 +6,7 @@ import AppContext from '../services/storage';
 import mmkv from '../services/mmkv';
 import useStyles from '../styles/auth';
 import SizedBox from './SizedBox';
+import useButtonStyles from '../styles/button';
 
 interface FormData {
   email: string;
@@ -43,12 +44,13 @@ const Login: React.FC<{}> = ({}) => {
   });
 
   const styles = useStyles();
+  const buttonStyles = useButtonStyles();
 
   return (
     <>
       <Pressable>
         <View style={styles.form}>
-          <Text style={styles.label}>Email</Text>
+          <Text style={styles.label}>email</Text>
           <Controller
             control={control}
             name="email"
@@ -74,7 +76,7 @@ const Login: React.FC<{}> = ({}) => {
 
       <Pressable>
         <View style={styles.form}>
-          <Text style={styles.label}>Password</Text>
+          <Text style={styles.label}>password</Text>
 
           <Controller
             control={control}
@@ -101,8 +103,8 @@ const Login: React.FC<{}> = ({}) => {
       <SizedBox height={16} />
 
       <TouchableOpacity onPress={onSubmit}>
-        <View style={styles.button}>
-          <Text style={styles.buttonTitle}>Continue</Text>
+        <View style={buttonStyles.button}>
+          <Text style={buttonStyles.buttonTitle}>continue</Text>
         </View>
       </TouchableOpacity>
     </>

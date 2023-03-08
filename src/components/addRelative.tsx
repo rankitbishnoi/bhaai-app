@@ -5,7 +5,7 @@ import {
   DialogActions,
   Button,
 } from '@react-native-material/core';
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {Controller, useForm} from 'react-hook-form';
 import {
   KeyboardAvoidingView,
@@ -16,76 +16,95 @@ import {
   TextInput,
 } from 'react-native';
 import {apiService} from '../services/api.service';
-import {BaanBase} from '../types/Baan';
+import {Relative, RelativeBase} from '../types/Relative';
 import SizedBox from './SizedBox';
-import useStyles from '../styles/baan';
-import {Baan} from '../types/BaanList';
+import useStyles from '../styles/relative';
+import AppContext from '../services/storage';
 
 interface DialogOptions {
-  visible: boolean;
-  setVisible: (visiblity: boolean) => any;
-  reloadList?: (reason: string) => any;
-  bhaaiId: string;
+  visible: string;
+  pariwarId: string;
+  invalidateData: (key: number) => any;
+  setVisible: (visiblity: string) => any;
   type?: 'EDIT' | 'ADD';
-  data?: Baan;
+  data?: Relative;
 }
 
-const AddBaan: React.FC<DialogOptions> = (props: DialogOptions) => {
-  const styles = useStyles();
+const AddRelative: React.FC<DialogOptions> = (props: DialogOptions) => {
   const [processingEdit, setProcessingEdit] = useState(false);
   const [processingDelete, setProcessingDelete] = useState(false);
-  const {control, handleSubmit} = useForm<BaanBase>({
+  const myContext = useContext(AppContext);
+  const styles = useStyles();
+  const {control, handleSubmit} = useForm<RelativeBase>({
     defaultValues: props.data || {
       firstName: '',
       lastName: '',
       nickName: '',
       fathersName: '',
       address: '',
-      amount: 0,
+      phoneNumber: '',
     },
   });
 
-  const onSubmit = handleSubmit((input: BaanBase) => {
+  const onSubmit = handleSubmit((input: RelativeBase) => {
     setProcessingEdit(true);
     if (props.type === 'EDIT') {
       apiService
-        .updateBaan(props.data?._id as string, props.bhaaiId, input)
+        .updateRelative(props.data?._id as string, props.pariwarId, input)
         .then(data => {
           if (data) {
-            props.reloadList && props.reloadList('EDIT');
+            props.invalidateData(Date.now());
+            myContext.setAppSettings({
+              ...myContext.appSettings,
+              message: 'Relative has been updated',
+            });
             setProcessingEdit(false);
-            props.setVisible(false);
+            props.setVisible('');
           }
         });
     } else {
-      apiService.createBaan(props.bhaaiId, input).then(data => {
+      apiService.createRelative(props.pariwarId, input).then(data => {
         if (data) {
-          props.reloadList && props.reloadList('ADD');
+          props.invalidateData(Date.now());
+          myContext.setAppSettings({
+            ...myContext.appSettings,
+            message: 'Relative has been added',
+          });
           setProcessingEdit(false);
-          props.setVisible(false);
+          props.setVisible('');
         }
       });
     }
   });
 
   const close = () => {
-    props.setVisible(false);
+    props.setVisible('');
   };
 
-  const deleteBaan = () => {
+  const deleteRelative = () => {
     setProcessingDelete(true);
-    apiService.deleteBaan(props.data?._id as string, props.bhaaiId).then(() => {
-      props.reloadList && props.reloadList('DELETE');
-      setProcessingDelete(false);
-      props.setVisible(false);
-    });
+    apiService
+      .deleteRelative(props.data?._id as string, props.pariwarId)
+      .then(() => {
+        props.invalidateData(Date.now());
+        myContext.setAppSettings({
+          ...myContext.appSettings,
+          message: 'Relative has been deleted',
+        });
+        setProcessingDelete(false);
+        props.setVisible('');
+      });
   };
 
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-      <Dialog visible={props.visible} onDismiss={() => props.setVisible(false)}>
-        <DialogHeader title={`${props.type === 'ADD' ? 'add' : 'edit'} baan`} />
+      <Dialog
+        visible={props.visible === 'add' || props.visible === 'edit'}
+        onDismiss={() => props.setVisible('')}>
+        <DialogHeader
+          title={`${props.type === 'ADD' ? 'add' : 'edit'} relative`}
+        />
         <DialogContent>
           <Pressable>
             <View style={styles.form}>
@@ -202,21 +221,25 @@ const AddBaan: React.FC<DialogOptions> = (props: DialogOptions) => {
           </Pressable>
 
           <SizedBox height={16} />
+
           <Pressable>
             <View style={styles.form}>
-              <Text style={styles.label}>amount</Text>
+              <Text style={styles.label}>phone number</Text>
               <Controller
                 control={control}
-                name="amount"
+                name="phoneNumber"
                 render={({field}) => (
                   <TextInput
                     {...field}
+                    autoCapitalize="none"
+                    autoComplete="tel"
                     autoCorrect={false}
                     keyboardType="number-pad"
                     returnKeyType="next"
                     style={styles.textInput}
+                    textContentType="telephoneNumber"
                     onChangeText={value => field.onChange(value)}
-                    value={field.value + ''}
+                    value={field.value}
                   />
                 )}
               />
@@ -232,9 +255,9 @@ const AddBaan: React.FC<DialogOptions> = (props: DialogOptions) => {
               title="delete"
               compact
               variant="text"
-              onPress={deleteBaan}
               loading={processingDelete}
               disabled={processingDelete}
+              onPress={deleteRelative}
             />
           )}
           <Button
@@ -258,4 +281,4 @@ const AddBaan: React.FC<DialogOptions> = (props: DialogOptions) => {
   );
 };
 
-export default AddBaan;
+export default AddRelative;

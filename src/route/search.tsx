@@ -15,6 +15,7 @@ import ProgressBar from '../components/loader';
 import {BaanBase} from '../types/BaanList';
 import GiveBaan from '../components/giveBaan';
 import AppContext from '../services/storage';
+import useStackBarStyles from '../styles/stackBar';
 
 interface SearchProps {
   setSearchVisible: (visiblity: boolean) => any;
@@ -24,6 +25,7 @@ interface SearchProps {
 const Search: React.FC<SearchProps> = ({setSearchVisible, reloadList}) => {
   const myContext = useContext(AppContext);
   const styles = useStyles();
+  const stackBarStyles = useStackBarStyles();
   const [data, setData] = useState({} as any);
   const [loading, setLoading] = useState(false);
   const [giveBaanVisible, setGiveBaanVisible] = useState(false);
@@ -88,7 +90,12 @@ const Search: React.FC<SearchProps> = ({setSearchVisible, reloadList}) => {
             }
           />
         ))}
-      <Stack fill bottom={1} right={1} spacing={4}>
+      <Stack
+        style={stackBarStyles.stackBar}
+        fill
+        bottom={1}
+        right={1}
+        spacing={4}>
         <IconButton
           onPress={() => {
             reloadList && reloadList();
@@ -96,7 +103,7 @@ const Search: React.FC<SearchProps> = ({setSearchVisible, reloadList}) => {
           }}
           icon={props => <Ionicons name="arrow-back-outline" {...props} />}
           color="secondary"
-          style={styles.fabLeft}
+          style={stackBarStyles.fab}
         />
       </Stack>
       {giveBaanVisible && (

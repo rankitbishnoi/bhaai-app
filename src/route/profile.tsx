@@ -11,16 +11,22 @@ import mmkv from '../services/mmkv';
 import AppContext from '../services/storage';
 
 import useStyles from '../styles/profile';
+import useButtonStyles from '../styles/button';
+import useStackBarStyles from '../styles/stackBar';
 import {PariwarRole} from '../types/Profile';
 
 const Profile: React.FC = () => {
   const styles = useStyles();
+  const stackBarStyles = useStackBarStyles();
+  const buttonStyles = useButtonStyles();
   const myContext = useContext(AppContext);
   const [addVisible, setAddVisible] = useState(false);
   const [editVisible, setEditVisible] = useState(false);
   const [selectedRole, setSelectedRole] = useState({} as any);
-  const {data, isLoading, isError, error} = useQuery('profile', () =>
-    apiService.getProfile(),
+  const [queryKey, setQueryKey] = useState(Date.now());
+  const {data, isLoading, isError, error} = useQuery(
+    ['profile', queryKey],
+    () => apiService.getProfile(),
   );
 
   const logout = () => {
@@ -57,8 +63,23 @@ const Profile: React.FC = () => {
               <Text style={styles.labelData}>{data?.phoneNumber}</Text>
             </View>
           )}
+          <TouchableOpacity onPress={logout}>
+            <View style={buttonStyles.buttonSecondary}>
+              <Text style={buttonStyles.buttonTitle}>logout</Text>
+            </View>
+          </TouchableOpacity>
           <Text style={styles.labelContainer}>Roles</Text>
           <ScrollView>
+            {data?.pariwarRoles.length === 0 && (
+              <TouchableOpacity
+                onPress={() => {
+                  setAddVisible(!addVisible);
+                }}>
+                <View style={buttonStyles.button}>
+                  <Text style={buttonStyles.buttonTitle}>create pariwar</Text>
+                </View>
+              </TouchableOpacity>
+            )}
             {isError && <Text>Error: {(error as any).message}</Text>}
             {data?.pariwarRoles.map((role: PariwarRole) => (
               <ListItem
@@ -88,6 +109,7 @@ const Profile: React.FC = () => {
           {addVisible && (
             <AddPariwar
               visible={addVisible}
+              invalidateData={setQueryKey}
               setVisible={setAddVisible}
               type="ADD"
             />
@@ -95,28 +117,30 @@ const Profile: React.FC = () => {
           {editVisible && (
             <AddPariwar
               visible={editVisible}
+              invalidateData={setQueryKey}
               setVisible={setEditVisible}
               type="EDIT"
               data={selectedRole}
             />
           )}
-          <Stack fill bottom={1} right={1} spacing={4}>
+          <Stack
+            style={stackBarStyles.stackBar}
+            fill
+            bottom={1}
+            right={1}
+            spacing={4}>
+            <View />
             <IconButton
               onPress={() => {
                 setAddVisible(!addVisible);
               }}
               icon={props => <Ionicons name="add" {...props} />}
               color="secondary"
-              style={styles.fab}
+              style={stackBarStyles.fab}
             />
           </Stack>
         </>
       )}
-      <TouchableOpacity onPress={logout}>
-        <View style={styles.button}>
-          <Text style={styles.buttonTitle}>Logout</Text>
-        </View>
-      </TouchableOpacity>
     </View>
   );
 };

@@ -11,6 +11,9 @@ interface MessagePopUpOptions {
 
 const MessagePopUp: React.FC<MessagePopUpOptions> = ({message, setVisible}) => {
   const styles = useStyles();
+  setTimeout(() => {
+    setVisible(false);
+  }, 2000);
 
   return (
     <Snackbar

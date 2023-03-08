@@ -4,6 +4,7 @@ import {apiService} from '../services/api.service';
 import {IconButton, ListItem, Stack} from '@react-native-material/core';
 
 import useStyles from '../styles/bhaai';
+import useStackBarStyles from '../styles/stackBar';
 import {Bhaai as BhaaiType} from '../types/Bhaai';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AddBhaai from '../components/addBhaai';
@@ -16,6 +17,7 @@ import AppContext from '../services/storage';
 const Bhaai: React.FC = () => {
   const myContext = useContext(AppContext);
   const styles = useStyles();
+  const stackBarStyles = useStackBarStyles();
   const [data, setData] = useState([] as any);
   const [searchVisible, setSearchVisible] = useState(false);
   const [addVisible, setAddVisible] = useState(false);
@@ -102,22 +104,27 @@ const Bhaai: React.FC = () => {
                 />
               ))}
           </ScrollView>
-          <Stack fill bottom={1} right={1} spacing={4}>
-            <IconButton
-              onPress={() => {
-                setAddVisible(!addVisible);
-              }}
-              icon={props => <Ionicons name="add" {...props} />}
-              color="secondary"
-              style={styles.fab}
-            />
+          <Stack
+            style={stackBarStyles.stackBar}
+            fill
+            bottom={1}
+            right={1}
+            spacing={4}>
             <IconButton
               onPress={() => {
                 setSearchVisible(!addVisible);
               }}
               icon={props => <Ionicons name="search" {...props} />}
               color="secondary"
-              style={styles.fabLeft}
+              style={stackBarStyles.fab}
+            />
+            <IconButton
+              onPress={() => {
+                setAddVisible(!addVisible);
+              }}
+              icon={props => <Ionicons name="add" {...props} />}
+              color="secondary"
+              style={stackBarStyles.fab}
             />
           </Stack>
           {addVisible && (

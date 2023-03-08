@@ -19,12 +19,12 @@ import {apiService} from '../services/api.service';
 import {Nimta, NimtaBase} from '../types/Nimta';
 import SizedBox from './SizedBox';
 import useStyles from '../styles/nimta';
-import {useQueryClient} from 'react-query';
 import AppContext from '../services/storage';
 
 interface DialogOptions {
   visible: boolean;
   pariwarId: string;
+  invalidateData: (key: number) => any;
   setVisible: (visiblity: boolean) => any;
   type?: 'EDIT' | 'ADD';
   data?: Nimta;
@@ -33,7 +33,6 @@ interface DialogOptions {
 const AddNimta: React.FC<DialogOptions> = (props: DialogOptions) => {
   const [processingEdit, setProcessingEdit] = useState(false);
   const [processingDelete, setProcessingDelete] = useState(false);
-  const queryClient = useQueryClient();
   const myContext = useContext(AppContext);
   const styles = useStyles();
   const {control, handleSubmit} = useForm<NimtaBase>({
@@ -49,7 +48,7 @@ const AddNimta: React.FC<DialogOptions> = (props: DialogOptions) => {
         .updateNimta(props.data?._id as string, props.pariwarId, input)
         .then(data => {
           if (data) {
-            queryClient.invalidateQueries(['nimtaList', props.pariwarId]);
+            props.invalidateData(Date.now());
             myContext.setAppSettings({
               ...myContext.appSettings,
               message: 'Nimta has been updated',
@@ -61,7 +60,6 @@ const AddNimta: React.FC<DialogOptions> = (props: DialogOptions) => {
     } else {
       apiService.createNimta(props.pariwarId, input).then(data => {
         if (data) {
-          queryClient.invalidateQueries(['nimtaList', props.pariwarId]);
           myContext.setAppSettings({
             ...myContext.appSettings,
             message: 'Nimta has been added',
@@ -82,7 +80,6 @@ const AddNimta: React.FC<DialogOptions> = (props: DialogOptions) => {
     apiService
       .deleteNimta(props.data?._id as string, props.pariwarId)
       .then(() => {
-        queryClient.invalidateQueries(['nimtaList', props.pariwarId]);
         myContext.setAppSettings({
           ...myContext.appSettings,
           message: 'Nimta has been deleted',
@@ -97,12 +94,12 @@ const AddNimta: React.FC<DialogOptions> = (props: DialogOptions) => {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <Dialog visible={props.visible} onDismiss={() => props.setVisible(false)}>
         <DialogHeader
-          title={`${props.type === 'ADD' ? 'Add' : 'Edit'} Nimta`}
+          title={`${props.type === 'ADD' ? 'add' : 'edit'} nimta`}
         />
         <DialogContent>
           <Pressable>
             <View style={styles.form}>
-              <Text style={styles.label}>Name</Text>
+              <Text style={styles.label}>name</Text>
               <Controller
                 control={control}
                 name="name"
@@ -128,7 +125,7 @@ const AddNimta: React.FC<DialogOptions> = (props: DialogOptions) => {
           {props.type === 'EDIT' && (
             <Button
               color="error"
-              title="Delete"
+              title="delete"
               compact
               variant="text"
               loading={processingDelete}
@@ -138,13 +135,13 @@ const AddNimta: React.FC<DialogOptions> = (props: DialogOptions) => {
           )}
           <Button
             color="secondary"
-            title="Cancel"
+            title="cancel"
             compact
             variant="text"
             onPress={close}
           />
           <Button
-            title="Save"
+            title="save"
             compact
             variant="text"
             onPress={onSubmit}
