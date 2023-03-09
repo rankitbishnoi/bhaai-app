@@ -54,5 +54,9 @@ export default function useStyles() {
       color: '#FFFFFF',
       flex: 1,
     },
+    sortFilter: {
+      width: 140,
+      height: 32,
+    },
   });
 }

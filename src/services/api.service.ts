@@ -13,6 +13,7 @@ import {Pariwar, PariwarBase} from '../types/Pariwar';
 import {Profile} from '../types/Profile';
 import mmkv from './mmkv';
 import {RelativeList} from '../types/RelativeList';
+import {AddRelative} from '../types/AddRelative';
 
 class ApiService {
   baseURL =
@@ -117,21 +118,38 @@ class ApiService {
       });
   }
 
-  async getBaanList(bhaaiId: string): Promise<BaanList> {
+  async getBaanList(
+    by: BaanBase = {} as any,
+    bhaaiId?: string,
+  ): Promise<BaanList> {
+    const url = bhaaiId
+      ? `${this.baseURL}/bhaai/${bhaaiId}/baan`
+      : `${this.baseURL}/baan`;
     return axios
-      .get<BaanList>(`${this.baseURL}/bhaai/${bhaaiId}/baan`, this.getHeaders())
+      .get<BaanList>(url, this.getHeaders())
       .then(response => {
-        response.data.sort((a, b) => {
-          if (a.firstName < b.firstName) {
-            return -1;
+        return response.data?.filter(a => {
+          let truthy = true;
+          if (by.firstName?.length) {
+            truthy = truthy && a.firstName.includes(by.firstName);
           }
-          if (a.firstName > b.firstName) {
-            return 1;
+          if (by.lastName?.length) {
+            truthy = truthy && a.lastName.includes(by.lastName);
           }
-          return 0;
+          if (by.address?.length) {
+            truthy = truthy && a.address.includes(by.address);
+          }
+          if (by.fathersName?.length) {
+            truthy = truthy && a.fathersName.includes(by.fathersName);
+          }
+          if (by.nickName?.length) {
+            truthy = truthy && a.nickName.includes(by.nickName);
+          }
+          if (by.amount) {
+            truthy = truthy && a.amount === by.amount;
+          }
+          return truthy;
         });
-
-        return response.data;
       })
       .catch(error => {
         console.log(error);
@@ -365,7 +383,7 @@ class ApiService {
             truthy = truthy && a.phoneNumber.includes(by.phoneNumber);
           }
           return truthy;
-        });;
+        });
       })
       .catch(error => {
         console.log(error);
@@ -409,6 +427,27 @@ class ApiService {
       .catch(error => {
         console.log(error);
         return {} as any;
+      });
+  }
+
+  async addRelativesInNimta(
+    nimtaId: string,
+    pariwarId: string,
+    data: AddRelative,
+  ): Promise<void> {
+    return axios
+      .post<void>(
+        `${this.baseURL}/pariwar/${pariwarId}/nimta/${nimtaId}/addRelative`,
+        data,
+        this.getHeaders(),
+      )
+      .then(res => {
+        console.log(JSON.stringify(res));
+        return;
+      })
+      .catch(error => {
+        console.log(error);
+        return;
       });
   }
 

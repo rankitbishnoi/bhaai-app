@@ -4,7 +4,7 @@ import {apiService} from '../services/api.service';
 import {IconButton, ListItem, Stack} from '@react-native-material/core';
 
 import useStyles from '../styles/relative';
-import {Relative as RelativeType, RelativeBase} from '../types/Relative';
+import {Relative as RelativeType} from '../types/Relative';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AddRelative from '../components/addRelative';
 import {Image} from 'react-native';
@@ -17,7 +17,17 @@ import {useNavigation} from '@react-navigation/native';
 import SortRelative from '../components/sortRelative';
 import FilterRelative from '../components/filterRelative';
 
-const Relative: React.FC = () => {
+interface RelativeProps {
+  setVisible?: (visiblity: string) => any;
+  relatives?: RelativeType[];
+  nimtaBase?: boolean;
+}
+
+const Relative: React.FC<RelativeProps> = ({
+  nimtaBase,
+  relatives,
+  setVisible,
+}) => {
   const myContext = useContext(AppContext);
   const navigation = useNavigation();
   const styles = useStyles();
@@ -28,11 +38,42 @@ const Relative: React.FC = () => {
   const [filterBy, setFilterBy] = useState({} as any);
   const [queryKey, setQueryKey] = useState(Date.now());
   const [selectedRelative, setSelectedRelative] = useState({} as any);
+  const relativeList = relatives || [];
   let {data, isLoading} = useQuery(
     ['relativeList', myContext.appSettings.selectedRole, filterBy, queryKey],
     () =>
-      apiService.getRelativeList(myContext.appSettings.selectedRole, filterBy),
+      nimtaBase
+        ? filterList(relativeList)
+        : apiService.getRelativeList(
+            myContext.appSettings.selectedRole,
+            filterBy,
+          ),
   );
+
+  const filterList = (list: RelativeType[]) => {
+    return list.filter(a => {
+      let truthy = true;
+      if (filterBy.firstName?.length) {
+        truthy = truthy && a.firstName.includes(filterBy.firstName);
+      }
+      if (filterBy.lastName?.length) {
+        truthy = truthy && a.lastName.includes(filterBy.lastName);
+      }
+      if (filterBy.address?.length) {
+        truthy = truthy && a.address.includes(filterBy.address);
+      }
+      if (filterBy.fathersName?.length) {
+        truthy = truthy && a.fathersName.includes(filterBy.fathersName);
+      }
+      if (filterBy.nickName?.length) {
+        truthy = truthy && a.nickName.includes(filterBy.nickName);
+      }
+      if (filterBy.phoneNumber?.length) {
+        truthy = truthy && a.phoneNumber.includes(filterBy.phoneNumber);
+      }
+      return truthy;
+    });
+  };
 
   const editItem = (relative: RelativeType) => {
     setSelectedRelative(relative);
@@ -102,14 +143,26 @@ const Relative: React.FC = () => {
           bottom={1}
           right={1}
           spacing={0}>
-          <IconButton
-            onPress={() => {
-              setOpenDailog('search');
-            }}
-            icon={props => <Ionicons name="search" {...props} />}
-            color="secondary"
-            style={stackBarStyles.fab}
-          />
+          {!!nimtaBase && (
+            <IconButton
+              onPress={() => {
+                setVisible && setVisible('');
+              }}
+              icon={props => <Ionicons name="arrow-back-outline" {...props} />}
+              color="secondary"
+              style={stackBarStyles.fab}
+            />
+          )}
+          {!nimtaBase && (
+            <IconButton
+              onPress={() => {
+                setOpenDailog('search');
+              }}
+              icon={props => <Ionicons name="person-add-outline" {...props} />}
+              color="secondary"
+              style={stackBarStyles.fab}
+            />
+          )}
           <View style={{...buttonStyles.buttonGroup, ...styles.sortFilter}}>
             <TouchableOpacity
               onPress={() => {
@@ -145,14 +198,26 @@ const Relative: React.FC = () => {
               </View>
             </TouchableOpacity>
           </View>
-          <IconButton
-            onPress={() => {
-              setOpenDailog('add');
-            }}
-            icon={props => <Ionicons name="add" {...props} />}
-            color="secondary"
-            style={stackBarStyles.fab}
-          />
+          {!!nimtaBase && (
+            <IconButton
+              onPress={() => {
+                setVisible && setVisible('addFromWhere');
+              }}
+              icon={props => <Ionicons name="person-add-outline" {...props} />}
+              color="secondary"
+              style={stackBarStyles.fab}
+            />
+          )}
+          {!nimtaBase && (
+            <IconButton
+              onPress={() => {
+                setOpenDailog('add');
+              }}
+              icon={props => <Ionicons name="add" {...props} />}
+              color="secondary"
+              style={stackBarStyles.fab}
+            />
+          )}
         </Stack>
         {openDailog === 'add' && (
           <AddRelative

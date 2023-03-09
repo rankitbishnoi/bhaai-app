@@ -84,16 +84,17 @@ const Profile: React.FC = () => {
             {data?.pariwarRoles.map((role: PariwarRole) => (
               <ListItem
                 key={role._id}
-                title={role._id}
+                title={role.pariwarId.name}
                 style={styles.list}
                 elevation={4}
                 leadingMode="image"
                 leading={
                   <TouchableOpacity
-                    onPress={() => selectPariwarRole(role.pariwarId)}>
+                    onPress={() => selectPariwarRole(role.pariwarId._id)}>
                     <RadioButton
                       selected={
-                        role.pariwarId === myContext.appSettings.selectedRole
+                        role.pariwarId._id ===
+                        myContext.appSettings.selectedRole
                       }
                     />
                   </TouchableOpacity>

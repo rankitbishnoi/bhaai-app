@@ -34,7 +34,7 @@ const Baan: React.FC<BaanProps> = ({bhaaiId, setBaanVisible}) => {
 
   const getData = useCallback(async () => {
     setLoading(true);
-    const baanList = await apiService.getBaanList(bhaaiId);
+    const baanList = await apiService.getBaanList({} as any, bhaaiId);
     const bhaaiData = await apiService.getBhaai(bhaaiId, true);
     setData({baanList, bhaaiData});
     setLoading(false);

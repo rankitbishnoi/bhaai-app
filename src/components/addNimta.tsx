@@ -60,6 +60,7 @@ const AddNimta: React.FC<DialogOptions> = (props: DialogOptions) => {
     } else {
       apiService.createNimta(props.pariwarId, input).then(data => {
         if (data) {
+          props.invalidateData(Date.now());
           myContext.setAppSettings({
             ...myContext.appSettings,
             message: 'Nimta has been added',
@@ -80,6 +81,7 @@ const AddNimta: React.FC<DialogOptions> = (props: DialogOptions) => {
     apiService
       .deleteNimta(props.data?._id as string, props.pariwarId)
       .then(() => {
+        props.invalidateData(Date.now());
         myContext.setAppSettings({
           ...myContext.appSettings,
           message: 'Nimta has been deleted',

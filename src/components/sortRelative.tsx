@@ -14,13 +14,17 @@ import {
   View,
 } from 'react-native';
 import useStyles from '../styles/profile';
+import {BaanBase} from '../types/Baan';
 import {Relative} from '../types/Relative';
 import RadioButton from './radioButton';
+
+type sortRelativeKeyType = keyof Relative;
+type sortBaanKeyType = keyof BaanBase;
 
 interface DialogOptions {
   visible: string;
   setVisible: (visiblity: string) => any;
-  setSortBy: (reason?: keyof Relative) => any;
+  setSortBy: (reason?: sortRelativeKeyType & sortBaanKeyType) => any;
   sortBy: string;
 }
 

@@ -5,6 +5,8 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
+import { Pariwar } from "./Pariwar";
+
 export type Profile = Profile1 & Profile2;
 export type Profile1 = CustomerBase;
 export type PariwarRole = PariwarRole1 & PariwarRole2;
@@ -24,5 +26,5 @@ export interface PariwarRoleBase {
 }
 export interface PariwarRole2 {
     _id: string;
-    pariwarId: string;
+    pariwarId: Pariwar;
 }
