@@ -16,7 +16,7 @@ export default function useStyles() {
       paddingVertical: 32,
     },
     list: {
-      backgroundColor: '#111',
+      backgroundColor: '#000',
       color: '#ddd',
     },
   });

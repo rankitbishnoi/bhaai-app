@@ -36,7 +36,6 @@ const Auth: React.FC = () => {
 
       <SizedBox height={32} />
       {login ? <Login /> : <Signup />}
-      <SizedBox height={16} />
       <TouchableOpacity onPress={handleToggle}>
         <View style={buttonStyles.buttonSecondary}>
           <Text style={buttonStyles.buttonTitle}>

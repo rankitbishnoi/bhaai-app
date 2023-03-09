@@ -35,7 +35,7 @@ const Signup: React.FC<{}> = ({}) => {
       .catch(error => {
         myContext.setAppSettings({
           ...myContext.appSettings,
-          error: JSON.stringify(error),
+          message: error.response.data?.message || 'Unable to SignUp',
         });
         return {access_token: ''};
       })

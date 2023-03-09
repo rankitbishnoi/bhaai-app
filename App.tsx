@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {SafeAreaView, View} from 'react-native';
+import {KeyboardAvoidingView, Platform, SafeAreaView, View} from 'react-native';
 import {Provider, defaultTheme} from '@react-native-material/core';
 
 import useStyles from './src/styles/root';
@@ -44,14 +44,17 @@ const App: React.FC = () => {
           <View style={styles.root}>
             <SafeAreaView style={styles.safeAreaView}>
               {appSettings.isLoggedIn ? <Main /> : <Auth />}
-              {appSettings?.message && (
-                <MessagePopUp
-                  setVisible={() => {
-                    setAppSettings({...appSettings, message: null});
-                  }}
-                  message={appSettings?.message}
-                />
-              )}
+              <KeyboardAvoidingView
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+                {appSettings?.message && (
+                  <MessagePopUp
+                    setVisible={() => {
+                      setAppSettings({...appSettings, message: null});
+                    }}
+                    message={appSettings?.message}
+                  />
+                )}
+              </KeyboardAvoidingView>
             </SafeAreaView>
           </View>
         </QueryClientProvider>

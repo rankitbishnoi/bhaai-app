@@ -71,7 +71,7 @@ export default function useStyles() {
       color: '#999',
     },
     list: {
-      backgroundColor: '#111',
+      backgroundColor: '#000',
       color: '#ddd',
     },
   });

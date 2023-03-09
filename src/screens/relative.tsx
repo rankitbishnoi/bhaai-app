@@ -169,16 +169,7 @@ const Relative: React.FC<RelativeProps> = ({
               style={stackBarStyles.fab}
             />
           )}
-          {!nimtaBase && (
-            <IconButton
-              onPress={() => {
-                setOpenDailog('search');
-              }}
-              icon={props => <Ionicons name="person-add-outline" {...props} />}
-              color="secondary"
-              style={stackBarStyles.fab}
-            />
-          )}
+          {!nimtaBase && <View style={stackBarStyles.fab} />}
           <View style={{...buttonStyles.buttonGroup, ...styles.sortFilter}}>
             <TouchableOpacity
               onPress={() => {

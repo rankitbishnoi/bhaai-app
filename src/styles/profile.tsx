@@ -7,7 +7,7 @@ export default function useStyles() {
       flex: 1,
     },
     list: {
-      backgroundColor: '#111',
+      backgroundColor: '#000',
       color: '#ddd',
     },
     labelContainer: {

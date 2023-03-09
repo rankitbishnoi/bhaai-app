@@ -4,11 +4,11 @@ export default function useStyles() {
   return StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: '#111',
+      backgroundColor: '#000000',
       color: '#ddd',
     },
     list: {
-      backgroundColor: '#111',
+      backgroundColor: '#000',
       color: '#ddd',
     },
     loader: {
