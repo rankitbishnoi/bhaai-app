@@ -29,7 +29,6 @@ class ApiService {
   }
 
   async login(loginData: CustomerBase): Promise<AccessToken> {
-    console.log(loginData);
     return axios
       .post<AccessToken>(`${this.baseURL}/auth/login`, loginData)
       .then(response => {
@@ -441,8 +440,7 @@ class ApiService {
         data,
         this.getHeaders(),
       )
-      .then(res => {
-        console.log(JSON.stringify(res));
+      .then(() => {
         return;
       })
       .catch(error => {
@@ -455,6 +453,25 @@ class ApiService {
     return axios
       .delete<void>(
         `${this.baseURL}/pariwar/${pariwarId}/relative/${id}`,
+        this.getHeaders(),
+      )
+      .then(response => {
+        return response.data;
+      })
+      .catch(error => {
+        console.log(JSON.stringify(error));
+        return {} as any;
+      });
+  }
+
+  async removeRelativeFromNimta(
+    id: string,
+    nimtaId: string,
+    pariwarId: string,
+  ): Promise<void> {
+    return axios
+      .delete<void>(
+        `${this.baseURL}/pariwar/${pariwarId}/nimta/${nimtaId}/removeRelative/${id}`,
         this.getHeaders(),
       )
       .then(response => {

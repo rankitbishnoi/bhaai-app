@@ -1,7 +1,7 @@
 import React, {useContext, useState} from 'react';
-import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import {Text, TouchableOpacity, View} from 'react-native';
 import {apiService} from '../services/api.service';
-import {IconButton, ListItem, Stack} from '@react-native-material/core';
+import {IconButton, Stack} from '@react-native-material/core';
 
 import useStyles from '../styles/relative';
 import {Relative as RelativeType} from '../types/Relative';
@@ -16,14 +16,17 @@ import useStackBarStyles from '../styles/stackBar';
 import {useNavigation} from '@react-navigation/native';
 import SortRelative from '../components/sortRelative';
 import FilterRelative from '../components/filterRelative';
+import SwipeableList from '../components/swipeableList/swipeableList';
 
 interface RelativeProps {
   setVisible?: (visiblity: string) => any;
   relatives?: RelativeType[];
+  nimtaId?: string;
   nimtaBase?: boolean;
 }
 
 const Relative: React.FC<RelativeProps> = ({
+  nimtaId,
   nimtaBase,
   relatives,
   setVisible,
@@ -94,49 +97,62 @@ const Relative: React.FC<RelativeProps> = ({
     setSortBy(by);
   };
 
+  const deleteRelative = async (id: string) => {
+    if (nimtaBase && nimtaId) {
+      return apiService
+        .removeRelativeFromNimta(
+          id,
+          nimtaId,
+          myContext.appSettings.selectedRole,
+        )
+        .then(() => true);
+    }
+
+    return apiService
+      .deleteRelative(id, myContext.appSettings.selectedRole)
+      .then(() => true);
+  };
+
   return (
     <>
       <View style={styles.container}>
         {isLoading && (
           <ProgressBar height={5} indeterminate backgroundColor="#4a0072" />
         )}
-        <ScrollView>
-          {!myContext.appSettings.selectedRole && (
-            <TouchableOpacity
-              onPress={() => {
-                navigation.navigate('profile' as never);
-              }}>
-              <View style={buttonStyles.button}>
-                <Text style={buttonStyles.buttonTitle}>select pariwar</Text>
-              </View>
-            </TouchableOpacity>
-          )}
-          {data?.map((relative: RelativeType) => (
-            <ListItem
-              key={relative._id}
-              title={`${relative.firstName} ${relative.lastName}${
-                relative.nickName ? '(' + relative.nickName + ')' : ''
-              } ${relative.fathersName ? 'S/O ' + relative.fathersName : ''}, ${
-                relative.address
-              }`}
-              secondaryText={`Mobile: ${relative.phoneNumber}`}
-              style={styles.list}
-              elevation={4}
-              leadingMode="image"
-              leading={
-                <TouchableOpacity onPress={() => editItem(relative)}>
-                  <Image
-                    source={require('../assets/edit-icon.png')}
-                    style={{width: 50, height: 50}}
-                  />
-                </TouchableOpacity>
-              }
-              trailing={props => (
-                <Ionicons name="chevron-forward-outline" {...props} />
-              )}
-            />
-          ))}
-        </ScrollView>
+        {!myContext.appSettings.selectedRole && (
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('profile' as never);
+            }}>
+            <View style={buttonStyles.button}>
+              <Text style={buttonStyles.buttonTitle}>select pariwar</Text>
+            </View>
+          </TouchableOpacity>
+        )}
+        {data && (
+          <SwipeableList
+            items={data.map(relative => {
+              return {
+                key: relative._id,
+                title: `${relative.firstName} ${relative.lastName}${
+                  relative.nickName ? '(' + relative.nickName + ')' : ''
+                } ${
+                  relative.fathersName ? 'S/O ' + relative.fathersName : ''
+                }, ${relative.address}`,
+                subtitle: `Mobile: ${relative.phoneNumber || 'not available'}`,
+                leading: (
+                  <TouchableOpacity onPress={() => editItem(relative)}>
+                    <Image
+                      source={require('../assets/edit-icon.png')}
+                      style={{width: 50, height: 50}}
+                    />
+                  </TouchableOpacity>
+                ),
+              };
+            })}
+            deleteItem={deleteRelative}
+          />
+        )}
         <Stack
           style={stackBarStyles.stackBar}
           fill

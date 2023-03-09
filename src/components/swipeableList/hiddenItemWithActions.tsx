@@ -31,7 +31,6 @@ const HiddenItemWithActions: React.FC<HiddenItemWithActionsOptions> = ({
   onDelete,
 }) => {
   const styles = useStyles();
-	console.log(rightActionActivated);
   if (rightActionActivated) {
     Animated.spring(rowActionAnimatedValue, {
       toValue: 500,

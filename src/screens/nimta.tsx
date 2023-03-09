@@ -2,7 +2,6 @@ import React, {useContext, useState} from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
-  ScrollView,
   Text,
   TouchableOpacity,
   View,
@@ -15,7 +14,6 @@ import {
   DialogContent,
   DialogHeader,
   IconButton,
-  ListItem,
   Stack,
 } from '@react-native-material/core';
 
@@ -34,6 +32,7 @@ import Relative from './relative';
 import AddFromRelative from '../components/addFromRelative';
 import AddFromBaan from '../components/addFromBaan';
 import SizedBox from '../components/SizedBox';
+import SwipeableList from '../components/swipeableList/swipeableList';
 
 const childPageStates = ['relative', 'addFromRelative', 'addFromBaan'];
 
@@ -56,6 +55,14 @@ const Nimta: React.FC = () => {
     setOpenDailog('edit');
   };
 
+  const deleteNimta = async (id: string) => {
+    return apiService
+      .deleteNimta(id, myContext.appSettings.selectedRole)
+      .then(() => {
+        return true;
+      });
+  };
+
   return (
     <>
       {!childPageStates.includes(openDailog) && (
@@ -63,43 +70,49 @@ const Nimta: React.FC = () => {
           {isLoading && (
             <ProgressBar height={5} indeterminate backgroundColor="#4a0072" />
           )}
-          <ScrollView>
-            {!myContext.appSettings.selectedRole && (
-              <TouchableOpacity
-                onPress={() => {
-                  navigation.navigate('profile' as never);
-                }}>
-                <View style={buttonStyles.button}>
-                  <Text style={buttonStyles.buttonTitle}>select pariwar</Text>
-                </View>
-              </TouchableOpacity>
-            )}
-            {data?.map((nimta: NimtaType) => (
-              <ListItem
-                onPress={() => {
-                  setSelectedNimta(nimta);
-                  setOpenDailog('relative');
-                }}
-                key={nimta._id}
-                title={nimta.name}
-                secondaryText={`Relatives: ${nimta.relative.length}`}
-                style={styles.list}
-                elevation={4}
-                leadingMode="image"
-                leading={
-                  <TouchableOpacity onPress={() => editItem(nimta)}>
-                    <Image
-                      source={require('../assets/edit-icon.png')}
-                      style={{width: 50, height: 50}}
-                    />
-                  </TouchableOpacity>
-                }
-                trailing={props => (
-                  <Ionicons name="chevron-forward-outline" {...props} />
-                )}
-              />
-            ))}
-          </ScrollView>
+          {!myContext.appSettings.selectedRole && (
+            <TouchableOpacity
+              onPress={() => {
+                navigation.navigate('profile' as never);
+              }}>
+              <View style={buttonStyles.button}>
+                <Text style={buttonStyles.buttonTitle}>select pariwar</Text>
+              </View>
+            </TouchableOpacity>
+          )}
+          {data && (
+            <SwipeableList
+              items={data.map(nimta => {
+                return {
+                  title: nimta.name,
+                  key: nimta._id,
+                  subtitle: `Relatives: ${nimta.relative.length}`,
+                  leading: (
+                    <TouchableOpacity onPress={() => editItem(nimta)}>
+                      <Image
+                        source={require('../assets/edit-icon.png')}
+                        style={{width: 50, height: 50}}
+                      />
+                    </TouchableOpacity>
+                  ),
+                  trailing: (
+                    <TouchableOpacity
+                      onPress={() => {
+                        setSelectedNimta(nimta);
+                        setOpenDailog('relative');
+                      }}>
+                      <Ionicons
+                        name="chevron-forward-outline"
+                        size={25}
+                        color={'white'}
+                      />
+                    </TouchableOpacity>
+                  ),
+                };
+              })}
+              deleteItem={deleteNimta}
+            />
+          )}
           <Stack
             style={stackBarStyles.stackBar}
             fill
@@ -141,6 +154,7 @@ const Nimta: React.FC = () => {
         <Relative
           relatives={selectedNimta.relative}
           nimtaBase={true}
+          nimtaId={selectedNimta._id}
           setVisible={value => setOpenDailog(value)}
         />
       )}

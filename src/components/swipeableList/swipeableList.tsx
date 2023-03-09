@@ -91,6 +91,16 @@ const SwipeableList: React.FC<SwipeableListOptions> = ({items, deleteItem}) => {
     );
   };
 
+  const onRowDidOpen = () => {};
+
+  const onLeftActionStatusChange = () => {};
+
+  const onRightActionStatusChange = () => {};
+
+  const onRightAction = () => {};
+
+  const onLeftAction = () => {};
+
   return (
     <View style={styles.container}>
       <SwipeListView
@@ -100,10 +110,15 @@ const SwipeableList: React.FC<SwipeableListOptions> = ({items, deleteItem}) => {
         leftOpenValue={75}
         rightOpenValue={-150}
         disableRightSwipe
+        onRowDidOpen={onRowDidOpen}
         leftActivationValue={100}
         rightActivationValue={-200}
         leftActionValue={0}
         rightActionValue={-500}
+        onLeftAction={onLeftAction}
+        onRightAction={onRightAction}
+        onLeftActionStatusChange={onLeftActionStatusChange}
+        onRightActionStatusChange={onRightActionStatusChange}
       />
     </View>
   );

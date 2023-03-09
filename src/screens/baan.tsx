@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
-import {ScrollView, TouchableOpacity, View} from 'react-native';
+import {TouchableOpacity, View} from 'react-native';
 import {apiService} from '../services/api.service';
-import {IconButton, ListItem, Stack, Text} from '@react-native-material/core';
+import {IconButton, Stack, Text} from '@react-native-material/core';
 
 import useStyles from '../styles/baan';
 import useStackBarStyles from '../styles/stackBar';
@@ -13,6 +13,7 @@ import ProgressBar from '../components/loader';
 import {useQuery} from 'react-query';
 import {BaanList} from '../types/BaanList';
 import {BhaaiTotal} from '../types/BhaaiTotal';
+import SwipeableList from '../components/swipeableList/swipeableList';
 
 interface BaanProps {
   setBaanVisible: (visiblity: boolean) => any;
@@ -40,6 +41,12 @@ const Baan: React.FC<BaanProps> = ({bhaaiId, setBaanVisible}) => {
     setOpenDailog('edit');
   };
 
+  const deleteBaan = async (id: string) => {
+    return apiService.deleteBaan(id, bhaaiId).then(() => {
+      return true;
+    });
+  };
+
   return (
     <View style={styles.container}>
       {isLoading && (
@@ -55,31 +62,30 @@ const Baan: React.FC<BaanProps> = ({bhaaiId, setBaanVisible}) => {
           </Text>
         </Stack>
       )}
-      <ScrollView>
-        {data?.baanList &&
-          data.baanList.map((baan: BaanType) => (
-            <ListItem
-              key={baan._id}
-              title={`${baan.firstName} ${baan.lastName}${
+      {data?.baanList && (
+        <SwipeableList
+          items={data.baanList.map(baan => {
+            return {
+              title: `${baan.firstName} ${baan.lastName}${
                 baan.nickName ? '(' + baan.nickName + ')' : ''
               } ${baan.fathersName ? 'S/O ' + baan.fathersName : ''}, ${
                 baan.address
-              }`}
-              secondaryText={`Rs: ${baan.amount}`}
-              style={styles.list}
-              elevation={4}
-              leadingMode="image"
-              leading={
+              }`,
+              key: baan._id,
+              subtitle: `Rs: ${baan.amount}`,
+              leading: (
                 <TouchableOpacity onPress={() => editItem(baan)}>
                   <Image
                     source={require('../assets/edit-icon.png')}
                     style={{width: 50, height: 50}}
                   />
                 </TouchableOpacity>
-              }
-            />
-          ))}
-      </ScrollView>
+              ),
+            };
+          })}
+          deleteItem={deleteBaan}
+        />
+      )}
       <Stack
         style={stackBarStyles.stackBar}
         fill

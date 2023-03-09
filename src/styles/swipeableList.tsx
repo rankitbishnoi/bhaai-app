@@ -27,7 +27,7 @@ export default function useStyles() {
     },
     rowBack: {
       alignItems: 'center',
-      backgroundColor: '#DDD',
+      backgroundColor: '#111',
       flex: 1,
       flexDirection: 'row',
       justifyContent: 'space-between',
@@ -56,6 +56,7 @@ export default function useStyles() {
       borderBottomRightRadius: 5,
     },
     trash: {
+      height: 25,
       width: 25,
       marginRight: 7,
     },
