@@ -62,7 +62,7 @@ class ApiService {
         return response.data;
       })
       .catch(error => {
-        console.log(error);
+        console.log(JSON.stringify(error));
         return [] as any;
       });
   }
@@ -74,7 +74,7 @@ class ApiService {
         return response.data;
       })
       .catch(error => {
-        console.log(error);
+        console.log(JSON.stringify(error));
         return {} as any;
       });
   }
@@ -86,7 +86,7 @@ class ApiService {
         return response.data;
       })
       .catch(error => {
-        console.log(error);
+        console.log(JSON.stringify(error));
         return {} as any;
       });
   }
@@ -98,7 +98,7 @@ class ApiService {
         return response.data;
       })
       .catch(error => {
-        console.log(error);
+        console.log(JSON.stringify(error));
         return {} as any;
       });
   }
@@ -113,7 +113,7 @@ class ApiService {
         return response.data;
       })
       .catch(error => {
-        console.log(error);
+        console.log(JSON.stringify(error));
         return {} as any;
       });
   }
@@ -152,7 +152,7 @@ class ApiService {
         });
       })
       .catch(error => {
-        console.log(error);
+        console.log(JSON.stringify(error));
         return [] as any;
       });
   }
@@ -168,7 +168,7 @@ class ApiService {
         return response.data;
       })
       .catch(error => {
-        console.log(error);
+        console.log(JSON.stringify(error));
         return {} as any;
       });
   }
@@ -184,7 +184,7 @@ class ApiService {
         return response.data;
       })
       .catch(error => {
-        console.log(error);
+        console.log(JSON.stringify(error));
         return {} as any;
       });
   }
@@ -199,7 +199,7 @@ class ApiService {
         return response.data;
       })
       .catch(error => {
-        console.log(error);
+        console.log(JSON.stringify(error));
         return {} as any;
       });
   }
@@ -214,7 +214,7 @@ class ApiService {
         return response.data;
       })
       .catch(error => {
-        console.log(error);
+        console.log(JSON.stringify(error));
         return [] as any;
       });
   }
@@ -233,7 +233,7 @@ class ApiService {
         return response.data;
       })
       .catch(error => {
-        console.log(error);
+        console.log(JSON.stringify(error));
         return {} as any;
       });
   }
@@ -245,7 +245,7 @@ class ApiService {
         return response.data;
       })
       .catch(error => {
-        console.log(error);
+        console.log(JSON.stringify(error));
         return {} as any;
       });
   }
@@ -257,7 +257,7 @@ class ApiService {
         return response.data;
       })
       .catch(error => {
-        console.log(error);
+        console.log(JSON.stringify(error));
         return {} as any;
       });
   }
@@ -269,7 +269,7 @@ class ApiService {
         return response.data;
       })
       .catch(error => {
-        console.log(error);
+        console.log(JSON.stringify(error));
         return {} as any;
       });
   }
@@ -281,7 +281,7 @@ class ApiService {
         return response.data;
       })
       .catch(error => {
-        console.log(error);
+        console.log(JSON.stringify(error));
         return {} as any;
       });
   }
@@ -296,7 +296,7 @@ class ApiService {
         return response.data;
       })
       .catch(error => {
-        console.log(error);
+        console.log(JSON.stringify(error));
         return [] as any;
       });
   }
@@ -312,7 +312,7 @@ class ApiService {
         return response.data;
       })
       .catch(error => {
-        console.log(error);
+        console.log(JSON.stringify(error));
         return {} as any;
       });
   }
@@ -332,7 +332,7 @@ class ApiService {
         return response.data;
       })
       .catch(error => {
-        console.log(error);
+        console.log(JSON.stringify(error));
         return {} as any;
       });
   }
@@ -347,7 +347,7 @@ class ApiService {
         return response.data;
       })
       .catch(error => {
-        console.log(error);
+        console.log(JSON.stringify(error));
         return {} as any;
       });
   }
@@ -386,7 +386,7 @@ class ApiService {
         });
       })
       .catch(error => {
-        console.log(error);
+        console.log(JSON.stringify(error));
         return [] as any;
       });
   }
@@ -405,7 +405,7 @@ class ApiService {
         return response.data;
       })
       .catch(error => {
-        console.log(error);
+        console.log(JSON.stringify(error));
         return {} as any;
       });
   }
@@ -425,7 +425,7 @@ class ApiService {
         return response.data;
       })
       .catch(error => {
-        console.log(error);
+        console.log(JSON.stringify(error));
         return {} as any;
       });
   }
@@ -446,7 +446,7 @@ class ApiService {
         return;
       })
       .catch(error => {
-        console.log(error);
+        console.log(JSON.stringify(error));
         return;
       });
   }
@@ -461,7 +461,7 @@ class ApiService {
         return response.data;
       })
       .catch(error => {
-        console.log(error);
+        console.log(JSON.stringify(error));
         return {} as any;
       });
   }

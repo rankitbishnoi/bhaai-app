@@ -3,10 +3,10 @@ import {SafeAreaView, View} from 'react-native';
 import {Provider, defaultTheme} from '@react-native-material/core';
 
 import useStyles from './src/styles/root';
-import Auth from './src/route/auth';
+import Auth from './src/screens/auth';
 import AppContext from './src/services/storage';
 import mmkv from './src/services/mmkv';
-import Main from './src/route/main';
+import Main from './src/screens/main';
 import MessagePopUp from './src/components/messagePopUp';
 import {QueryClient, QueryClientProvider} from 'react-query';
 

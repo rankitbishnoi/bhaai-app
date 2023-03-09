@@ -104,7 +104,7 @@ const Relative: React.FC<RelativeProps> = ({
           {!myContext.appSettings.selectedRole && (
             <TouchableOpacity
               onPress={() => {
-                navigation.navigate('profile');
+                navigation.navigate('profile' as never);
               }}>
               <View style={buttonStyles.button}>
                 <Text style={buttonStyles.buttonTitle}>select pariwar</Text>

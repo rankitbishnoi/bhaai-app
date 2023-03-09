@@ -20,8 +20,7 @@ const Profile: React.FC = () => {
   const stackBarStyles = useStackBarStyles();
   const buttonStyles = useButtonStyles();
   const myContext = useContext(AppContext);
-  const [addVisible, setAddVisible] = useState(false);
-  const [editVisible, setEditVisible] = useState(false);
+  const [openDailog, setOpenDailog] = useState('');
   const [selectedRole, setSelectedRole] = useState({} as any);
   const [queryKey, setQueryKey] = useState(Date.now());
   const {data, isLoading, isError, error} = useQuery(
@@ -43,7 +42,7 @@ const Profile: React.FC = () => {
 
   const editItem = (role: PariwarRole) => {
     setSelectedRole(role);
-    setEditVisible(true);
+    setOpenDailog('edit');
   };
 
   return (
@@ -73,7 +72,7 @@ const Profile: React.FC = () => {
             {data?.pariwarRoles.length === 0 && (
               <TouchableOpacity
                 onPress={() => {
-                  setAddVisible(!addVisible);
+                  setOpenDailog('add');
                 }}>
                 <View style={buttonStyles.button}>
                   <Text style={buttonStyles.buttonTitle}>create pariwar</Text>
@@ -107,19 +106,19 @@ const Profile: React.FC = () => {
               />
             ))}
           </ScrollView>
-          {addVisible && (
+          {openDailog === 'add' && (
             <AddPariwar
-              visible={addVisible}
+              visible={openDailog === 'add'}
               invalidateData={setQueryKey}
-              setVisible={setAddVisible}
+              setVisible={value => setOpenDailog(value ? 'add' : '')}
               type="ADD"
             />
           )}
-          {editVisible && (
+          {openDailog === 'edit' && (
             <AddPariwar
-              visible={editVisible}
+              visible={openDailog === 'edit'}
               invalidateData={setQueryKey}
-              setVisible={setEditVisible}
+              setVisible={value => setOpenDailog(value ? 'edit' : '')}
               type="EDIT"
               data={selectedRole}
             />
@@ -133,7 +132,7 @@ const Profile: React.FC = () => {
             <View />
             <IconButton
               onPress={() => {
-                setAddVisible(!addVisible);
+                setOpenDailog('add');
               }}
               icon={props => <Ionicons name="add" {...props} />}
               color="secondary"

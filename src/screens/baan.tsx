@@ -1,4 +1,4 @@
-import React, {useCallback, useContext, useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {ScrollView, TouchableOpacity, View} from 'react-native';
 import {apiService} from '../services/api.service';
 import {IconButton, ListItem, Stack, Text} from '@react-native-material/core';
@@ -10,7 +10,9 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import AddBaan from '../components/addBaan';
 import {Image} from 'react-native';
 import ProgressBar from '../components/loader';
-import AppContext from '../services/storage';
+import {useQuery} from 'react-query';
+import {BaanList} from '../types/BaanList';
+import {BhaaiTotal} from '../types/BhaaiTotal';
 
 interface BaanProps {
   setBaanVisible: (visiblity: boolean) => any;
@@ -18,55 +20,29 @@ interface BaanProps {
 }
 
 const Baan: React.FC<BaanProps> = ({bhaaiId, setBaanVisible}) => {
-  const myContext = useContext(AppContext);
   const styles = useStyles();
   const stackBarStyles = useStackBarStyles();
-  const [data, setData] = useState({} as any);
-  const [addVisible, setAddVisible] = useState(false);
-  const [editVisible, setEditVisible] = useState(false);
+  const [openDailog, setOpenDailog] = useState('');
   const [selectedBaan, setSelectedBaan] = useState({} as any);
-  const [loading, setLoading] = useState(true);
+  const [queryKey, setQueryKey] = useState(Date.now());
+  const {data, isLoading} = useQuery(['baanList', bhaaiId, queryKey], () =>
+    Promise.all([
+      apiService.getBaanList({} as any, bhaaiId),
+      apiService.getBhaai(bhaaiId, true),
+    ]).then(([baanList, bhaaiData]: [BaanList, BhaaiTotal]) => ({
+      baanList,
+      bhaaiData,
+    })),
+  );
 
   const editItem = (baan: BaanType) => {
     setSelectedBaan(baan);
-    setEditVisible(true);
-  };
-
-  const getData = useCallback(async () => {
-    setLoading(true);
-    const baanList = await apiService.getBaanList({} as any, bhaaiId);
-    const bhaaiData = await apiService.getBhaai(bhaaiId, true);
-    setData({baanList, bhaaiData});
-    setLoading(false);
-  }, [bhaaiId]);
-
-  useEffect(() => {
-    getData();
-  }, [getData]);
-
-  const reloadData = (reason: string) => {
-    if (reason === 'EDIT') {
-      myContext.setAppSettings({
-        ...myContext.appSettings,
-        message: 'Baan has been updated',
-      });
-    } else if (reason === 'ADD') {
-      myContext.setAppSettings({
-        ...myContext.appSettings,
-        message: 'Baan has been added',
-      });
-    } else if (reason === 'DELETE') {
-      myContext.setAppSettings({
-        ...myContext.appSettings,
-        message: 'Baan has been deleted',
-      });
-    }
-    getData();
+    setOpenDailog('edit');
   };
 
   return (
     <View style={styles.container}>
-      {loading && (
+      {isLoading && (
         <ProgressBar height={5} indeterminate backgroundColor="#4a0072" />
       )}
       {data?.bhaaiData && (
@@ -120,29 +96,29 @@ const Baan: React.FC<BaanProps> = ({bhaaiId, setBaanVisible}) => {
         />
         <IconButton
           onPress={() => {
-            setAddVisible(!addVisible);
+            setOpenDailog('add');
           }}
           icon={props => <Ionicons name="add" {...props} />}
           color="secondary"
           style={stackBarStyles.fab}
         />
       </Stack>
-      {addVisible && (
+      {openDailog === 'add' && (
         <AddBaan
-          visible={addVisible}
-          setVisible={setAddVisible}
+          visible={openDailog === 'add'}
+          setVisible={value => setOpenDailog(value ? 'add' : '')}
           type="ADD"
           bhaaiId={bhaaiId}
-          reloadList={reloadData}
+          invalidateData={setQueryKey}
         />
       )}
-      {editVisible && (
+      {openDailog === 'edit' && (
         <AddBaan
-          visible={editVisible}
-          setVisible={setEditVisible}
+          visible={openDailog === 'edit'}
+          setVisible={value => setOpenDailog(value ? 'edit' : '')}
           type="EDIT"
           bhaaiId={bhaaiId}
-          reloadList={reloadData}
+          invalidateData={setQueryKey}
           data={selectedBaan}
         />
       )}

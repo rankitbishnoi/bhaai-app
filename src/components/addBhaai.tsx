@@ -5,7 +5,7 @@ import {
   DialogActions,
   Button,
 } from '@react-native-material/core';
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {Controller, useForm} from 'react-hook-form';
 import {
   KeyboardAvoidingView,
@@ -21,16 +21,18 @@ import SizedBox from './SizedBox';
 import useStyles from '../styles/bhaai';
 import DatePicker from 'react-native-date-picker';
 import {Bhaai} from '../types/BhaaiList';
+import AppContext from '../services/storage';
 
 interface DialogOptions {
   visible: boolean;
   setVisible: (visiblity: boolean) => any;
-  reloadList?: (reason: string) => any;
+  invalidateData: (reason: number) => any;
   type?: 'EDIT' | 'ADD';
   data?: Bhaai;
 }
 
 const AddBhaai: React.FC<DialogOptions> = (props: DialogOptions) => {
+  const myContext = useContext(AppContext);
   const [processingEdit, setProcessingEdit] = useState(false);
   const [processingDelete, setProcessingDelete] = useState(false);
   const [openDatePicker, setOpenDatePicker] = useState(false);
@@ -47,7 +49,11 @@ const AddBhaai: React.FC<DialogOptions> = (props: DialogOptions) => {
     if (props.type === 'EDIT') {
       apiService.updateBhaai(props.data?._id as string, input).then(data => {
         if (data) {
-          props.reloadList && props.reloadList('EDIT');
+          props.invalidateData(Date.now());
+          myContext.setAppSettings({
+            ...myContext.appSettings,
+            message: 'Bhaai has been updated',
+          });
           setProcessingEdit(false);
           props.setVisible(false);
         }
@@ -55,7 +61,11 @@ const AddBhaai: React.FC<DialogOptions> = (props: DialogOptions) => {
     } else {
       apiService.createBhaai(input).then(data => {
         if (data) {
-          props.reloadList && props.reloadList('ADD');
+          props.invalidateData(Date.now());
+          myContext.setAppSettings({
+            ...myContext.appSettings,
+            message: 'Bhaai has been added',
+          });
           setProcessingEdit(false);
           props.setVisible(false);
         }
@@ -70,7 +80,11 @@ const AddBhaai: React.FC<DialogOptions> = (props: DialogOptions) => {
   const deleteBhaai = () => {
     setProcessingDelete(true);
     apiService.deleteBhaai(props.data?._id as string).then(() => {
-      props.reloadList && props.reloadList('DELETE');
+      props.invalidateData(Date.now());
+      myContext.setAppSettings({
+        ...myContext.appSettings,
+        message: 'Bhaai has been deleted',
+      });
       setProcessingDelete(false);
       props.setVisible(false);
     });
@@ -130,11 +144,12 @@ const AddBhaai: React.FC<DialogOptions> = (props: DialogOptions) => {
                     />
                     <DatePicker
                       modal
+                      mode={'date'}
                       open={openDatePicker}
                       date={new Date(control._formValues.date || Date.now())}
                       onConfirm={selectedDate => {
                         setOpenDatePicker(false);
-                        field.onChange(selectedDate.toISOString());
+                        field.onChange(selectedDate.toDateString());
                       }}
                       onCancel={() => {
                         setOpenDatePicker(false);

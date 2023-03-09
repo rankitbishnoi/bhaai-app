@@ -19,10 +19,10 @@ import useStackBarStyles from '../styles/stackBar';
 
 interface SearchProps {
   setSearchVisible: (visiblity: boolean) => any;
-  reloadList?: () => any;
+  invalidateData: (reason: number) => any;
 }
 
-const Search: React.FC<SearchProps> = ({setSearchVisible, reloadList}) => {
+const Search: React.FC<SearchProps> = ({setSearchVisible, invalidateData}) => {
   const myContext = useContext(AppContext);
   const styles = useStyles();
   const stackBarStyles = useStackBarStyles();
@@ -98,7 +98,7 @@ const Search: React.FC<SearchProps> = ({setSearchVisible, reloadList}) => {
         spacing={4}>
         <IconButton
           onPress={() => {
-            reloadList && reloadList();
+            invalidateData(Date.now());
             setSearchVisible(false);
           }}
           icon={props => <Ionicons name="arrow-back-outline" {...props} />}

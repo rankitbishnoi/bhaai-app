@@ -5,7 +5,7 @@ import {
   DialogActions,
   Button,
 } from '@react-native-material/core';
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {Controller, useForm} from 'react-hook-form';
 import {
   KeyboardAvoidingView,
@@ -20,17 +20,19 @@ import {BaanBase} from '../types/Baan';
 import SizedBox from './SizedBox';
 import useStyles from '../styles/baan';
 import {Baan} from '../types/BaanList';
+import AppContext from '../services/storage';
 
 interface DialogOptions {
   visible: boolean;
   setVisible: (visiblity: boolean) => any;
-  reloadList?: (reason: string) => any;
+  invalidateData: (reason: number) => any;
   bhaaiId: string;
   type?: 'EDIT' | 'ADD';
   data?: Baan;
 }
 
 const AddBaan: React.FC<DialogOptions> = (props: DialogOptions) => {
+  const myContext = useContext(AppContext);
   const styles = useStyles();
   const [processingEdit, setProcessingEdit] = useState(false);
   const [processingDelete, setProcessingDelete] = useState(false);
@@ -52,7 +54,11 @@ const AddBaan: React.FC<DialogOptions> = (props: DialogOptions) => {
         .updateBaan(props.data?._id as string, props.bhaaiId, input)
         .then(data => {
           if (data) {
-            props.reloadList && props.reloadList('EDIT');
+            props.invalidateData(Date.now());
+            myContext.setAppSettings({
+              ...myContext.appSettings,
+              message: 'Baan has been updated',
+            });
             setProcessingEdit(false);
             props.setVisible(false);
           }
@@ -60,7 +66,11 @@ const AddBaan: React.FC<DialogOptions> = (props: DialogOptions) => {
     } else {
       apiService.createBaan(props.bhaaiId, input).then(data => {
         if (data) {
-          props.reloadList && props.reloadList('ADD');
+          props.invalidateData(Date.now());
+          myContext.setAppSettings({
+            ...myContext.appSettings,
+            message: 'Baan has been added',
+          });
           setProcessingEdit(false);
           props.setVisible(false);
         }
@@ -75,7 +85,11 @@ const AddBaan: React.FC<DialogOptions> = (props: DialogOptions) => {
   const deleteBaan = () => {
     setProcessingDelete(true);
     apiService.deleteBaan(props.data?._id as string, props.bhaaiId).then(() => {
-      props.reloadList && props.reloadList('DELETE');
+      props.invalidateData(Date.now());
+      myContext.setAppSettings({
+        ...myContext.appSettings,
+        message: 'Baan has been deleted',
+      });
       setProcessingDelete(false);
       props.setVisible(false);
     });
