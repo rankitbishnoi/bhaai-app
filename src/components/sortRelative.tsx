@@ -42,24 +42,24 @@ const SortRelative: React.FC<ComponentProps> = (props: ComponentProps) => {
             {'sort'}
           </Text>
         </Stack>
-        <View style={styles.labelContainer}>
-          <TouchableOpacity onPress={() => props.setSortBy('firstName')}>
+        <TouchableOpacity onPress={() => props.setSortBy('firstName')}>
+          <View style={styles.labelContainer}>
             <RadioButton selected={props.sortBy === 'firstName'} />
-          </TouchableOpacity>
-          <Text style={styles.labelData}>first name</Text>
-        </View>
-        <View style={styles.labelContainer}>
-          <TouchableOpacity onPress={() => props.setSortBy('fathersName')}>
+            <Text style={styles.labelData}>first name</Text>
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => props.setSortBy('fathersName')}>
+          <View style={styles.labelContainer}>
             <RadioButton selected={props.sortBy === 'fathersName'} />
-          </TouchableOpacity>
-          <Text style={styles.labelData}>father's name</Text>
-        </View>
-        <View style={styles.labelContainer}>
-          <TouchableOpacity onPress={() => props.setSortBy('address')}>
+            <Text style={styles.labelData}>father's name</Text>
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => props.setSortBy('address')}>
+          <View style={styles.labelContainer}>
             <RadioButton selected={props.sortBy === 'address'} />
-          </TouchableOpacity>
-          <Text style={styles.labelData}>address</Text>
-        </View>
+            <Text style={styles.labelData}>address</Text>
+          </View>
+        </TouchableOpacity>
         <Button title="apply" onPress={apply} />
         <SizedBox height={16} />
         <Button color="secondary" title="cancel" onPress={close} />
