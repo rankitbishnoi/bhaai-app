@@ -1,21 +1,14 @@
-import {
-  Dialog,
-  DialogHeader,
-  DialogContent,
-  DialogActions,
-  Button,
-  TextInput,
-} from '@react-native-material/core';
+import {Button, TextInput, Stack, Text} from '@react-native-material/core';
 import React, {useContext, useEffect, useState} from 'react';
 import {Controller, useForm} from 'react-hook-form';
-import {KeyboardAvoidingView, Platform, Pressable} from 'react-native';
+import {KeyboardAvoidingView, Platform, Pressable, View} from 'react-native';
 import {apiService} from '../services/api.service';
 import {Nimta, NimtaBase} from '../types/Nimta';
 import useStyles from '../styles/nimta';
 import AppContext from '../services/storage';
+import SizedBox from './SizedBox';
 
-interface DialogOptions {
-  visible: boolean;
+interface ComponentProps {
   pariwarId: string;
   invalidateData: (key: number) => any;
   setVisible: (visiblity: boolean) => any;
@@ -23,7 +16,7 @@ interface DialogOptions {
   data?: Nimta;
 }
 
-const AddNimta: React.FC<DialogOptions> = (props: DialogOptions) => {
+const AddNimta: React.FC<ComponentProps> = (props: ComponentProps) => {
   const [processingEdit, setProcessingEdit] = useState(false);
   const [processingDelete, setProcessingDelete] = useState(false);
   const myContext = useContext(AppContext);
@@ -89,65 +82,57 @@ const AddNimta: React.FC<DialogOptions> = (props: DialogOptions) => {
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-      <Dialog visible={props.visible} onDismiss={() => props.setVisible(false)}>
-        <DialogHeader
-          title={`${props.type === 'ADD' ? 'add' : 'edit'} nimta`}
+    <View style={styles.container}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+        <Stack m={4} spacing={4}>
+          <Text style={styles.heading} variant="button">
+            {`${props.type === 'ADD' ? 'add' : 'edit'} nimta`}
+          </Text>
+        </Stack>
+        <Pressable onPress={() => setFocus('name')}>
+          <Controller
+            control={control}
+            name="name"
+            render={({field}) => (
+              <TextInput
+                {...field}
+                {...register('name')}
+                autoCorrect={false}
+                keyboardType="default"
+                returnKeyType="next"
+                style={styles.textInput}
+                textContentType="name"
+                variant="outlined"
+                label="name"
+                onChangeText={value => field.onChange(value)}
+                value={field.value}
+              />
+            )}
+          />
+        </Pressable>
+        <Button
+          title="save"
+          onPress={onSubmit}
+          loading={processingEdit}
+          disabled={processingEdit}
         />
-        <DialogContent>
-          <Pressable onPress={() => setFocus('name')}>
-            <Controller
-              control={control}
-              name="name"
-              render={({field}) => (
-                <TextInput
-                  {...field}
-                  {...register('name')}
-                  autoCorrect={false}
-                  keyboardType="default"
-                  returnKeyType="next"
-                  style={styles.textInput}
-                  textContentType="name"
-                  variant="outlined"
-                  label="name"
-                  onChangeText={value => field.onChange(value)}
-                  value={field.value}
-                />
-              )}
-            />
-          </Pressable>
-        </DialogContent>
-        <DialogActions>
-          {props.type === 'EDIT' && (
+        <SizedBox height={16} />
+        {props.type === 'EDIT' && (
+          <>
             <Button
               color="error"
               title="delete"
-              compact
-              variant="text"
               loading={processingDelete}
               disabled={processingDelete}
               onPress={deleteNimta}
             />
-          )}
-          <Button
-            color="secondary"
-            title="cancel"
-            compact
-            variant="text"
-            onPress={close}
-          />
-          <Button
-            title="save"
-            compact
-            variant="text"
-            onPress={onSubmit}
-            loading={processingEdit}
-            disabled={processingEdit}
-          />
-        </DialogActions>
-      </Dialog>
-    </KeyboardAvoidingView>
+            <SizedBox height={16} />
+          </>
+        )}
+        <Button color="secondary" title="cancel" onPress={close} />
+      </KeyboardAvoidingView>
+    </View>
   );
 };
 

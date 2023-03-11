@@ -1,28 +1,21 @@
-import {
-  Dialog,
-  DialogHeader,
-  DialogContent,
-  DialogActions,
-  Button,
-  TextInput,
-} from '@react-native-material/core';
+import {Button, TextInput, Stack, Text} from '@react-native-material/core';
 import React, {useEffect, useState} from 'react';
 import {Controller, useForm} from 'react-hook-form';
-import {KeyboardAvoidingView, Platform, Pressable} from 'react-native';
+import {KeyboardAvoidingView, Platform, Pressable, View} from 'react-native';
 import {apiService} from '../services/api.service';
 import {PariwarBase} from '../types/Pariwar';
 import useStyles from '../styles/bhaai';
 import {Pariwar} from '../types/PariwarList';
+import SizedBox from './SizedBox';
 
-interface DialogOptions {
-  visible: boolean;
+interface ComponentProps {
   invalidateData: (key: number) => any;
   setVisible: (visiblity: boolean) => any;
   type?: 'EDIT' | 'ADD';
   data?: Pariwar;
 }
 
-const AddPariwar: React.FC<DialogOptions> = (props: DialogOptions) => {
+const AddPariwar: React.FC<ComponentProps> = (props: ComponentProps) => {
   const [processingEdit, setProcessingEdit] = useState(false);
   const [processingDelete, setProcessingDelete] = useState(false);
   const styles = useStyles();
@@ -31,9 +24,11 @@ const AddPariwar: React.FC<DialogOptions> = (props: DialogOptions) => {
       name: '',
     },
   });
+
   useEffect(() => {
     setFocus('name');
   }, [setFocus]);
+
   const onSubmit = handleSubmit((input: PariwarBase) => {
     setProcessingEdit(true);
     if (props.type === 'EDIT') {
@@ -69,65 +64,57 @@ const AddPariwar: React.FC<DialogOptions> = (props: DialogOptions) => {
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-      <Dialog visible={props.visible} onDismiss={() => props.setVisible(false)}>
-        <DialogHeader
-          title={`${props.type === 'ADD' ? 'add' : 'edit'} pariwar`}
+    <View style={styles.container}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+        <Stack m={4} spacing={4}>
+          <Text style={styles.heading} variant="button">
+            {`${props.type === 'ADD' ? 'add' : 'edit'} pariwar`}
+          </Text>
+        </Stack>
+        <Pressable onPress={() => setFocus('name')}>
+          <Controller
+            control={control}
+            name="name"
+            render={({field}) => (
+              <TextInput
+                {...field}
+                {...register('name')}
+                autoCorrect={false}
+                keyboardType="default"
+                returnKeyType="next"
+                style={styles.textInput}
+                textContentType="name"
+                variant="outlined"
+                label="name"
+                onChangeText={value => field.onChange(value)}
+                value={field.value}
+              />
+            )}
+          />
+        </Pressable>
+        <Button
+          title="save"
+          onPress={onSubmit}
+          loading={processingEdit}
+          disabled={processingEdit}
         />
-        <DialogContent>
-          <Pressable onPress={() => setFocus('name')}>
-            <Controller
-              control={control}
-              name="name"
-              render={({field}) => (
-                <TextInput
-                  {...field}
-                  {...register('name')}
-                  autoCorrect={false}
-                  keyboardType="default"
-                  returnKeyType="next"
-                  style={styles.textInput}
-                  textContentType="name"
-                  variant="outlined"
-                  label="name"
-                  onChangeText={value => field.onChange(value)}
-                  value={field.value}
-                />
-              )}
-            />
-          </Pressable>
-        </DialogContent>
-        <DialogActions>
-          {props.type === 'EDIT' && (
+        <SizedBox height={16} />
+        {props.type === 'EDIT' && (
+          <>
             <Button
               color="error"
               title="delete"
-              compact
-              variant="text"
               loading={processingDelete}
               disabled={processingDelete}
               onPress={deletePariwar}
             />
-          )}
-          <Button
-            color="secondary"
-            title="cancel"
-            compact
-            variant="text"
-            onPress={close}
-          />
-          <Button
-            title="save"
-            compact
-            variant="text"
-            onPress={onSubmit}
-            loading={processingEdit}
-            disabled={processingEdit}
-          />
-        </DialogActions>
-      </Dialog>
-    </KeyboardAvoidingView>
+            <SizedBox height={16} />
+          </>
+        )}
+        <Button color="secondary" title="cancel" onPress={close} />
+      </KeyboardAvoidingView>
+    </View>
   );
 };
 

@@ -17,6 +17,8 @@ import SortRelative from '../components/sortRelative';
 import FilterRelative from '../components/filterRelative';
 import SwipeableList from '../components/swipeableList/swipeableList';
 
+const childPageStates = ['sort', 'filter', 'add', 'edit'];
+
 interface RelativeProps {
   setVisible?: (visiblity: string) => any;
   relatives?: RelativeType[];
@@ -125,160 +127,164 @@ const Relative: React.FC<RelativeProps> = ({
 
   return (
     <>
-      <View style={styles.container}>
-        {isLoading && (
-          <ProgressBar height={5} indeterminate backgroundColor="#4a0072" />
-        )}
-        <Stack m={4} spacing={4}>
-          <Text style={styles.heading} variant="button">
-            {nimtaBase ? 'Nimta Relatives' : 'Relatives'}
-          </Text>
-        </Stack>
-        {!myContext.appSettings.selectedRole && (
-          <TouchableOpacity
-            onPress={() => {
-              navigation.navigate('profile' as never);
-            }}>
-            <View style={buttonStyles.button}>
-              <Text style={buttonStyles.buttonTitle}>select pariwar</Text>
+      {!childPageStates.includes(openDailog) && (
+        <View style={styles.container}>
+          {isLoading && (
+            <ProgressBar height={5} indeterminate backgroundColor="#4a0072" />
+          )}
+          <Stack m={4} spacing={4}>
+            <Text style={styles.heading} variant="button">
+              {nimtaBase ? 'Nimta Relatives' : 'Relatives'}
+            </Text>
+          </Stack>
+          {!myContext.appSettings.selectedRole && (
+            <TouchableOpacity
+              onPress={() => {
+                navigation.navigate('profile' as never);
+              }}>
+              <View style={buttonStyles.button}>
+                <Text style={buttonStyles.buttonTitle}>select pariwar</Text>
+              </View>
+            </TouchableOpacity>
+          )}
+          {myContext.appSettings.selectedRole && data && (
+            <SwipeableList
+              items={data.map(relative => {
+                return {
+                  key: relative._id,
+                  title: `${relative.firstName} ${relative.lastName}${
+                    relative.nickName ? '(' + relative.nickName + ')' : ''
+                  } ${
+                    relative.fathersName ? 'S/O ' + relative.fathersName : ''
+                  }, ${relative.address}`,
+                  subtitle: `Mobile: ${
+                    relative.phoneNumber || 'not available'
+                  }`,
+                  leading: (
+                    <TouchableOpacity onPress={() => editItem(relative)}>
+                      <Image
+                        source={require('../assets/edit-icon.png')}
+                        style={{width: 50, height: 50}}
+                      />
+                    </TouchableOpacity>
+                  ),
+                };
+              })}
+              deleteItem={deleteRelative}
+              refreshing={isLoading}
+              refresh={() => setQueryKey(Date.now())}
+            />
+          )}
+          <Stack
+            style={stackBarStyles.stackBar}
+            fill
+            bottom={1}
+            right={1}
+            spacing={0}>
+            {!!nimtaBase && (
+              <IconButton
+                onPress={() => {
+                  setVisible && setVisible('');
+                }}
+                icon={props => (
+                  <Ionicons name="arrow-back-outline" {...props} />
+                )}
+                color="secondary"
+                style={stackBarStyles.fab}
+              />
+            )}
+            {!nimtaBase && <View style={stackBarStyles.fab} />}
+            <View style={{...buttonStyles.buttonGroup, ...styles.sortFilter}}>
+              <TouchableOpacity
+                onPress={() => {
+                  setOpenDailog('sort');
+                }}>
+                <View
+                  style={{
+                    ...buttonStyles.buttonGroupItem,
+                    ...buttonStyles.buttonSmall,
+                  }}>
+                  <Ionicons
+                    style={buttonStyles.buttonGroupItemIcon}
+                    name="funnel-outline"
+                  />
+                  <Text style={buttonStyles.buttonGroupTitle}>sort</Text>
+                </View>
+              </TouchableOpacity>
+              <View style={buttonStyles.buttonGroupDivider} />
+              <TouchableOpacity
+                onPress={() => {
+                  setOpenDailog('filter');
+                }}>
+                <View
+                  style={{
+                    ...buttonStyles.buttonGroupItem,
+                    ...buttonStyles.buttonSmall,
+                  }}>
+                  <Ionicons
+                    style={buttonStyles.buttonGroupItemIcon}
+                    name="filter-outline"
+                  />
+                  <Text style={buttonStyles.buttonGroupTitle}>filter</Text>
+                </View>
+              </TouchableOpacity>
             </View>
-          </TouchableOpacity>
-        )}
-        {myContext.appSettings.selectedRole && data && (
-          <SwipeableList
-            items={data.map(relative => {
-              return {
-                key: relative._id,
-                title: `${relative.firstName} ${relative.lastName}${
-                  relative.nickName ? '(' + relative.nickName + ')' : ''
-                } ${
-                  relative.fathersName ? 'S/O ' + relative.fathersName : ''
-                }, ${relative.address}`,
-                subtitle: `Mobile: ${relative.phoneNumber || 'not available'}`,
-                leading: (
-                  <TouchableOpacity onPress={() => editItem(relative)}>
-                    <Image
-                      source={require('../assets/edit-icon.png')}
-                      style={{width: 50, height: 50}}
-                    />
-                  </TouchableOpacity>
-                ),
-              };
-            })}
-            deleteItem={deleteRelative}
-            refreshing={isLoading}
-            refresh={() => setQueryKey(Date.now())}
-          />
-        )}
-        <Stack
-          style={stackBarStyles.stackBar}
-          fill
-          bottom={1}
-          right={1}
-          spacing={0}>
-          {!!nimtaBase && (
-            <IconButton
-              onPress={() => {
-                setVisible && setVisible('');
-              }}
-              icon={props => <Ionicons name="arrow-back-outline" {...props} />}
-              color="secondary"
-              style={stackBarStyles.fab}
-            />
-          )}
-          {!nimtaBase && <View style={stackBarStyles.fab} />}
-          <View style={{...buttonStyles.buttonGroup, ...styles.sortFilter}}>
-            <TouchableOpacity
-              onPress={() => {
-                setOpenDailog('sort');
-              }}>
-              <View
-                style={{
-                  ...buttonStyles.buttonGroupItem,
-                  ...buttonStyles.buttonSmall,
-                }}>
-                <Ionicons
-                  style={buttonStyles.buttonGroupItemIcon}
-                  name="funnel-outline"
-                />
-                <Text style={buttonStyles.buttonGroupTitle}>sort</Text>
-              </View>
-            </TouchableOpacity>
-            <View style={buttonStyles.buttonGroupDivider} />
-            <TouchableOpacity
-              onPress={() => {
-                setOpenDailog('filter');
-              }}>
-              <View
-                style={{
-                  ...buttonStyles.buttonGroupItem,
-                  ...buttonStyles.buttonSmall,
-                }}>
-                <Ionicons
-                  style={buttonStyles.buttonGroupItemIcon}
-                  name="filter-outline"
-                />
-                <Text style={buttonStyles.buttonGroupTitle}>filter</Text>
-              </View>
-            </TouchableOpacity>
-          </View>
-          {!!nimtaBase && (
-            <IconButton
-              onPress={() => {
-                setVisible && setVisible('addFromWhere');
-              }}
-              icon={props => <Ionicons name="person-add-outline" {...props} />}
-              color="secondary"
-              style={stackBarStyles.fab}
-            />
-          )}
-          {!nimtaBase && (
-            <IconButton
-              onPress={() => {
-                setOpenDailog('add');
-              }}
-              icon={props => <Ionicons name="add" {...props} />}
-              color="secondary"
-              style={stackBarStyles.fab}
-            />
-          )}
-        </Stack>
-        {openDailog === 'add' && (
-          <AddRelative
-            visible={openDailog}
-            invalidateData={setQueryKey}
-            setVisible={setOpenDailog}
-            type="ADD"
-            pariwarId={myContext.appSettings.selectedRole}
-          />
-        )}
-        {openDailog === 'edit' && (
-          <AddRelative
-            visible={openDailog}
-            invalidateData={setQueryKey}
-            setVisible={setOpenDailog}
-            type="EDIT"
-            data={selectedRelative}
-            pariwarId={myContext.appSettings.selectedRole}
-          />
-        )}
-        {openDailog === 'sort' && (
-          <SortRelative
-            visible={openDailog}
-            setVisible={setOpenDailog}
-            sortBy={sortBy}
-            setSortBy={sortList}
-          />
-        )}
-        {openDailog === 'filter' && (
-          <FilterRelative
-            visible={openDailog}
-            setVisible={setOpenDailog}
-            filterBy={filterBy}
-            setFilterBy={setFilterBy}
-          />
-        )}
-      </View>
+            {!!nimtaBase && (
+              <IconButton
+                onPress={() => {
+                  setVisible && setVisible('addFromWhere');
+                }}
+                icon={props => (
+                  <Ionicons name="person-add-outline" {...props} />
+                )}
+                color="secondary"
+                style={stackBarStyles.fab}
+              />
+            )}
+            {!nimtaBase && (
+              <IconButton
+                onPress={() => {
+                  setOpenDailog('add');
+                }}
+                icon={props => <Ionicons name="add" {...props} />}
+                color="secondary"
+                style={stackBarStyles.fab}
+              />
+            )}
+          </Stack>
+        </View>
+      )}
+      {openDailog === 'add' && (
+        <AddRelative
+          invalidateData={setQueryKey}
+          setVisible={setOpenDailog}
+          type="ADD"
+          pariwarId={myContext.appSettings.selectedRole}
+        />
+      )}
+      {openDailog === 'edit' && (
+        <AddRelative
+          invalidateData={setQueryKey}
+          setVisible={setOpenDailog}
+          type="EDIT"
+          data={selectedRelative}
+          pariwarId={myContext.appSettings.selectedRole}
+        />
+      )}
+      {openDailog === 'sort' && (
+        <SortRelative
+          setVisible={setOpenDailog}
+          sortBy={sortBy}
+          setSortBy={sortList}
+        />
+      )}
+      {openDailog === 'filter' && (
+        <FilterRelative
+          setVisible={setOpenDailog}
+          filterBy={filterBy}
+          setFilterBy={setFilterBy}
+        />
+      )}
     </>
   );
 };

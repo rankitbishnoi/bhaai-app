@@ -1,5 +1,5 @@
 import React, {useContext, useEffect, useState} from 'react';
-import {Animated, ListRenderItemInfo, View} from 'react-native';
+import {Alert, Animated, ListRenderItemInfo, View} from 'react-native';
 
 import {SwipeListView, SwipeRow} from 'react-native-swipe-list-view';
 import AppContext from '../../services/storage';
@@ -64,6 +64,42 @@ const SwipeableList: React.FC<SwipeableListOptions> = ({
   };
 
   const deleteRow = (rowMap: RowMap<SwipeableListItem>, rowKey: string) => {
+    Alert.alert('Are you sure?', 'you want to delete this item.', [
+      {
+        text: 'Cancel',
+        onPress: () => closeRow(rowMap, rowKey),
+        style: 'cancel',
+      },
+      {
+        text: 'yes',
+        onPress: () => {
+          deleteItem(rowKey).then(result => {
+            if (result) {
+              const newData = [...listData];
+              const prevIndex = listData.findIndex(item => item.key === rowKey);
+              newData.splice(prevIndex, 1);
+              setListData(newData);
+              myContext.setAppSettings({
+                ...myContext.appSettings,
+                message: 'Item has been deleted',
+              });
+            } else {
+              myContext.setAppSettings({
+                ...myContext.appSettings,
+                message: 'Unable to delete. Please try again',
+              });
+            }
+            closeRow(rowMap, rowKey);
+          });
+        },
+      },
+    ]);
+  };
+
+  const deleteRowAlert = (
+    rowMap: RowMap<SwipeableListItem>,
+    rowKey: string,
+  ) => {
     deleteItem(rowKey).then(result => {
       if (result) {
         const newData = [...listData];
@@ -94,7 +130,7 @@ const SwipeableList: React.FC<SwipeableListOptions> = ({
       <VisibleItem
         data={data}
         rowHeightAnimatedValue={rowHeightAnimatedValue}
-        removeRow={() => deleteRow(rowMap, data.item.key)}
+        removeRow={() => deleteRowAlert(rowMap, data.item.key)}
       />
     );
   };

@@ -1,30 +1,23 @@
-import {
-  Dialog,
-  DialogHeader,
-  DialogContent,
-  DialogActions,
-  Button,
-  TextInput,
-} from '@react-native-material/core';
+import {Button, TextInput, Stack, Text} from '@react-native-material/core';
 import React, {useContext, useEffect, useState} from 'react';
 import {Controller, useForm} from 'react-hook-form';
-import {KeyboardAvoidingView, Platform, Pressable} from 'react-native';
+import {KeyboardAvoidingView, Platform, Pressable, View} from 'react-native';
 import {apiService} from '../services/api.service';
 import {BhaaiBase} from '../types/Bhaai';
 import useStyles from '../styles/bhaai';
 import DatePicker from 'react-native-date-picker';
 import {Bhaai} from '../types/BhaaiList';
 import AppContext from '../services/storage';
+import SizedBox from './SizedBox';
 
-interface DialogOptions {
-  visible: boolean;
+interface ComponentProps {
   setVisible: (visiblity: boolean) => any;
   invalidateData: (reason: number) => any;
   type?: 'EDIT' | 'ADD';
   data?: Bhaai;
 }
 
-const AddBhaai: React.FC<DialogOptions> = (props: DialogOptions) => {
+const AddBhaai: React.FC<ComponentProps> = (props: ComponentProps) => {
   const myContext = useContext(AppContext);
   const [processingEdit, setProcessingEdit] = useState(false);
   const [processingDelete, setProcessingDelete] = useState(false);
@@ -88,104 +81,96 @@ const AddBhaai: React.FC<DialogOptions> = (props: DialogOptions) => {
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-      <Dialog visible={props.visible} onDismiss={() => props.setVisible(false)}>
-        <DialogHeader
-          title={`${props.type === 'ADD' ? 'add' : 'edit'} bhaai`}
-        />
-        <DialogContent>
-          <Pressable onPress={() => setFocus('marriage')}>
-            <Controller
-              control={control}
-              name="marriage"
-              render={({field}) => (
+    <View style={styles.container}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+        <Stack m={4} spacing={4}>
+          <Text style={styles.heading} variant="button">
+            {`${props.type === 'ADD' ? 'add' : 'edit'} bhaai`}
+          </Text>
+        </Stack>
+        <Pressable onPress={() => setFocus('marriage')}>
+          <Controller
+            control={control}
+            name="marriage"
+            render={({field}) => (
+              <TextInput
+                {...field}
+                {...register('marriage')}
+                onSubmitEditing={() => setFocus('date')}
+                autoCorrect={false}
+                keyboardType="default"
+                returnKeyType="next"
+                style={styles.textInput}
+                textContentType="name"
+                variant="outlined"
+                label="marriage"
+                onChangeText={value => field.onChange(value)}
+                value={field.value}
+              />
+            )}
+          />
+        </Pressable>
+        <Pressable onPress={() => setFocus('date')}>
+          <Controller
+            control={control}
+            name="date"
+            render={({field}) => (
+              <>
                 <TextInput
                   {...field}
-                  {...register('marriage')}
-                  onSubmitEditing={() => setFocus('date')}
+                  {...register('date')}
                   autoCorrect={false}
-                  keyboardType="default"
                   returnKeyType="next"
                   style={styles.textInput}
-                  textContentType="name"
+                  textContentType="none"
                   variant="outlined"
-                  label="marriage"
+                  label="date"
                   onChangeText={value => field.onChange(value)}
                   value={field.value}
+                  onFocus={() => {
+                    setOpenDatePicker(true);
+                  }}
                 />
-              )}
-            />
-          </Pressable>
-          <Pressable onPress={() => setFocus('date')}>
-            <Controller
-              control={control}
-              name="date"
-              render={({field}) => (
-                <>
-                  <TextInput
-                    {...field}
-                    {...register('date')}
-                    autoCorrect={false}
-                    returnKeyType="next"
-                    style={styles.textInput}
-                    textContentType="none"
-                    variant="outlined"
-                    label="date"
-                    onChangeText={value => field.onChange(value)}
-                    value={field.value}
-                    onFocus={() => {
-                      setOpenDatePicker(true);
-                    }}
-                  />
-                  <DatePicker
-                    modal
-                    mode={'date'}
-                    open={openDatePicker}
-                    date={new Date(control._formValues.date || Date.now())}
-                    onConfirm={selectedDate => {
-                      setOpenDatePicker(false);
-                      field.onChange(selectedDate.toDateString());
-                    }}
-                    onCancel={() => {
-                      setOpenDatePicker(false);
-                    }}
-                  />
-                </>
-              )}
-            />
-          </Pressable>
-        </DialogContent>
-        <DialogActions>
-          {props.type === 'EDIT' && (
+                <DatePicker
+                  modal
+                  mode={'date'}
+                  open={openDatePicker}
+                  date={new Date(control._formValues.date || Date.now())}
+                  onConfirm={selectedDate => {
+                    setOpenDatePicker(false);
+                    field.onChange(selectedDate.toDateString());
+                  }}
+                  onCancel={() => {
+                    setOpenDatePicker(false);
+                  }}
+                />
+              </>
+            )}
+          />
+        </Pressable>
+        <Button
+          title="save"
+          onPress={onSubmit}
+          loading={processingEdit}
+          disabled={processingEdit}
+        />
+        <SizedBox height={16} />
+        {props.type === 'EDIT' && (
+          <>
             <Button
               color="error"
               title="delete"
-              compact
-              variant="text"
               loading={processingDelete}
               disabled={processingDelete}
               onPress={deleteBhaai}
             />
-          )}
-          <Button
-            color="secondary"
-            title="cancel"
-            compact
-            variant="text"
-            onPress={close}
-          />
-          <Button
-            title="save"
-            compact
-            variant="text"
-            onPress={onSubmit}
-            loading={processingEdit}
-            disabled={processingEdit}
-          />
-        </DialogActions>
-      </Dialog>
-    </KeyboardAvoidingView>
+            <SizedBox height={16} />
+          </>
+        )}
+        <Button color="secondary" title="cancel" onPress={close} />
+      </KeyboardAvoidingView>
+    </View>
   );
 };
 

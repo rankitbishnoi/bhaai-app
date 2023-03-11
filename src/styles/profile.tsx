@@ -2,9 +2,14 @@ import {StyleSheet} from 'react-native';
 
 export default function useStyles() {
   return StyleSheet.create({
-    conatiner: {
-      backgroundColor: '#000000',
+    container: {
       flex: 1,
+      backgroundColor: '#000000',
+      color: '#ddd',
+    },
+    heading: {
+      textAlign: 'center',
+      color: 'rgb(93, 95, 222)',
     },
     list: {
       backgroundColor: '#000',

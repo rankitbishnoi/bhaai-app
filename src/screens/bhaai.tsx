@@ -14,7 +14,7 @@ import Search from './search';
 import {useQuery} from 'react-query';
 import SwipeableList from '../components/swipeableList/swipeableList';
 
-const childPageStates = ['baan-list', 'search'];
+const childPageStates = ['baan-list', 'search', 'edit', 'add'];
 
 const Bhaai: React.FC = () => {
   const styles = useStyles();
@@ -113,24 +113,22 @@ const Bhaai: React.FC = () => {
               style={stackBarStyles.fab}
             />
           </Stack>
-          {openDailog === 'add' && (
-            <AddBhaai
-              visible={openDailog === 'add'}
-              setVisible={value => setOpenDailog(value ? 'add' : '')}
-              type="ADD"
-              invalidateData={setQueryKey}
-            />
-          )}
-          {openDailog === 'edit' && (
-            <AddBhaai
-              visible={openDailog === 'edit'}
-              setVisible={value => setOpenDailog(value ? 'edit' : '')}
-              type="EDIT"
-              invalidateData={setQueryKey}
-              data={selectedBhaai}
-            />
-          )}
         </View>
+      )}
+      {openDailog === 'add' && (
+        <AddBhaai
+          setVisible={value => setOpenDailog(value ? 'add' : '')}
+          type="ADD"
+          invalidateData={setQueryKey}
+        />
+      )}
+      {openDailog === 'edit' && (
+        <AddBhaai
+          setVisible={value => setOpenDailog(value ? 'edit' : '')}
+          type="EDIT"
+          invalidateData={setQueryKey}
+          data={selectedBhaai}
+        />
       )}
       {openDailog === 'baan-list' && (
         <Baan

@@ -174,7 +174,6 @@ const AddFromRelative: React.FC<RelativeProps> = ({
         </Stack>
         {openDailog === 'sort' && (
           <SortRelative
-            visible={openDailog}
             setVisible={setOpenDailog}
             sortBy={sortBy}
             setSortBy={sortList}
@@ -182,7 +181,6 @@ const AddFromRelative: React.FC<RelativeProps> = ({
         )}
         {openDailog === 'filter' && (
           <FilterRelative
-            visible={openDailog}
             setVisible={setOpenDailog}
             filterBy={filterBy}
             setFilterBy={setFilterBy}

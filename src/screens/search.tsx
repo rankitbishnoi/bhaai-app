@@ -64,78 +64,84 @@ const Search: React.FC<SearchProps> = ({setSearchVisible, invalidateData}) => {
   };
 
   return (
-    <View style={styles.container}>
-      {loading && (
-        <ProgressBar height={5} indeterminate backgroundColor="#4a0072" />
-      )}
-      <Pressable onPress={() => setFocus('searchText')}>
-        <Controller
-          control={control}
-          name="searchText"
-          render={({field}) => (
-            <TextInput
-              {...field}
-              {...register('searchText')}
-              variant="outlined"
-              label="Search"
-              style={{margin: 16}}
-              onSubmitEditing={() => search(field.value)}
-              onChangeText={value => field.onChange(value)}
-              value={field.value}
-              trailing={props => (
-                <TouchableOpacity onPress={() => search(field.value)}>
-                  <Ionicons name="search" {...props} />
-                </TouchableOpacity>
+    <>
+      {!giveBaanVisible ? (
+        <View style={styles.container}>
+          {loading && (
+            <ProgressBar height={5} indeterminate backgroundColor="#4a0072" />
+          )}
+          <Pressable onPress={() => setFocus('searchText')}>
+            <Controller
+              control={control}
+              name="searchText"
+              render={({field}) => (
+                <TextInput
+                  {...field}
+                  {...register('searchText')}
+                  variant="outlined"
+                  label="Search"
+                  style={{margin: 16}}
+                  onSubmitEditing={() => search(field.value)}
+                  onChangeText={value => field.onChange(value)}
+                  value={field.value}
+                  trailing={props => (
+                    <TouchableOpacity onPress={() => search(field.value)}>
+                      <Ionicons name="search" {...props} />
+                    </TouchableOpacity>
+                  )}
+                />
               )}
             />
-          )}
-        />
-      </Pressable>
-      {data?.baanList &&
-        data.baanList.map((baan: BaanType) => (
-          <ListItem
-            key={baan._id}
-            title={`${baan.firstName} ${baan.lastName}${
-              baan.nickName ? '(' + baan.nickName + ')' : ''
-            } ${baan.fathersName ? 'S/O ' + baan.fathersName : ''}, ${
-              baan.address
-            }`}
-            secondaryText={`Rs: ${baan.amount}`}
-            style={styles.list}
-            elevation={4}
-            leadingMode="avatar"
-            leading={
-              <TouchableOpacity onPress={() => openGiveBaan(baan)}>
-                <Ionicons color={'white'} style={{fontSize: 50}} name="add" />
-              </TouchableOpacity>
-            }
-          />
-        ))}
-      <Stack
-        style={stackBarStyles.stackBar}
-        fill
-        bottom={1}
-        right={1}
-        spacing={4}>
-        <IconButton
-          onPress={() => {
-            invalidateData(Date.now());
-            setSearchVisible(false);
-          }}
-          icon={props => <Ionicons name="arrow-back-outline" {...props} />}
-          color="secondary"
-          style={stackBarStyles.fab}
-        />
-      </Stack>
-      {giveBaanVisible && (
+          </Pressable>
+          {data?.baanList &&
+            data.baanList.map((baan: BaanType) => (
+              <ListItem
+                key={baan._id}
+                title={`${baan.firstName} ${baan.lastName}${
+                  baan.nickName ? '(' + baan.nickName + ')' : ''
+                } ${baan.fathersName ? 'S/O ' + baan.fathersName : ''}, ${
+                  baan.address
+                }`}
+                secondaryText={`Rs: ${baan.amount}`}
+                style={styles.list}
+                elevation={4}
+                leadingMode="avatar"
+                leading={
+                  <TouchableOpacity onPress={() => openGiveBaan(baan)}>
+                    <Ionicons
+                      color={'white'}
+                      style={{fontSize: 50}}
+                      name="add"
+                    />
+                  </TouchableOpacity>
+                }
+              />
+            ))}
+          <Stack
+            style={stackBarStyles.stackBar}
+            fill
+            bottom={1}
+            right={1}
+            spacing={4}>
+            <IconButton
+              onPress={() => {
+                invalidateData(Date.now());
+                setSearchVisible(false);
+              }}
+              icon={props => <Ionicons name="arrow-back-outline" {...props} />}
+              color="secondary"
+              style={stackBarStyles.fab}
+            />
+          </Stack>
+        </View>
+      ) : (
         <GiveBaan
-          visible={giveBaanVisible}
           setVisible={setGiveBaanVisible}
           showMessage={showMessage}
           data={selectedBaan}
         />
       )}
-    </View>
+    </>
   );
 };
 

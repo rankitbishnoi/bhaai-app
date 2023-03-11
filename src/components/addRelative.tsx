@@ -1,21 +1,14 @@
-import {
-  Dialog,
-  DialogHeader,
-  DialogContent,
-  DialogActions,
-  Button,
-  TextInput,
-} from '@react-native-material/core';
+import {Button, TextInput, Stack, Text} from '@react-native-material/core';
 import React, {useContext, useEffect, useState} from 'react';
 import {Controller, useForm} from 'react-hook-form';
-import {KeyboardAvoidingView, Platform, Pressable} from 'react-native';
+import {KeyboardAvoidingView, Platform, Pressable, View} from 'react-native';
 import {apiService} from '../services/api.service';
 import {Relative, RelativeBase} from '../types/Relative';
 import useStyles from '../styles/relative';
 import AppContext from '../services/storage';
+import SizedBox from './SizedBox';
 
-interface DialogOptions {
-  visible: string;
+interface ComponentProps {
   pariwarId: string;
   invalidateData: (key: number) => any;
   setVisible: (visiblity: string) => any;
@@ -23,7 +16,7 @@ interface DialogOptions {
   data?: Relative;
 }
 
-const AddRelative: React.FC<DialogOptions> = (props: DialogOptions) => {
+const AddRelative: React.FC<ComponentProps> = (props: ComponentProps) => {
   const [processingEdit, setProcessingEdit] = useState(false);
   const [processingDelete, setProcessingDelete] = useState(false);
   const myContext = useContext(AppContext);
@@ -94,179 +87,169 @@ const AddRelative: React.FC<DialogOptions> = (props: DialogOptions) => {
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-      <Dialog
-        visible={props.visible === 'add' || props.visible === 'edit'}
-        onDismiss={() => props.setVisible('')}>
-        <DialogHeader
-          title={`${props.type === 'ADD' ? 'add' : 'edit'} relative`}
+    <View style={styles.container}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+        <Stack m={4} spacing={4}>
+          <Text style={styles.heading} variant="button">
+            {`${props.type === 'ADD' ? 'add' : 'edit'} relative`}
+          </Text>
+        </Stack>
+        <Pressable onPress={() => setFocus('firstName')}>
+          <Controller
+            control={control}
+            name="firstName"
+            render={({field}) => (
+              <TextInput
+                {...field}
+                {...register('firstName')}
+                onSubmitEditing={() => setFocus('lastName')}
+                autoCorrect={false}
+                keyboardType="default"
+                returnKeyType="next"
+                style={styles.textInput}
+                textContentType="name"
+                variant="outlined"
+                label="firstName"
+                onChangeText={value => field.onChange(value)}
+                value={field.value}
+              />
+            )}
+          />
+        </Pressable>
+        <Pressable onPress={() => setFocus('lastName')}>
+          <Controller
+            control={control}
+            name="lastName"
+            render={({field}) => (
+              <TextInput
+                {...field}
+                {...register('lastName')}
+                onSubmitEditing={() => setFocus('nickName')}
+                autoCorrect={false}
+                keyboardType="default"
+                returnKeyType="next"
+                style={styles.textInput}
+                textContentType="name"
+                variant="outlined"
+                label="lastName"
+                onChangeText={value => field.onChange(value)}
+                value={field.value}
+              />
+            )}
+          />
+        </Pressable>
+        <Pressable onPress={() => setFocus('nickName')}>
+          <Controller
+            control={control}
+            name="nickName"
+            render={({field}) => (
+              <TextInput
+                {...field}
+                {...register('nickName')}
+                onSubmitEditing={() => setFocus('fathersName')}
+                autoCorrect={false}
+                keyboardType="default"
+                returnKeyType="next"
+                style={styles.textInput}
+                textContentType="name"
+                variant="outlined"
+                label="nickName"
+                onChangeText={value => field.onChange(value)}
+                value={field.value}
+              />
+            )}
+          />
+        </Pressable>
+        <Pressable onPress={() => setFocus('fathersName')}>
+          <Controller
+            control={control}
+            name="fathersName"
+            render={({field}) => (
+              <TextInput
+                {...field}
+                {...register('fathersName')}
+                onSubmitEditing={() => setFocus('address')}
+                autoCorrect={false}
+                keyboardType="default"
+                returnKeyType="next"
+                style={styles.textInput}
+                textContentType="name"
+                variant="outlined"
+                label="fathersName"
+                onChangeText={value => field.onChange(value)}
+                value={field.value}
+              />
+            )}
+          />
+        </Pressable>
+        <Pressable onPress={() => setFocus('address')}>
+          <Controller
+            control={control}
+            name="address"
+            render={({field}) => (
+              <TextInput
+                {...field}
+                {...register('address')}
+                onSubmitEditing={() => setFocus('phoneNumber')}
+                autoCorrect={false}
+                keyboardType="default"
+                returnKeyType="next"
+                style={styles.textInput}
+                textContentType="name"
+                variant="outlined"
+                label="address"
+                onChangeText={value => field.onChange(value)}
+                value={field.value}
+              />
+            )}
+          />
+        </Pressable>
+        <Pressable onPress={() => setFocus('phoneNumber')}>
+          <Controller
+            control={control}
+            name="phoneNumber"
+            render={({field}) => (
+              <TextInput
+                {...field}
+                {...register('phoneNumber')}
+                autoCapitalize="none"
+                autoComplete="tel"
+                autoCorrect={false}
+                keyboardType="number-pad"
+                returnKeyType="next"
+                style={styles.textInput}
+                textContentType="telephoneNumber"
+                variant="outlined"
+                label="phoneNumber"
+                onChangeText={value => field.onChange(value)}
+                value={field.value}
+              />
+            )}
+          />
+        </Pressable>
+        <Button
+          title="save"
+          onPress={onSubmit}
+          loading={processingEdit}
+          disabled={processingEdit}
         />
-        <DialogContent>
-          <Pressable onPress={() => setFocus('firstName')}>
-            <Controller
-              control={control}
-              name="firstName"
-              render={({field}) => (
-                <TextInput
-                  {...field}
-                  {...register('firstName')}
-                  onSubmitEditing={() => setFocus('lastName')}
-                  autoCorrect={false}
-                  keyboardType="default"
-                  returnKeyType="next"
-                  style={styles.textInput}
-                  textContentType="name"
-                  variant="outlined"
-                  label="firstName"
-                  onChangeText={value => field.onChange(value)}
-                  value={field.value}
-                />
-              )}
-            />
-          </Pressable>
-          <Pressable onPress={() => setFocus('lastName')}>
-            <Controller
-              control={control}
-              name="lastName"
-              render={({field}) => (
-                <TextInput
-                  {...field}
-                  {...register('lastName')}
-                  onSubmitEditing={() => setFocus('nickName')}
-                  autoCorrect={false}
-                  keyboardType="default"
-                  returnKeyType="next"
-                  style={styles.textInput}
-                  textContentType="name"
-                  variant="outlined"
-                  label="lastName"
-                  onChangeText={value => field.onChange(value)}
-                  value={field.value}
-                />
-              )}
-            />
-          </Pressable>
-          <Pressable onPress={() => setFocus('nickName')}>
-            <Controller
-              control={control}
-              name="nickName"
-              render={({field}) => (
-                <TextInput
-                  {...field}
-                  {...register('nickName')}
-                  onSubmitEditing={() => setFocus('fathersName')}
-                  autoCorrect={false}
-                  keyboardType="default"
-                  returnKeyType="next"
-                  style={styles.textInput}
-                  textContentType="name"
-                  variant="outlined"
-                  label="nickName"
-                  onChangeText={value => field.onChange(value)}
-                  value={field.value}
-                />
-              )}
-            />
-          </Pressable>
-          <Pressable onPress={() => setFocus('fathersName')}>
-            <Controller
-              control={control}
-              name="fathersName"
-              render={({field}) => (
-                <TextInput
-                  {...field}
-                  {...register('fathersName')}
-                  onSubmitEditing={() => setFocus('address')}
-                  autoCorrect={false}
-                  keyboardType="default"
-                  returnKeyType="next"
-                  style={styles.textInput}
-                  textContentType="name"
-                  variant="outlined"
-                  label="fathersName"
-                  onChangeText={value => field.onChange(value)}
-                  value={field.value}
-                />
-              )}
-            />
-          </Pressable>
-          <Pressable onPress={() => setFocus('address')}>
-            <Controller
-              control={control}
-              name="address"
-              render={({field}) => (
-                <TextInput
-                  {...field}
-                  {...register('address')}
-                  onSubmitEditing={() => setFocus('phoneNumber')}
-                  autoCorrect={false}
-                  keyboardType="default"
-                  returnKeyType="next"
-                  style={styles.textInput}
-                  textContentType="name"
-                  variant="outlined"
-                  label="address"
-                  onChangeText={value => field.onChange(value)}
-                  value={field.value}
-                />
-              )}
-            />
-          </Pressable>
-          <Pressable onPress={() => setFocus('phoneNumber')}>
-            <Controller
-              control={control}
-              name="phoneNumber"
-              render={({field}) => (
-                <TextInput
-                  {...field}
-                  {...register('phoneNumber')}
-                  autoCapitalize="none"
-                  autoComplete="tel"
-                  autoCorrect={false}
-                  keyboardType="number-pad"
-                  returnKeyType="next"
-                  style={styles.textInput}
-                  textContentType="telephoneNumber"
-                  variant="outlined"
-                  label="phoneNumber"
-                  onChangeText={value => field.onChange(value)}
-                  value={field.value}
-                />
-              )}
-            />
-          </Pressable>
-        </DialogContent>
-        <DialogActions>
-          {props.type === 'EDIT' && (
+        <SizedBox height={16} />
+        {props.type === 'EDIT' && (
+          <>
             <Button
               color="error"
               title="delete"
-              compact
-              variant="text"
               loading={processingDelete}
               disabled={processingDelete}
               onPress={deleteRelative}
             />
-          )}
-          <Button
-            color="secondary"
-            title="cancel"
-            compact
-            variant="text"
-            onPress={close}
-          />
-          <Button
-            title="save"
-            compact
-            variant="text"
-            onPress={onSubmit}
-            loading={processingEdit}
-            disabled={processingEdit}
-          />
-        </DialogActions>
-      </Dialog>
-    </KeyboardAvoidingView>
+            <SizedBox height={16} />
+          </>
+        )}
+        <Button color="secondary" title="cancel" onPress={close} />
+      </KeyboardAvoidingView>
+    </View>
   );
 };
 

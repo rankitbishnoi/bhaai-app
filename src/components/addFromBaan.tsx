@@ -169,7 +169,6 @@ const AddFromBaan: React.FC<BaanProps> = ({
         </Stack>
         {openDailog === 'sort' && (
           <SortBaan
-            visible={openDailog}
             setVisible={setOpenDailog}
             sortBy={sortBy}
             setSortBy={sortList}
@@ -177,7 +176,6 @@ const AddFromBaan: React.FC<BaanProps> = ({
         )}
         {openDailog === 'filter' && (
           <FilterBaan
-            visible={openDailog}
             setVisible={setOpenDailog}
             filterBy={filterBy}
             setFilterBy={setFilterBy}

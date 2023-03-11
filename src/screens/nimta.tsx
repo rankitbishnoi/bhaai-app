@@ -33,7 +33,13 @@ import AddFromBaan from '../components/addFromBaan';
 import SizedBox from '../components/SizedBox';
 import SwipeableList from '../components/swipeableList/swipeableList';
 
-const childPageStates = ['relative', 'addFromRelative', 'addFromBaan'];
+const childPageStates = [
+  'relative',
+  'addFromRelative',
+  'addFromBaan',
+  'add',
+  'edit',
+];
 
 const Nimta: React.FC = () => {
   const myContext = useContext(AppContext);
@@ -143,26 +149,24 @@ const Nimta: React.FC = () => {
               style={stackBarStyles.fab}
             />
           </Stack>
-          {openDailog === 'add' && (
-            <AddNimta
-              visible={openDailog === 'add'}
-              setVisible={value => setOpenDailog(value ? 'add' : '')}
-              type="ADD"
-              pariwarId={myContext.appSettings.selectedRole}
-              invalidateData={setQueryKey}
-            />
-          )}
-          {openDailog === 'edit' && (
-            <AddNimta
-              visible={openDailog === 'edit'}
-              setVisible={value => setOpenDailog(value ? 'edit' : '')}
-              type="EDIT"
-              data={selectedNimta}
-              pariwarId={myContext.appSettings.selectedRole}
-              invalidateData={setQueryKey}
-            />
-          )}
         </View>
+      )}
+      {openDailog === 'add' && (
+        <AddNimta
+          setVisible={value => setOpenDailog(value ? 'add' : '')}
+          type="ADD"
+          pariwarId={myContext.appSettings.selectedRole}
+          invalidateData={setQueryKey}
+        />
+      )}
+      {openDailog === 'edit' && (
+        <AddNimta
+          setVisible={value => setOpenDailog(value ? 'edit' : '')}
+          type="EDIT"
+          data={selectedNimta}
+          pariwarId={myContext.appSettings.selectedRole}
+          invalidateData={setQueryKey}
+        />
       )}
       {openDailog === 'relative' && (
         <Relative
