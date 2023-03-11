@@ -3,7 +3,7 @@ import {StyleSheet} from 'react-native';
 export default function useStyles() {
   return StyleSheet.create({
     container: {
-      backgroundColor: '#111',
+      backgroundColor: 'rgb(10, 10, 10)',
       flex: 1,
     },
     backTextWhite: {
@@ -19,7 +19,7 @@ export default function useStyles() {
       top: '50%',
     },
     rowFront: {
-      backgroundColor: '#111',
+      backgroundColor: 'rgb(10, 10, 10)',
       borderRadius: 5,
       margin: 5,
       marginBottom: 5,
@@ -30,13 +30,13 @@ export default function useStyles() {
       elevation: 5,
     },
     rowFrontVisible: {
-      backgroundColor: '#111',
+      backgroundColor: 'rgb(10, 10, 10)',
       borderRadius: 5,
       padding: 0,
     },
     rowBack: {
       alignItems: 'center',
-      backgroundColor: '#111',
+      backgroundColor: 'rgb(10, 10, 10)',
       flex: 1,
       flexDirection: 'row',
       justifyContent: 'space-between',

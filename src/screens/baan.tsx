@@ -88,6 +88,8 @@ const Baan: React.FC<BaanProps> = ({bhaaiId, setBaanVisible}) => {
             };
           })}
           deleteItem={deleteBaan}
+          refreshing={isLoading}
+          refresh={() => setQueryKey(Date.now())}
         />
       )}
       <Stack

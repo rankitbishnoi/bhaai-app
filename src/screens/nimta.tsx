@@ -123,6 +123,8 @@ const Nimta: React.FC = () => {
                 };
               })}
               deleteItem={deleteNimta}
+              refreshing={isLoading}
+              refresh={() => setQueryKey(Date.now())}
             />
           )}
           <Stack

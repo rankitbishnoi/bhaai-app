@@ -7,6 +7,7 @@ import HiddenItemWithActions from './hiddenItemWithActions';
 import VisibleItem from './visibleItem';
 import useStyles from '../../styles/swipeableList';
 import {Text} from '@react-native-material/core';
+import {RefreshControl} from 'react-native-gesture-handler';
 
 type RowMap<T> = {[open_cell_key: string]: SwipeRow<T>};
 
@@ -21,10 +22,17 @@ export interface SwipeableListItem {
 
 interface SwipeableListOptions {
   items: SwipeableListItem[];
+  refresh: () => any;
+  refreshing: boolean;
   deleteItem: (id: string) => Promise<boolean>;
 }
 
-const SwipeableList: React.FC<SwipeableListOptions> = ({items, deleteItem}) => {
+const SwipeableList: React.FC<SwipeableListOptions> = ({
+  items,
+  deleteItem,
+  refresh,
+  refreshing,
+}) => {
   const styles = useStyles();
   const myContext = useContext(AppContext);
   const [listData, setListData] = useState([
@@ -141,6 +149,14 @@ const SwipeableList: React.FC<SwipeableListOptions> = ({items, deleteItem}) => {
         onRightAction={onRightAction}
         onLeftActionStatusChange={onLeftActionStatusChange}
         onRightActionStatusChange={onRightActionStatusChange}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={refresh}
+            tintColor="#fff"
+            titleColor="#fff"
+          />
+        }
       />
     </View>
   );

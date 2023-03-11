@@ -4,6 +4,7 @@ import {
   ListRenderItemInfo,
   Text,
   TouchableOpacity,
+  View,
 } from 'react-native';
 import {RowMap} from 'react-native-swipe-list-view';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -45,9 +46,9 @@ const HiddenItemWithActions: React.FC<HiddenItemWithActionsOptions> = ({
   }
 
   return (
-    <Animated.View style={[styles.rowBack]}>
-      {data.item.key !== 'LAST_ITEM' && (
-        <>
+    <>
+      {data.item.key !== 'LAST_ITEM' ? (
+        <Animated.View style={[styles.rowBack]}>
           <Text>Left</Text>
           {!leftActionActivated && (
             <TouchableOpacity
@@ -96,9 +97,11 @@ const HiddenItemWithActions: React.FC<HiddenItemWithActionsOptions> = ({
               </TouchableOpacity>
             </Animated.View>
           )}
-        </>
+        </Animated.View>
+      ) : (
+        <View />
       )}
-    </Animated.View>
+    </>
   );
 };
 

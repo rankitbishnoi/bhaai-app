@@ -166,6 +166,8 @@ const Relative: React.FC<RelativeProps> = ({
               };
             })}
             deleteItem={deleteRelative}
+            refreshing={isLoading}
+            refresh={() => setQueryKey(Date.now())}
           />
         )}
         <Stack

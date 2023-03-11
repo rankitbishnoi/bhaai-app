@@ -86,6 +86,8 @@ const Bhaai: React.FC = () => {
                 };
               })}
               deleteItem={deleteBhaai}
+              refreshing={isLoading}
+              refresh={() => setQueryKey(Date.now())}
             />
           )}
           <Stack
