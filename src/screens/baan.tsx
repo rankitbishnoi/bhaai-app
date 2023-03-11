@@ -43,6 +43,10 @@ const Baan: React.FC<BaanProps> = ({bhaaiId, setBaanVisible}) => {
 
   const deleteBaan = async (id: string) => {
     return apiService.deleteBaan(id, bhaaiId).then(() => {
+      if (data) {
+        const index = data?.baanList.findIndex(a => a._id === id);
+        data.baanList.splice(index, 1);
+      }
       return true;
     });
   };

@@ -1,8 +1,7 @@
 import React, {useState} from 'react';
 import {TouchableOpacity, View} from 'react-native';
 import {apiService} from '../services/api.service';
-import {IconButton, Stack} from '@react-native-material/core';
-
+import {IconButton, Stack, Text} from '@react-native-material/core';
 import useStyles from '../styles/bhaai';
 import useStackBarStyles from '../styles/stackBar';
 import {Bhaai as BhaaiType} from '../types/Bhaai';
@@ -39,6 +38,10 @@ const Bhaai: React.FC = () => {
 
   const deleteBhaai = async (id: string) => {
     return apiService.deleteBhaai(id).then(() => {
+      if (data) {
+        const index = data?.findIndex(a => a._id === id);
+        data.splice(index, 1);
+      }
       return true;
     });
   };
@@ -50,6 +53,11 @@ const Bhaai: React.FC = () => {
           {isLoading && (
             <ProgressBar height={5} indeterminate backgroundColor="#4a0072" />
           )}
+          <Stack m={4} spacing={4}>
+            <Text style={styles.heading} variant="button">
+              Bhaai List
+            </Text>
+          </Stack>
           {data && (
             <SwipeableList
               items={data.map(bhaaiItem => {

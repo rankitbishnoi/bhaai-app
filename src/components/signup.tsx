@@ -1,12 +1,13 @@
-import React, {useContext} from 'react';
+import React, {useContext, useEffect} from 'react';
 import {Controller, useForm} from 'react-hook-form';
-import {Pressable, Text, TextInput, TouchableOpacity, View} from 'react-native';
+import {Pressable, Text, TouchableOpacity, View} from 'react-native';
 import {apiService} from '../services/api.service';
 import AppContext from '../services/storage';
 import useStyles from '../styles/auth';
 import mmkv from '../services/mmkv';
-import SizedBox from './SizedBox';
+
 import useButtonStyles from '../styles/button';
+import {TextInput} from '@react-native-material/core';
 
 interface FormData {
   email: string;
@@ -17,7 +18,7 @@ interface FormData {
 
 const Signup: React.FC<{}> = ({}) => {
   const myContext = useContext(AppContext);
-  const {control, handleSubmit} = useForm<FormData>({
+  const {control, handleSubmit, setFocus, register} = useForm<FormData>({
     defaultValues: {
       email: '',
       password: '',
@@ -25,6 +26,10 @@ const Signup: React.FC<{}> = ({}) => {
       phoneNumber: '+91',
     },
   });
+
+  useEffect(() => {
+    setFocus('email');
+  }, [setFocus]);
 
   const onSubmit = handleSubmit(({email, password}) => {
     apiService
@@ -54,113 +59,101 @@ const Signup: React.FC<{}> = ({}) => {
 
   return (
     <>
-      <Pressable>
-        <View style={styles.form}>
-          <Text style={styles.label}>email</Text>
-          <Controller
-            control={control}
-            name="email"
-            render={({field}) => (
-              <TextInput
-                {...field}
-                autoCapitalize="none"
-                autoComplete="email"
-                autoCorrect={false}
-                keyboardType="email-address"
-                returnKeyType="next"
-                style={styles.textInput}
-                textContentType="username"
-                onChangeText={value => field.onChange(value)}
-                value={field.value}
-              />
-            )}
-          />
-        </View>
+      <Pressable onPress={() => setFocus('email')}>
+        <Controller
+          control={control}
+          name="email"
+          render={({field}) => (
+            <TextInput
+              {...field}
+              {...register('email')}
+              onSubmitEditing={() => setFocus('phoneNumber')}
+              autoCapitalize="none"
+              autoComplete="email"
+              autoCorrect={false}
+              keyboardType="email-address"
+              returnKeyType="next"
+              style={styles.textInput}
+              textContentType="username"
+              variant="outlined"
+              label="email"
+              onChangeText={value => field.onChange(value)}
+              value={field.value}
+            />
+          )}
+        />
       </Pressable>
-
-      <SizedBox height={16} />
-
-      <Pressable>
-        <View style={styles.form}>
-          <Text style={styles.label}>phone number</Text>
-          <Controller
-            control={control}
-            name="phoneNumber"
-            render={({field}) => (
-              <TextInput
-                {...field}
-                autoCapitalize="none"
-                autoComplete="tel"
-                autoCorrect={false}
-                keyboardType="number-pad"
-                returnKeyType="next"
-                style={styles.textInput}
-                textContentType="telephoneNumber"
-                onChangeText={value => field.onChange(value)}
-                value={field.value}
-              />
-            )}
-          />
-        </View>
+      <Pressable onPress={() => setFocus('phoneNumber')}>
+        <Controller
+          control={control}
+          name="phoneNumber"
+          render={({field}) => (
+            <TextInput
+              {...field}
+              {...register('phoneNumber')}
+              onSubmitEditing={() => setFocus('password')}
+              autoCapitalize="none"
+              autoComplete="tel"
+              autoCorrect={false}
+              keyboardType="number-pad"
+              returnKeyType="next"
+              style={styles.textInput}
+              textContentType="telephoneNumber"
+              variant="outlined"
+              label="phoneNumber"
+              onChangeText={value => field.onChange(value)}
+              value={field.value}
+            />
+          )}
+        />
       </Pressable>
-
-      <SizedBox height={16} />
-
-      <Pressable>
-        <View style={styles.form}>
-          <Text style={styles.label}>password</Text>
-
-          <Controller
-            control={control}
-            name="password"
-            render={({field}) => (
-              <TextInput
-                {...field}
-                autoCapitalize="none"
-                autoCorrect={false}
-                onSubmitEditing={onSubmit}
-                returnKeyType="done"
-                secureTextEntry
-                style={styles.textInput}
-                textContentType="none"
-                onChangeText={value => field.onChange(value)}
-                value={field.value}
-              />
-            )}
-          />
-        </View>
+      <Pressable onPress={() => setFocus('password')}>
+        <Controller
+          control={control}
+          name="password"
+          render={({field}) => (
+            <TextInput
+              {...field}
+              {...register('password')}
+              onSubmitEditing={() => setFocus('cpassword')}
+              autoCapitalize="none"
+              autoCorrect={false}
+              returnKeyType="next"
+              secureTextEntry
+              style={styles.textInput}
+              textContentType="none"
+              variant="outlined"
+              label="password"
+              onChangeText={value => field.onChange(value)}
+              value={field.value}
+            />
+          )}
+        />
       </Pressable>
-
-      <SizedBox height={16} />
-
-      <Pressable>
-        <View style={styles.form}>
-          <Text style={styles.label}>confirm password</Text>
-
-          <Controller
-            control={control}
-            name="cpassword"
-            render={({field}) => (
-              <TextInput
-                {...field}
-                autoCapitalize="none"
-                autoComplete="password"
-                autoCorrect={false}
-                onSubmitEditing={onSubmit}
-                returnKeyType="done"
-                secureTextEntry
-                style={styles.textInput}
-                textContentType="password"
-                onChangeText={value => field.onChange(value)}
-                value={field.value}
-              />
-            )}
-          />
-        </View>
+      <Pressable onPress={() => setFocus('cpassword')}>
+        <Controller
+          control={control}
+          name="cpassword"
+          render={({field}) => (
+            <TextInput
+              {...field}
+              {...register('cpassword')}
+              autoCapitalize="none"
+              autoComplete="password"
+              autoCorrect={false}
+              onSubmitEditing={onSubmit}
+              returnKeyType="done"
+              secureTextEntry
+              style={styles.textInput}
+              textContentType="password"
+              variant="outlined"
+              label="confirm password"
+              onChangeText={value => field.onChange(value)}
+              value={field.value}
+            />
+          )}
+        />
       </Pressable>
-
-      <SizedBox height={16} />
-
       <TouchableOpacity onPress={onSubmit}>
         <View style={buttonStyles.button}>
           <Text style={buttonStyles.buttonTitle}>sign up</Text>

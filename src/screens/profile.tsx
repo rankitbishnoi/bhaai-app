@@ -120,7 +120,7 @@ const Profile: React.FC = () => {
               invalidateData={setQueryKey}
               setVisible={value => setOpenDailog(value ? 'edit' : '')}
               type="EDIT"
-              data={selectedRole}
+              data={selectedRole.pariwarId}
             />
           )}
           <Stack

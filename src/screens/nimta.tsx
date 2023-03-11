@@ -2,7 +2,6 @@ import React, {useContext, useState} from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
-  Text,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -15,8 +14,8 @@ import {
   DialogHeader,
   IconButton,
   Stack,
+  Text,
 } from '@react-native-material/core';
-
 import useStyles from '../styles/nimta';
 import useStackBarStyles from '../styles/stackBar';
 import {Nimta as NimtaType} from '../types/Nimta';
@@ -59,6 +58,10 @@ const Nimta: React.FC = () => {
     return apiService
       .deleteNimta(id, myContext.appSettings.selectedRole)
       .then(() => {
+        if (data) {
+          const index = data?.findIndex(a => a._id === id);
+          data.splice(index, 1);
+        }
         return true;
       });
   };
@@ -70,6 +73,11 @@ const Nimta: React.FC = () => {
           {isLoading && (
             <ProgressBar height={5} indeterminate backgroundColor="#4a0072" />
           )}
+          <Stack m={4} spacing={4}>
+            <Text style={styles.heading} variant="button">
+              Nimta List
+            </Text>
+          </Stack>
           {!myContext.appSettings.selectedRole && (
             <TouchableOpacity
               onPress={() => {

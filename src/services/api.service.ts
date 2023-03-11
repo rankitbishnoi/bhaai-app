@@ -203,12 +203,12 @@ class ApiService {
       });
   }
 
-  async searchBaan(baan: any): Promise<BaanList> {
-    const queryParams = Object.keys(baan)
-      .map(key => `${key}=${this.getValue(baan, key)}`)
-      .join('&');
+  async searchBaan(input: string): Promise<BaanList> {
     return axios
-      .get<BaanList>(`${this.baseURL}/search?${queryParams}`, this.getHeaders())
+      .get<BaanList>(
+        `${this.baseURL}/search?searchBy=${input}`,
+        this.getHeaders(),
+      )
       .then(response => {
         return response.data;
       })
@@ -481,10 +481,6 @@ class ApiService {
         console.log(JSON.stringify(error));
         return {} as any;
       });
-  }
-
-  getValue(obj: any, key: string) {
-    return obj[key];
   }
 }
 

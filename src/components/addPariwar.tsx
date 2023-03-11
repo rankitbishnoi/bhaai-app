@@ -4,20 +4,13 @@ import {
   DialogContent,
   DialogActions,
   Button,
-} from '@react-native-material/core';
-import React, {useState} from 'react';
-import {Controller, useForm} from 'react-hook-form';
-import {
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  Text,
-  View,
   TextInput,
-} from 'react-native';
+} from '@react-native-material/core';
+import React, {useEffect, useState} from 'react';
+import {Controller, useForm} from 'react-hook-form';
+import {KeyboardAvoidingView, Platform, Pressable} from 'react-native';
 import {apiService} from '../services/api.service';
 import {PariwarBase} from '../types/Pariwar';
-import SizedBox from './SizedBox';
 import useStyles from '../styles/bhaai';
 import {Pariwar} from '../types/PariwarList';
 
@@ -33,12 +26,14 @@ const AddPariwar: React.FC<DialogOptions> = (props: DialogOptions) => {
   const [processingEdit, setProcessingEdit] = useState(false);
   const [processingDelete, setProcessingDelete] = useState(false);
   const styles = useStyles();
-  const {control, handleSubmit} = useForm<PariwarBase>({
+  const {control, handleSubmit, setFocus, register} = useForm<PariwarBase>({
     defaultValues: props.data || {
       name: '',
     },
   });
-
+  useEffect(() => {
+    setFocus('name');
+  }, [setFocus]);
   const onSubmit = handleSubmit((input: PariwarBase) => {
     setProcessingEdit(true);
     if (props.type === 'EDIT') {
@@ -81,29 +76,27 @@ const AddPariwar: React.FC<DialogOptions> = (props: DialogOptions) => {
           title={`${props.type === 'ADD' ? 'add' : 'edit'} pariwar`}
         />
         <DialogContent>
-          <Pressable>
-            <View style={styles.form}>
-              <Text style={styles.label}>name</Text>
-              <Controller
-                control={control}
-                name="name"
-                render={({field}) => (
-                  <TextInput
-                    {...field}
-                    autoCorrect={false}
-                    keyboardType="default"
-                    returnKeyType="next"
-                    style={styles.textInput}
-                    textContentType="name"
-                    onChangeText={value => field.onChange(value)}
-                    value={field.value}
-                  />
-                )}
-              />
-            </View>
+          <Pressable onPress={() => setFocus('name')}>
+            <Controller
+              control={control}
+              name="name"
+              render={({field}) => (
+                <TextInput
+                  {...field}
+                  {...register('name')}
+                  autoCorrect={false}
+                  keyboardType="default"
+                  returnKeyType="next"
+                  style={styles.textInput}
+                  textContentType="name"
+                  variant="outlined"
+                  label="name"
+                  onChangeText={value => field.onChange(value)}
+                  value={field.value}
+                />
+              )}
+            />
           </Pressable>
-
-          <SizedBox height={16} />
         </DialogContent>
         <DialogActions>
           {props.type === 'EDIT' && (

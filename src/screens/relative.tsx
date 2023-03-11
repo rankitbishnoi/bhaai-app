@@ -1,8 +1,7 @@
 import React, {useContext, useState} from 'react';
-import {Text, TouchableOpacity, View} from 'react-native';
+import {TouchableOpacity, View} from 'react-native';
 import {apiService} from '../services/api.service';
-import {IconButton, Stack} from '@react-native-material/core';
-
+import {IconButton, Stack, Text} from '@react-native-material/core';
 import useStyles from '../styles/relative';
 import {Relative as RelativeType} from '../types/Relative';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -105,12 +104,23 @@ const Relative: React.FC<RelativeProps> = ({
           nimtaId,
           myContext.appSettings.selectedRole,
         )
-        .then(() => true);
+        .then(() => {
+          if (relatives) {
+            const index = relatives?.findIndex(a => a._id === id);
+            relatives.splice(index, 1);
+          }
+          return true;
+        });
     }
-
     return apiService
       .deleteRelative(id, myContext.appSettings.selectedRole)
-      .then(() => true);
+      .then(() => {
+        if (data) {
+          const index = data?.findIndex(a => a._id === id);
+          data.splice(index, 1);
+        }
+        return true;
+      });
   };
 
   return (
@@ -119,6 +129,11 @@ const Relative: React.FC<RelativeProps> = ({
         {isLoading && (
           <ProgressBar height={5} indeterminate backgroundColor="#4a0072" />
         )}
+        <Stack m={4} spacing={4}>
+          <Text style={styles.heading} variant="button">
+            {nimtaBase ? 'Nimta Relatives' : 'Relatives'}
+          </Text>
+        </Stack>
         {!myContext.appSettings.selectedRole && (
           <TouchableOpacity
             onPress={() => {

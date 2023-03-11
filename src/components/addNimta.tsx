@@ -4,20 +4,13 @@ import {
   DialogContent,
   DialogActions,
   Button,
-} from '@react-native-material/core';
-import React, {useContext, useState} from 'react';
-import {Controller, useForm} from 'react-hook-form';
-import {
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  Text,
-  View,
   TextInput,
-} from 'react-native';
+} from '@react-native-material/core';
+import React, {useContext, useEffect, useState} from 'react';
+import {Controller, useForm} from 'react-hook-form';
+import {KeyboardAvoidingView, Platform, Pressable} from 'react-native';
 import {apiService} from '../services/api.service';
 import {Nimta, NimtaBase} from '../types/Nimta';
-import SizedBox from './SizedBox';
 import useStyles from '../styles/nimta';
 import AppContext from '../services/storage';
 
@@ -35,11 +28,15 @@ const AddNimta: React.FC<DialogOptions> = (props: DialogOptions) => {
   const [processingDelete, setProcessingDelete] = useState(false);
   const myContext = useContext(AppContext);
   const styles = useStyles();
-  const {control, handleSubmit} = useForm<NimtaBase>({
+  const {control, handleSubmit, setFocus, register} = useForm<NimtaBase>({
     defaultValues: props.data || {
       name: '',
     },
   });
+
+  useEffect(() => {
+    setFocus('name');
+  }, [setFocus]);
 
   const onSubmit = handleSubmit((input: NimtaBase) => {
     setProcessingEdit(true);
@@ -99,29 +96,27 @@ const AddNimta: React.FC<DialogOptions> = (props: DialogOptions) => {
           title={`${props.type === 'ADD' ? 'add' : 'edit'} nimta`}
         />
         <DialogContent>
-          <Pressable>
-            <View style={styles.form}>
-              <Text style={styles.label}>name</Text>
-              <Controller
-                control={control}
-                name="name"
-                render={({field}) => (
-                  <TextInput
-                    {...field}
-                    autoCorrect={false}
-                    keyboardType="default"
-                    returnKeyType="next"
-                    style={styles.textInput}
-                    textContentType="name"
-                    onChangeText={value => field.onChange(value)}
-                    value={field.value}
-                  />
-                )}
-              />
-            </View>
+          <Pressable onPress={() => setFocus('name')}>
+            <Controller
+              control={control}
+              name="name"
+              render={({field}) => (
+                <TextInput
+                  {...field}
+                  {...register('name')}
+                  autoCorrect={false}
+                  keyboardType="default"
+                  returnKeyType="next"
+                  style={styles.textInput}
+                  textContentType="name"
+                  variant="outlined"
+                  label="name"
+                  onChangeText={value => field.onChange(value)}
+                  value={field.value}
+                />
+              )}
+            />
           </Pressable>
-
-          <SizedBox height={16} />
         </DialogContent>
         <DialogActions>
           {props.type === 'EDIT' && (

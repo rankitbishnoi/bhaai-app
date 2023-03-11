@@ -4,20 +4,13 @@ import {
   DialogContent,
   DialogActions,
   Button,
-} from '@react-native-material/core';
-import React from 'react';
-import {Controller, useForm} from 'react-hook-form';
-import {
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  Text,
   TextInput,
-  View,
-} from 'react-native';
+} from '@react-native-material/core';
+import React, {useEffect} from 'react';
+import {Controller, useForm} from 'react-hook-form';
+import {KeyboardAvoidingView, Platform, Pressable} from 'react-native';
 import useStyles from '../styles/relative';
 import {RelativeBase} from '../types/Relative';
-import SizedBox from './SizedBox';
 
 interface DialogOptions {
   visible: string;
@@ -28,7 +21,7 @@ interface DialogOptions {
 
 const FilterRelative: React.FC<DialogOptions> = (props: DialogOptions) => {
   const styles = useStyles();
-  const {control, handleSubmit} = useForm<RelativeBase>({
+  const {control, handleSubmit, setFocus, register} = useForm<RelativeBase>({
     defaultValues: props.filterBy || {
       firstName: '',
       lastName: '',
@@ -38,6 +31,10 @@ const FilterRelative: React.FC<DialogOptions> = (props: DialogOptions) => {
       phoneNumber: '',
     },
   });
+
+  useEffect(() => {
+    setFocus('firstName');
+  }, [setFocus]);
 
   const onSubmit = handleSubmit((input: RelativeBase) => {
     props.setFilterBy(input);
@@ -55,149 +52,141 @@ const FilterRelative: React.FC<DialogOptions> = (props: DialogOptions) => {
       <Dialog
         visible={props.visible === 'filter'}
         onDismiss={() => props.setVisible('')}>
-        <DialogHeader title={'sort'} />
+        <DialogHeader title={'filter'} />
         <DialogContent>
-          <Pressable>
-            <View style={styles.form}>
-              <Text style={styles.label}>first name</Text>
-              <Controller
-                control={control}
-                name="firstName"
-                render={({field}) => (
-                  <TextInput
-                    {...field}
-                    autoCorrect={false}
-                    keyboardType="default"
-                    returnKeyType="next"
-                    style={styles.textInput}
-                    textContentType="name"
-                    onChangeText={value => field.onChange(value)}
-                    value={field.value}
-                  />
-                )}
-              />
-            </View>
+          <Pressable onPress={() => setFocus('firstName')}>
+            <Controller
+              control={control}
+              name="firstName"
+              render={({field}) => (
+                <TextInput
+                  {...field}
+                  {...register('firstName')}
+                  onSubmitEditing={() => setFocus('lastName')}
+                  autoCorrect={false}
+                  keyboardType="default"
+                  returnKeyType="next"
+                  style={styles.textInput}
+                  textContentType="name"
+                  variant="outlined"
+                  label="firstName"
+                  onChangeText={value => field.onChange(value)}
+                  value={field.value}
+                />
+              )}
+            />
           </Pressable>
-
-          <SizedBox height={16} />
-          <Pressable>
-            <View style={styles.form}>
-              <Text style={styles.label}>last name</Text>
-              <Controller
-                control={control}
-                name="lastName"
-                render={({field}) => (
-                  <TextInput
-                    {...field}
-                    autoCorrect={false}
-                    keyboardType="default"
-                    returnKeyType="next"
-                    style={styles.textInput}
-                    textContentType="name"
-                    onChangeText={value => field.onChange(value)}
-                    value={field.value}
-                  />
-                )}
-              />
-            </View>
+          <Pressable onPress={() => setFocus('lastName')}>
+            <Controller
+              control={control}
+              name="lastName"
+              render={({field}) => (
+                <TextInput
+                  {...field}
+                  {...register('lastName')}
+                  onSubmitEditing={() => setFocus('nickName')}
+                  autoCorrect={false}
+                  keyboardType="default"
+                  returnKeyType="next"
+                  style={styles.textInput}
+                  textContentType="name"
+                  variant="outlined"
+                  label="lastName"
+                  onChangeText={value => field.onChange(value)}
+                  value={field.value}
+                />
+              )}
+            />
           </Pressable>
-
-          <SizedBox height={16} />
-          <Pressable>
-            <View style={styles.form}>
-              <Text style={styles.label}>nick name</Text>
-              <Controller
-                control={control}
-                name="nickName"
-                render={({field}) => (
-                  <TextInput
-                    {...field}
-                    autoCorrect={false}
-                    keyboardType="default"
-                    returnKeyType="next"
-                    style={styles.textInput}
-                    textContentType="name"
-                    onChangeText={value => field.onChange(value)}
-                    value={field.value}
-                  />
-                )}
-              />
-            </View>
+          <Pressable onPress={() => setFocus('nickName')}>
+            <Controller
+              control={control}
+              name="nickName"
+              render={({field}) => (
+                <TextInput
+                  {...field}
+                  {...register('nickName')}
+                  onSubmitEditing={() => setFocus('fathersName')}
+                  autoCorrect={false}
+                  keyboardType="default"
+                  returnKeyType="next"
+                  style={styles.textInput}
+                  textContentType="name"
+                  variant="outlined"
+                  label="nickName"
+                  onChangeText={value => field.onChange(value)}
+                  value={field.value}
+                />
+              )}
+            />
           </Pressable>
-
-          <SizedBox height={16} />
-          <Pressable>
-            <View style={styles.form}>
-              <Text style={styles.label}>father's name</Text>
-              <Controller
-                control={control}
-                name="fathersName"
-                render={({field}) => (
-                  <TextInput
-                    {...field}
-                    autoCorrect={false}
-                    keyboardType="default"
-                    returnKeyType="next"
-                    style={styles.textInput}
-                    textContentType="name"
-                    onChangeText={value => field.onChange(value)}
-                    value={field.value}
-                  />
-                )}
-              />
-            </View>
+          <Pressable onPress={() => setFocus('fathersName')}>
+            <Controller
+              control={control}
+              name="fathersName"
+              render={({field}) => (
+                <TextInput
+                  {...field}
+                  {...register('fathersName')}
+                  onSubmitEditing={() => setFocus('address')}
+                  autoCorrect={false}
+                  keyboardType="default"
+                  returnKeyType="next"
+                  style={styles.textInput}
+                  textContentType="name"
+                  variant="outlined"
+                  label="fathersName"
+                  onChangeText={value => field.onChange(value)}
+                  value={field.value}
+                />
+              )}
+            />
           </Pressable>
-
-          <SizedBox height={16} />
-          <Pressable>
-            <View style={styles.form}>
-              <Text style={styles.label}>address</Text>
-              <Controller
-                control={control}
-                name="address"
-                render={({field}) => (
-                  <TextInput
-                    {...field}
-                    autoCorrect={false}
-                    keyboardType="default"
-                    returnKeyType="next"
-                    style={styles.textInput}
-                    textContentType="name"
-                    onChangeText={value => field.onChange(value)}
-                    value={field.value}
-                  />
-                )}
-              />
-            </View>
+          <Pressable onPress={() => setFocus('address')}>
+            <Controller
+              control={control}
+              name="address"
+              render={({field}) => (
+                <TextInput
+                  {...field}
+                  {...register('address')}
+                  onSubmitEditing={() => setFocus('phoneNumber')}
+                  autoCorrect={false}
+                  keyboardType="default"
+                  returnKeyType="next"
+                  style={styles.textInput}
+                  textContentType="name"
+                  variant="outlined"
+                  label="address"
+                  onChangeText={value => field.onChange(value)}
+                  value={field.value}
+                />
+              )}
+            />
           </Pressable>
-
-          <SizedBox height={16} />
-
-          <Pressable>
-            <View style={styles.form}>
-              <Text style={styles.label}>phone number</Text>
-              <Controller
-                control={control}
-                name="phoneNumber"
-                render={({field}) => (
-                  <TextInput
-                    {...field}
-                    autoCapitalize="none"
-                    autoComplete="tel"
-                    autoCorrect={false}
-                    keyboardType="number-pad"
-                    returnKeyType="next"
-                    style={styles.textInput}
-                    textContentType="telephoneNumber"
-                    onChangeText={value => field.onChange(value)}
-                    value={field.value}
-                  />
-                )}
-              />
-            </View>
+          <Pressable onPress={() => setFocus('phoneNumber')}>
+            <Controller
+              control={control}
+              name="phoneNumber"
+              render={({field}) => (
+                <TextInput
+                  {...field}
+                  {...register('phoneNumber')}
+                  autoCapitalize="none"
+                  autoComplete="tel"
+                  autoCorrect={false}
+                  keyboardType="number-pad"
+                  returnKeyType="next"
+                  style={styles.textInput}
+                  textContentType="telephoneNumber"
+                  variant="outlined"
+                  label="phoneNumber"
+                  onChangeText={value => field.onChange(value)}
+                  value={field.value}
+                />
+              )}
+            />
           </Pressable>
-
-          <SizedBox height={16} />
         </DialogContent>
         <DialogActions>
           <Button

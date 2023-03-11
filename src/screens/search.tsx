@@ -1,5 +1,5 @@
-import React, {useContext, useState} from 'react';
-import {TouchableOpacity, View} from 'react-native';
+import React, {useContext, useEffect, useState} from 'react';
+import {Pressable, TouchableOpacity, View} from 'react-native';
 import {apiService} from '../services/api.service';
 import {
   IconButton,
@@ -16,6 +16,7 @@ import {BaanBase} from '../types/BaanList';
 import GiveBaan from '../components/giveBaan';
 import AppContext from '../services/storage';
 import useStackBarStyles from '../styles/stackBar';
+import {Controller, useForm} from 'react-hook-form';
 
 interface SearchProps {
   setSearchVisible: (visiblity: boolean) => any;
@@ -29,12 +30,21 @@ const Search: React.FC<SearchProps> = ({setSearchVisible, invalidateData}) => {
   const [data, setData] = useState({} as any);
   const [loading, setLoading] = useState(false);
   const [giveBaanVisible, setGiveBaanVisible] = useState(false);
-  const [searchText, setSearchText] = useState('');
-  const [selectedBaan, setSelectedBaan] = useState({} as any);
 
+  const [selectedBaan, setSelectedBaan] = useState({} as any);
+  const {control, setFocus, register} = useForm<{
+    searchText: string;
+  }>({
+    defaultValues: {
+      searchText: '',
+    },
+  });
+  useEffect(() => {
+    setFocus('searchText');
+  }, [setFocus]);
   const search = async (input: string) => {
     setLoading(true);
-    const baanList = await apiService.searchBaan({firstName: input});
+    const baanList = await apiService.searchBaan(input);
     setData({baanList});
     setLoading(false);
   };
@@ -58,18 +68,29 @@ const Search: React.FC<SearchProps> = ({setSearchVisible, invalidateData}) => {
       {loading && (
         <ProgressBar height={5} indeterminate backgroundColor="#4a0072" />
       )}
-      <TextInput
-        variant="outlined"
-        label="Search"
-        style={{margin: 16}}
-        value={searchText}
-        onChangeText={newText => setSearchText(newText)}
-        trailing={props => (
-          <TouchableOpacity onPress={() => search(searchText)}>
-            <Ionicons name="search" {...props} />
-          </TouchableOpacity>
-        )}
-      />
+      <Pressable onPress={() => setFocus('searchText')}>
+        <Controller
+          control={control}
+          name="searchText"
+          render={({field}) => (
+            <TextInput
+              {...field}
+              {...register('searchText')}
+              variant="outlined"
+              label="Search"
+              style={{margin: 16}}
+              onSubmitEditing={() => search(field.value)}
+              onChangeText={value => field.onChange(value)}
+              value={field.value}
+              trailing={props => (
+                <TouchableOpacity onPress={() => search(field.value)}>
+                  <Ionicons name="search" {...props} />
+                </TouchableOpacity>
+              )}
+            />
+          )}
+        />
+      </Pressable>
       {data?.baanList &&
         data.baanList.map((baan: BaanType) => (
           <ListItem

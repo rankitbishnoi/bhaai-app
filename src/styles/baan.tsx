@@ -3,6 +3,7 @@ import {StyleSheet} from 'react-native';
 export default function useStyles() {
   return StyleSheet.create({
     container: {
+      backgroundColor: '#000',
       flex: 1,
       color: '#ddd',
     },
@@ -51,7 +52,7 @@ export default function useStyles() {
     },
     textInput: {
       color: '#FFFFFF',
-      flex: 1,
+      marginBottom: 16,
     },
     sortFilter: {
       width: 140,

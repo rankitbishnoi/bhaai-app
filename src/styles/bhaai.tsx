@@ -15,6 +15,10 @@ export default function useStyles() {
       width: 100,
       height: 100,
     },
+    heading: {
+      textAlign: 'center',
+      color: 'rgb(93, 95, 222)',
+    },
     form: {
       alignItems: 'center',
       backgroundColor: 'rgb(58, 58, 60)',
@@ -44,7 +48,7 @@ export default function useStyles() {
     },
     textInput: {
       color: '#FFFFFF',
-      flex: 1,
+      marginBottom: 16,
     },
   });
 }

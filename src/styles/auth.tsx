@@ -40,7 +40,7 @@ export default function useStyles() {
     },
     textInput: {
       color: '#FFFFFF',
-      flex: 1,
+      marginBottom: 16,
     },
     title: {
       color: '#FFFFFF',
