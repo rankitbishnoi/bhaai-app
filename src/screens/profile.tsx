@@ -82,21 +82,18 @@ const Profile: React.FC = () => {
             {isError && <Text>Error: {(error as any).message}</Text>}
             {data?.pariwarRoles.map((role: PariwarRole) => (
               <ListItem
+                onPress={() => selectPariwarRole(role.pariwarId._id)}
                 key={role._id}
                 title={role.pariwarId.name}
                 style={styles.list}
                 elevation={4}
                 leadingMode="image"
                 leading={
-                  <TouchableOpacity
-                    onPress={() => selectPariwarRole(role.pariwarId._id)}>
-                    <RadioButton
-                      selected={
-                        role.pariwarId._id ===
-                        myContext.appSettings.selectedRole
-                      }
-                    />
-                  </TouchableOpacity>
+                  <RadioButton
+                    selected={
+                      role.pariwarId._id === myContext.appSettings.selectedRole
+                    }
+                  />
                 }
                 trailing={props => (
                   <TouchableOpacity onPress={() => editItem(role)}>

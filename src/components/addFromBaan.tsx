@@ -87,6 +87,9 @@ const AddFromBaan: React.FC<BaanProps> = ({
         <ScrollView>
           {data?.map(baan => (
             <ListItem
+              onPress={() => {
+                toggleSelect(baan._id);
+              }}
               key={baan._id}
               title={`${baan.firstName} ${baan.lastName}${
                 baan.nickName ? '(' + baan.nickName + ')' : ''
@@ -98,12 +101,7 @@ const AddFromBaan: React.FC<BaanProps> = ({
               elevation={4}
               leadingMode="image"
               leading={
-                <TouchableOpacity
-                  onPress={() => {
-                    toggleSelect(baan._id);
-                  }}>
-                  <RadioButton selected={selectedBaan.includes(baan._id)} />
-                </TouchableOpacity>
+                <RadioButton selected={selectedBaan.includes(baan._id)} />
               }
               trailing={props => (
                 <Ionicons name="chevron-forward-outline" {...props} />

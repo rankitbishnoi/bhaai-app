@@ -9,6 +9,15 @@ export default function useStyles() {
     backTextWhite: {
       color: '#FFF',
     },
+    noItems: {
+      color: '#aaa',
+      fontSize: 14,
+      fontWeight: 'bold',
+      position: 'absolute',
+      alignSelf: 'center',
+      textAlign: 'center',
+      top: '50%',
+    },
     rowFront: {
       backgroundColor: '#111',
       borderRadius: 5,

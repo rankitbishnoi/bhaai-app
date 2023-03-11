@@ -144,7 +144,7 @@ const Relative: React.FC<RelativeProps> = ({
             </View>
           </TouchableOpacity>
         )}
-        {data && (
+        {myContext.appSettings.selectedRole && data && (
           <SwipeableList
             items={data.map(relative => {
               return {

@@ -88,13 +88,17 @@ const Nimta: React.FC = () => {
               </View>
             </TouchableOpacity>
           )}
-          {data && (
+          {myContext.appSettings.selectedRole && data && (
             <SwipeableList
               items={data.map(nimta => {
                 return {
                   title: nimta.name,
                   key: nimta._id,
                   subtitle: `Relatives: ${nimta.relative.length}`,
+                  onPress: () => {
+                    setSelectedNimta(nimta);
+                    setOpenDailog('relative');
+                  },
                   leading: (
                     <TouchableOpacity onPress={() => editItem(nimta)}>
                       <Image
@@ -176,7 +180,9 @@ const Nimta: React.FC = () => {
       {openDailog === 'addFromBaan' && (
         <AddFromBaan
           nimtaId={selectedNimta._id}
-          invalidateData={setQueryKey}
+          invalidateData={value => {
+            setQueryKey(value);
+          }}
           setVisible={value => setOpenDailog(value)}
         />
       )}

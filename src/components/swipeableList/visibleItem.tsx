@@ -1,12 +1,8 @@
 import {ListItem} from '@react-native-material/core';
 import React from 'react';
-import {
-  Animated,
-  TouchableHighlight,
-  ListRenderItemInfo,
-  TouchableOpacity,
-} from 'react-native';
+import {Animated, TouchableHighlight, ListRenderItemInfo} from 'react-native';
 import useStyles from '../../styles/swipeableList';
+import SizedBox from '../SizedBox';
 import {SwipeableListItem} from './swipeableList';
 
 interface VisibleItemOptions {
@@ -37,24 +33,29 @@ const VisibleItem: React.FC<VisibleItemOptions> = ({
   const onPress = () => data.item.onPress && data.item.onPress();
 
   return (
-    <TouchableOpacity onPress={onPress}>
-      <Animated.View style={[styles.rowFront]}>
-        <TouchableHighlight
-          style={styles.rowFrontVisible}
-          underlayColor={'#ccc'}>
-          <ListItem
-            key={data.item.key}
-            title={data.item.title}
-            secondaryText={data.item.subtitle}
-            style={styles.list}
-            elevation={4}
-            leadingMode="image"
-            leading={data.item.leading}
-            trailing={data.item.trailing}
-          />
-        </TouchableHighlight>
-      </Animated.View>
-    </TouchableOpacity>
+    <>
+      {data.item.key !== 'LAST_ITEM' ? (
+        <Animated.View style={[styles.rowFront]}>
+          <TouchableHighlight
+            style={styles.rowFrontVisible}
+            underlayColor={'#ccc'}>
+            <ListItem
+              onPress={() => onPress()}
+              key={data.item.key}
+              title={data.item.title}
+              secondaryText={data.item.subtitle}
+              style={styles.list}
+              elevation={4}
+              leadingMode="image"
+              leading={data.item.leading}
+              trailing={data.item.trailing}
+            />
+          </TouchableHighlight>
+        </Animated.View>
+      ) : (
+        <SizedBox height={60} />
+      )}
+    </>
   );
 };
 

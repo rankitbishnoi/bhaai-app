@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {Animated, ListRenderItemInfo, View} from 'react-native';
 
 import {SwipeListView, SwipeRow} from 'react-native-swipe-list-view';
@@ -6,6 +6,7 @@ import AppContext from '../../services/storage';
 import HiddenItemWithActions from './hiddenItemWithActions';
 import VisibleItem from './visibleItem';
 import useStyles from '../../styles/swipeableList';
+import {Text} from '@react-native-material/core';
 
 type RowMap<T> = {[open_cell_key: string]: SwipeRow<T>};
 
@@ -26,7 +27,25 @@ interface SwipeableListOptions {
 const SwipeableList: React.FC<SwipeableListOptions> = ({items, deleteItem}) => {
   const styles = useStyles();
   const myContext = useContext(AppContext);
-  const [listData, setListData] = useState(items);
+  const [listData, setListData] = useState([
+    ...items,
+    {
+      key: 'LAST_ITEM',
+      title: 'LAST_ITEM',
+      subtitle: 'LAST_ITEM',
+    },
+  ]);
+
+  useEffect(() => {
+    setListData([
+      ...items,
+      {
+        key: 'LAST_ITEM',
+        title: 'LAST_ITEM',
+        subtitle: 'LAST_ITEM',
+      },
+    ]);
+  }, [items]);
   const closeRow = (
     rowMap: RowMap<SwipeableListItem>,
     rowKey: keyof RowMap<SwipeableListItem>,
@@ -103,6 +122,9 @@ const SwipeableList: React.FC<SwipeableListOptions> = ({items, deleteItem}) => {
 
   return (
     <View style={styles.container}>
+      {listData.length === 1 && (
+        <Text style={styles.noItems}>no items available</Text>
+      )}
       <SwipeListView
         data={listData}
         renderItem={renderItem}

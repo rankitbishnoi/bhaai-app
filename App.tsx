@@ -19,28 +19,28 @@ const App: React.FC = () => {
   const queryClient = new QueryClient();
 
   return (
-    <Provider
-      theme={{
-        ...defaultTheme,
-        colorScheme: 'dark',
-        palette: {
-          ...defaultTheme.palette,
-          secondary: {
-            main: 'rgb(0, 100, 100)',
-            on: '#ddd',
+    <QueryClientProvider client={queryClient}>
+      <Provider
+        theme={{
+          ...defaultTheme,
+          colorScheme: 'dark',
+          palette: {
+            ...defaultTheme.palette,
+            secondary: {
+              main: 'rgb(0, 100, 100)',
+              on: '#ddd',
+            },
+            background: {
+              main: '#111',
+              on: '#ddd',
+            },
+            surface: {
+              main: '#111',
+              on: '#ddd',
+            },
           },
-          background: {
-            main: '#111',
-            on: '#ddd',
-          },
-          surface: {
-            main: '#111',
-            on: '#ddd',
-          },
-        },
-      }}>
-      <AppContext.Provider value={{appSettings, setAppSettings}}>
-        <QueryClientProvider client={queryClient}>
+        }}>
+        <AppContext.Provider value={{appSettings, setAppSettings}}>
           <View style={styles.root}>
             <SafeAreaView style={styles.safeAreaView}>
               {appSettings.isLoggedIn ? <Main /> : <Auth />}
@@ -57,9 +57,9 @@ const App: React.FC = () => {
               </KeyboardAvoidingView>
             </SafeAreaView>
           </View>
-        </QueryClientProvider>
-      </AppContext.Provider>
-    </Provider>
+        </AppContext.Provider>
+      </Provider>
+    </QueryClientProvider>
   );
 };
 

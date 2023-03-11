@@ -23,6 +23,7 @@ interface HiddenItemWithActionsOptions {
 }
 
 const HiddenItemWithActions: React.FC<HiddenItemWithActionsOptions> = ({
+  data,
   swipeAnimatedValue,
   leftActionActivated,
   rightActionActivated,
@@ -45,53 +46,57 @@ const HiddenItemWithActions: React.FC<HiddenItemWithActionsOptions> = ({
 
   return (
     <Animated.View style={[styles.rowBack]}>
-      <Text>Left</Text>
-      {!leftActionActivated && (
-        <TouchableOpacity
-          style={[styles.backRightBtn, styles.backRightBtnLeft]}
-          onPress={onClose}>
-          <Ionicons
-            name="close-circle-outline"
-            size={25}
-            style={styles.trash}
-            color="#fff"
-          />
-        </TouchableOpacity>
-      )}
-      {!leftActionActivated && (
-        <Animated.View
-          style={[
-            styles.backRightBtn,
-            styles.backRightBtnRight,
-            {
-              flex: 1,
-              width: rowActionAnimatedValue,
-            },
-          ]}>
-          <TouchableOpacity
-            style={[styles.backRightBtn, styles.backRightBtnRight]}
-            onPress={onDelete}>
+      {data.item.key !== 'LAST_ITEM' && (
+        <>
+          <Text>Left</Text>
+          {!leftActionActivated && (
+            <TouchableOpacity
+              style={[styles.backRightBtn, styles.backRightBtnLeft]}
+              onPress={onClose}>
+              <Ionicons
+                name="close-circle-outline"
+                size={25}
+                style={styles.trash}
+                color="#fff"
+              />
+            </TouchableOpacity>
+          )}
+          {!leftActionActivated && (
             <Animated.View
               style={[
-                styles.trash,
+                styles.backRightBtn,
+                styles.backRightBtnRight,
                 {
-                  transform: [
-                    {
-                      scale: swipeAnimatedValue
-                        ? swipeAnimatedValue.interpolate({
-                            inputRange: [-90, -45],
-                            outputRange: [1, 0],
-                            extrapolate: 'clamp',
-                          })
-                        : 1,
-                    },
-                  ],
+                  flex: 1,
+                  width: rowActionAnimatedValue,
                 },
               ]}>
-              <Ionicons name="trash-outline" size={25} color="#fff" />
+              <TouchableOpacity
+                style={[styles.backRightBtn, styles.backRightBtnRight]}
+                onPress={onDelete}>
+                <Animated.View
+                  style={[
+                    styles.trash,
+                    {
+                      transform: [
+                        {
+                          scale: swipeAnimatedValue
+                            ? swipeAnimatedValue.interpolate({
+                                inputRange: [-90, -45],
+                                outputRange: [1, 0],
+                                extrapolate: 'clamp',
+                              })
+                            : 1,
+                        },
+                      ],
+                    },
+                  ]}>
+                  <Ionicons name="trash-outline" size={25} color="#fff" />
+                </Animated.View>
+              </TouchableOpacity>
             </Animated.View>
-          </TouchableOpacity>
-        </Animated.View>
+          )}
+        </>
       )}
     </Animated.View>
   );
