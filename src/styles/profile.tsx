@@ -10,6 +10,7 @@ export default function useStyles() {
     heading: {
       textAlign: 'center',
       color: 'rgb(93, 95, 222)',
+      marginBottom: 16,
     },
     list: {
       backgroundColor: '#000',
