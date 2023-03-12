@@ -51,5 +51,9 @@ export default function useStyles() {
       color: '#FFFFFF',
       marginBottom: 16,
     },
+    error: {
+      color: 'red',
+      marginBottom: 8,
+    },
   });
 }

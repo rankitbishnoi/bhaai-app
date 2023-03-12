@@ -21,7 +21,13 @@ const AddNimta: React.FC<ComponentProps> = (props: ComponentProps) => {
   const [processingDelete, setProcessingDelete] = useState(false);
   const myContext = useContext(AppContext);
   const styles = useStyles();
-  const {control, handleSubmit, setFocus, register} = useForm<NimtaBase>({
+  const {
+    control,
+    handleSubmit,
+    setFocus,
+    register,
+    formState: {errors},
+  } = useForm<NimtaBase>({
     defaultValues: props.data || {
       name: '',
     },
@@ -91,13 +97,16 @@ const AddNimta: React.FC<ComponentProps> = (props: ComponentProps) => {
           </Text>
         </Stack>
         <Pressable onPress={() => setFocus('name')}>
+          {errors.name && (
+            <Text style={styles.error}>{errors.name?.message}</Text>
+          )}
           <Controller
             control={control}
             name="name"
             render={({field}) => (
               <TextInput
                 {...field}
-                {...register('name')}
+                {...register('name', {required: 'name is required'})}
                 autoCorrect={false}
                 keyboardType="default"
                 returnKeyType="next"

@@ -16,13 +16,17 @@ interface ComponentProps {
 const GiveBaan: React.FC<ComponentProps> = (props: ComponentProps) => {
   const [processing, setProcessing] = useState(false);
   const styles = useStyles();
-  const {control, handleSubmit, setFocus, register} = useForm<{amount: string}>(
-    {
-      defaultValues: {
-        amount: '0',
-      },
+  const {
+    control,
+    handleSubmit,
+    setFocus,
+    register,
+    formState: {errors},
+  } = useForm<{amount: string}>({
+    defaultValues: {
+      amount: '0',
     },
-  );
+  });
 
   useEffect(() => {
     setFocus('amount');
@@ -55,13 +59,27 @@ const GiveBaan: React.FC<ComponentProps> = (props: ComponentProps) => {
           </Text>
         </Stack>
         <Pressable onPress={() => setFocus('amount')}>
+          {errors.amount && (
+            <Text style={styles.error}>{errors.amount?.message}</Text>
+          )}
           <Controller
             control={control}
             name="amount"
             render={({field}) => (
               <TextInput
                 {...field}
-                {...register('amount')}
+                {...register('amount', {
+                  required: 'amount is required',
+                  min: {
+                    value: 1,
+                    message: 'amount should be more than 0',
+                  },
+                  validate: value => {
+                    return value && value.match(/^[0-9]+$/)
+                      ? undefined
+                      : 'enter valid amount';
+                  },
+                })}
                 autoCorrect={false}
                 keyboardType="number-pad"
                 returnKeyType="next"

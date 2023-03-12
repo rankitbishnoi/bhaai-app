@@ -23,7 +23,13 @@ const AddBhaai: React.FC<ComponentProps> = (props: ComponentProps) => {
   const [processingDelete, setProcessingDelete] = useState(false);
   const [openDatePicker, setOpenDatePicker] = useState(false);
   const styles = useStyles();
-  const {control, handleSubmit, setFocus, register} = useForm<BhaaiBase>({
+  const {
+    control,
+    handleSubmit,
+    setFocus,
+    register,
+    formState: {errors},
+  } = useForm<BhaaiBase>({
     defaultValues: props.data || {
       marriage: '',
       date: '',
@@ -90,13 +96,16 @@ const AddBhaai: React.FC<ComponentProps> = (props: ComponentProps) => {
           </Text>
         </Stack>
         <Pressable onPress={() => setFocus('marriage')}>
+          {errors.marriage && (
+            <Text style={styles.error}>{errors.marriage?.message}</Text>
+          )}
           <Controller
             control={control}
             name="marriage"
             render={({field}) => (
               <TextInput
                 {...field}
-                {...register('marriage')}
+                {...register('marriage', {required: 'marriage is required'})}
                 onSubmitEditing={() => setFocus('date')}
                 autoCorrect={false}
                 keyboardType="default"
@@ -112,6 +121,9 @@ const AddBhaai: React.FC<ComponentProps> = (props: ComponentProps) => {
           />
         </Pressable>
         <Pressable onPress={() => setFocus('date')}>
+          {errors.date && (
+            <Text style={styles.error}>{errors.date?.message}</Text>
+          )}
           <Controller
             control={control}
             name="date"
@@ -119,7 +131,7 @@ const AddBhaai: React.FC<ComponentProps> = (props: ComponentProps) => {
               <>
                 <TextInput
                   {...field}
-                  {...register('date')}
+                  {...register('date', {required: 'date is required'})}
                   autoCorrect={false}
                   returnKeyType="next"
                   style={styles.textInput}

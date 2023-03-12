@@ -19,7 +19,13 @@ const AddPariwar: React.FC<ComponentProps> = (props: ComponentProps) => {
   const [processingEdit, setProcessingEdit] = useState(false);
   const [processingDelete, setProcessingDelete] = useState(false);
   const styles = useStyles();
-  const {control, handleSubmit, setFocus, register} = useForm<PariwarBase>({
+  const {
+    control,
+    handleSubmit,
+    setFocus,
+    register,
+    formState: {errors},
+  } = useForm<PariwarBase>({
     defaultValues: props.data || {
       name: '',
     },
@@ -73,13 +79,16 @@ const AddPariwar: React.FC<ComponentProps> = (props: ComponentProps) => {
           </Text>
         </Stack>
         <Pressable onPress={() => setFocus('name')}>
+          {errors.name && (
+            <Text style={styles.error}>{errors.name?.message}</Text>
+          )}
           <Controller
             control={control}
             name="name"
             render={({field}) => (
               <TextInput
                 {...field}
-                {...register('name')}
+                {...register('name', {required: 'name is required'})}
                 autoCorrect={false}
                 keyboardType="default"
                 returnKeyType="next"

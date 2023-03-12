@@ -7,6 +7,7 @@ import {Relative, RelativeBase} from '../types/Relative';
 import useStyles from '../styles/relative';
 import AppContext from '../services/storage';
 import SizedBox from './SizedBox';
+import {validatePhoneNumber} from '../services/helpers';
 
 interface ComponentProps {
   pariwarId: string;
@@ -21,14 +22,20 @@ const AddRelative: React.FC<ComponentProps> = (props: ComponentProps) => {
   const [processingDelete, setProcessingDelete] = useState(false);
   const myContext = useContext(AppContext);
   const styles = useStyles();
-  const {control, handleSubmit, setFocus, register} = useForm<RelativeBase>({
+  const {
+    control,
+    handleSubmit,
+    setFocus,
+    register,
+    formState: {errors},
+  } = useForm<RelativeBase>({
     defaultValues: props.data || {
       firstName: '',
       lastName: '',
       nickName: '',
       fathersName: '',
       address: '',
-      phoneNumber: '',
+      phoneNumber: '+91',
     },
   });
 
@@ -96,13 +103,16 @@ const AddRelative: React.FC<ComponentProps> = (props: ComponentProps) => {
           </Text>
         </Stack>
         <Pressable onPress={() => setFocus('firstName')}>
+          {errors.firstName && (
+            <Text style={styles.error}>{errors.firstName?.message}</Text>
+          )}
           <Controller
             control={control}
             name="firstName"
             render={({field}) => (
               <TextInput
                 {...field}
-                {...register('firstName')}
+                {...register('firstName', {required: 'first name is required'})}
                 onSubmitEditing={() => setFocus('lastName')}
                 autoCorrect={false}
                 keyboardType="default"
@@ -118,13 +128,16 @@ const AddRelative: React.FC<ComponentProps> = (props: ComponentProps) => {
           />
         </Pressable>
         <Pressable onPress={() => setFocus('lastName')}>
+          {errors.lastName && (
+            <Text style={styles.error}>{errors.lastName?.message}</Text>
+          )}
           <Controller
             control={control}
             name="lastName"
             render={({field}) => (
               <TextInput
                 {...field}
-                {...register('lastName')}
+                {...register('lastName', {required: 'last name is required'})}
                 onSubmitEditing={() => setFocus('nickName')}
                 autoCorrect={false}
                 keyboardType="default"
@@ -146,7 +159,7 @@ const AddRelative: React.FC<ComponentProps> = (props: ComponentProps) => {
             render={({field}) => (
               <TextInput
                 {...field}
-                {...register('nickName')}
+                {...register('nickName', {required: 'nick name is required'})}
                 onSubmitEditing={() => setFocus('fathersName')}
                 autoCorrect={false}
                 keyboardType="default"
@@ -162,13 +175,18 @@ const AddRelative: React.FC<ComponentProps> = (props: ComponentProps) => {
           />
         </Pressable>
         <Pressable onPress={() => setFocus('fathersName')}>
+          {errors.fathersName && (
+            <Text style={styles.error}>{errors.fathersName?.message}</Text>
+          )}
           <Controller
             control={control}
             name="fathersName"
             render={({field}) => (
               <TextInput
                 {...field}
-                {...register('fathersName')}
+                {...register('fathersName', {
+                  required: "father's name is required",
+                })}
                 onSubmitEditing={() => setFocus('address')}
                 autoCorrect={false}
                 keyboardType="default"
@@ -184,13 +202,16 @@ const AddRelative: React.FC<ComponentProps> = (props: ComponentProps) => {
           />
         </Pressable>
         <Pressable onPress={() => setFocus('address')}>
+          {errors.address && (
+            <Text style={styles.error}>{errors.address?.message}</Text>
+          )}
           <Controller
             control={control}
             name="address"
             render={({field}) => (
               <TextInput
                 {...field}
-                {...register('address')}
+                {...register('address', {required: 'address is required'})}
                 onSubmitEditing={() => setFocus('phoneNumber')}
                 autoCorrect={false}
                 keyboardType="default"
@@ -206,13 +227,25 @@ const AddRelative: React.FC<ComponentProps> = (props: ComponentProps) => {
           />
         </Pressable>
         <Pressable onPress={() => setFocus('phoneNumber')}>
+          {errors.phoneNumber && (
+            <Text style={styles.error}>{errors.phoneNumber?.message}</Text>
+          )}
           <Controller
             control={control}
             name="phoneNumber"
             render={({field}) => (
               <TextInput
                 {...field}
-                {...register('phoneNumber')}
+                {...register('phoneNumber', {
+                  required: 'password is required',
+                  minLength: {value: 13, message: 'enter valid phone number'},
+                  maxLength: {value: 13, message: 'enter valid phone number'},
+                  validate: value => {
+                    return validatePhoneNumber(value)
+                      ? undefined
+                      : 'please enter valid phone number';
+                  },
+                })}
                 autoCapitalize="none"
                 autoComplete="tel"
                 autoCorrect={false}

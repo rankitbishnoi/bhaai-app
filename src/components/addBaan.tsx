@@ -22,7 +22,13 @@ const AddBaan: React.FC<ComponentProps> = (props: ComponentProps) => {
   const styles = useStyles();
   const [processingEdit, setProcessingEdit] = useState(false);
   const [processingDelete, setProcessingDelete] = useState(false);
-  const {control, handleSubmit, setFocus, register} = useForm<BaanBase>({
+  const {
+    control,
+    handleSubmit,
+    setFocus,
+    register,
+    formState: {errors},
+  } = useForm<BaanBase>({
     defaultValues: props.data || {
       firstName: '',
       lastName: '',
@@ -95,13 +101,16 @@ const AddBaan: React.FC<ComponentProps> = (props: ComponentProps) => {
           </Text>
         </Stack>
         <Pressable onPress={() => setFocus('firstName')}>
+          {errors.firstName && (
+            <Text style={styles.error}>{errors.firstName?.message}</Text>
+          )}
           <Controller
             control={control}
             name="firstName"
             render={({field}) => (
               <TextInput
                 {...field}
-                {...register('firstName')}
+                {...register('firstName', {required: 'first name is required'})}
                 onSubmitEditing={() => setFocus('lastName')}
                 autoCorrect={false}
                 keyboardType="default"
@@ -118,13 +127,16 @@ const AddBaan: React.FC<ComponentProps> = (props: ComponentProps) => {
         </Pressable>
 
         <Pressable onPress={() => setFocus('lastName')}>
+          {errors.lastName && (
+            <Text style={styles.error}>{errors.lastName?.message}</Text>
+          )}
           <Controller
             control={control}
             name="lastName"
             render={({field}) => (
               <TextInput
                 {...field}
-                {...register('lastName')}
+                {...register('lastName', {required: 'last name is required'})}
                 onSubmitEditing={() => setFocus('nickName')}
                 autoCorrect={false}
                 keyboardType="default"
@@ -164,13 +176,18 @@ const AddBaan: React.FC<ComponentProps> = (props: ComponentProps) => {
         </Pressable>
 
         <Pressable onPress={() => setFocus('fathersName')}>
+          {errors.fathersName && (
+            <Text style={styles.error}>{errors.fathersName?.message}</Text>
+          )}
           <Controller
             control={control}
             name="fathersName"
             render={({field}) => (
               <TextInput
                 {...field}
-                {...register('fathersName')}
+                {...register('fathersName', {
+                  required: "father's name is required",
+                })}
                 onSubmitEditing={() => setFocus('address')}
                 autoCorrect={false}
                 keyboardType="default"
@@ -187,13 +204,16 @@ const AddBaan: React.FC<ComponentProps> = (props: ComponentProps) => {
         </Pressable>
 
         <Pressable onPress={() => setFocus('address')}>
+          {errors.address && (
+            <Text style={styles.error}>{errors.address?.message}</Text>
+          )}
           <Controller
             control={control}
             name="address"
             render={({field}) => (
               <TextInput
                 {...field}
-                {...register('address')}
+                {...register('address', {required: 'address is required'})}
                 onSubmitEditing={() => setFocus('amount')}
                 autoCorrect={false}
                 keyboardType="default"
@@ -210,13 +230,27 @@ const AddBaan: React.FC<ComponentProps> = (props: ComponentProps) => {
         </Pressable>
 
         <Pressable onPress={() => setFocus('amount')}>
+          {errors.amount && (
+            <Text style={styles.error}>{errors.amount?.message}</Text>
+          )}
           <Controller
             control={control}
             name="amount"
             render={({field}) => (
               <TextInput
                 {...field}
-                {...register('amount')}
+                {...register('amount', {
+                  required: 'amount is required',
+                  min: {
+                    value: 1,
+                    message: 'amount should be more than 0',
+                  },
+                  validate: value => {
+                    return value && value.toString().match(/^[0-9]+$/)
+                      ? undefined
+                      : 'enter valid amount';
+                  },
+                })}
                 onSubmitEditing={onSubmit}
                 autoCorrect={false}
                 keyboardType="number-pad"
