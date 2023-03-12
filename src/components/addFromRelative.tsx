@@ -29,6 +29,8 @@ import {
   MenuTrigger,
 } from 'react-native-popup-menu';
 
+const childPageStates = ['sort', 'filter'];
+
 interface RelativeProps {
   setVisible: (visiblity: string) => any;
   invalidateData: (key: number) => any;
@@ -108,7 +110,7 @@ const AddFromRelative: React.FC<RelativeProps> = ({
   }, [data, filterBy]);
 
   const sortList = (by: keyof RelativeType = 'firstName') => {
-    data?.sort((a, b) => {
+    filterList?.sort((a, b) => {
       if (a[by] < b[by]) {
         return -1;
       }
@@ -156,159 +158,161 @@ const AddFromRelative: React.FC<RelativeProps> = ({
 
   return (
     <MenuProvider>
-      <View style={styles.container}>
-        {isLoading && (
-          <ProgressBar height={5} indeterminate backgroundColor="#4a0072" />
-        )}
-        <Stack m={4} spacing={4} style={stackBarStyles.stackBar}>
-          <View style={stackBarStyles.empty} />
-          <Text style={styles.heading} variant="button">
-            Relative List
-          </Text>
-          <Menu
-            style={stackBarStyles.empty}
-            onClose={() => {
-              setMenuOpen(false);
-            }}
-            onOpen={() => {
-              setMenuOpen(true);
-            }}>
-            <MenuTrigger>
-              <Ionicons
-                style={stackBarStyles.left}
-                size={24}
-                color={'white'}
-                name={
-                  menuOpen
-                    ? 'ellipsis-horizontal'
-                    : 'ellipsis-horizontal-outline'
+      {!childPageStates.includes(openDailog) && (
+        <View style={styles.container}>
+          {isLoading && (
+            <ProgressBar height={5} indeterminate backgroundColor="#4a0072" />
+          )}
+          <Stack m={4} spacing={4} style={stackBarStyles.stackBar}>
+            <View style={stackBarStyles.empty} />
+            <Text style={styles.heading} variant="button">
+              Relative List
+            </Text>
+            <Menu
+              style={stackBarStyles.empty}
+              onClose={() => {
+                setMenuOpen(false);
+              }}
+              onOpen={() => {
+                setMenuOpen(true);
+              }}>
+              <MenuTrigger>
+                <Ionicons
+                  style={stackBarStyles.left}
+                  size={24}
+                  color={'white'}
+                  name={
+                    menuOpen
+                      ? 'ellipsis-horizontal'
+                      : 'ellipsis-horizontal-outline'
+                  }
+                />
+              </MenuTrigger>
+              <MenuOptions
+                customStyles={{
+                  optionsContainer: {
+                    backgroundColor: '#444',
+                    borderRadius: 5,
+                  },
+                  optionWrapper: {
+                    padding: 10,
+                  },
+                  optionTouchable: {
+                    activeOpacity: 70,
+                  },
+                  optionText: {
+                    color: '#ccc',
+                  },
+                }}>
+                <MenuOption onSelect={selectAll} text="select all" />
+                <Divider color={'#333'} />
+                <MenuOption onSelect={deselectAll} text="deselect all" />
+              </MenuOptions>
+            </Menu>
+          </Stack>
+          <ScrollView>
+            {filterList.map(relative => (
+              <ListItem
+                onPress={() => {
+                  toggleSelect(relative._id);
+                }}
+                key={relative._id}
+                title={`${relative.firstName} ${relative.lastName}${
+                  relative.nickName ? '(' + relative.nickName + ')' : ''
+                } ${
+                  relative.fathersName ? 'S/O Shri ' + relative.fathersName : ''
+                }, ${relative.address}`}
+                secondaryText={`Mobile: ${
+                  relative.phoneNumber || 'not available'
+                }`}
+                style={styles.list}
+                elevation={4}
+                leadingMode="icon"
+                leading={
+                  <TouchableOpacity>
+                    <RadioButton
+                      selected={selectedRelative.includes(relative._id)}
+                    />
+                  </TouchableOpacity>
                 }
               />
-            </MenuTrigger>
-            <MenuOptions
-              customStyles={{
-                optionsContainer: {
-                  backgroundColor: '#444',
-                  borderRadius: 5,
-                },
-                optionWrapper: {
-                  padding: 10,
-                },
-                optionTouchable: {
-                  activeOpacity: 70,
-                },
-                optionText: {
-                  color: '#ccc',
-                },
-              }}>
-              <MenuOption onSelect={selectAll} text="select all" />
-              <Divider color={'#333'} />
-              <MenuOption onSelect={deselectAll} text="deselect all" />
-            </MenuOptions>
-          </Menu>
-        </Stack>
-        <ScrollView>
-          {filterList.map(relative => (
-            <ListItem
-              key={relative._id}
-              title={`${relative.firstName} ${relative.lastName}${
-                relative.nickName ? '(' + relative.nickName + ')' : ''
-              } ${
-                relative.fathersName ? 'S/O Shri ' + relative.fathersName : ''
-              }, ${relative.address}`}
-              secondaryText={`Mobile: ${
-                relative.phoneNumber || 'not available'
-              }`}
-              style={styles.list}
-              elevation={4}
-              leadingMode="icon"
-              leading={
-                <TouchableOpacity
-                  onPress={() => {
-                    toggleSelect(relative._id);
-                  }}>
-                  <RadioButton
-                    selected={selectedRelative.includes(relative._id)}
-                  />
-                </TouchableOpacity>
-              }
+            ))}
+            <SizedBox height={60} />
+          </ScrollView>
+          <Stack
+            style={stackBarStyles.stackBarBottom}
+            fill
+            bottom={1}
+            right={1}
+            spacing={0}>
+            <IconButton
+              onPress={() => {
+                setVisible('');
+              }}
+              icon={props => <Ionicons name="arrow-back-outline" {...props} />}
+              color="secondary"
+              style={stackBarStyles.fab}
             />
-          ))}
-          <SizedBox height={60} />
-        </ScrollView>
-        <Stack
-          style={stackBarStyles.stackBarBottom}
-          fill
-          bottom={1}
-          right={1}
-          spacing={0}>
-          <IconButton
-            onPress={() => {
-              setVisible('');
-            }}
-            icon={props => <Ionicons name="arrow-back-outline" {...props} />}
-            color="secondary"
-            style={stackBarStyles.fab}
-          />
-          <View style={{...buttonStyles.buttonGroup, ...styles.sortFilter}}>
-            <TouchableOpacity
-              onPress={() => {
-                setOpenDailog('sort');
-              }}>
-              <View
-                style={{
-                  ...buttonStyles.buttonGroupItem,
-                  ...buttonStyles.buttonSmall,
+            <View style={{...buttonStyles.buttonGroup, ...styles.sortFilter}}>
+              <TouchableOpacity
+                onPress={() => {
+                  setOpenDailog('sort');
                 }}>
-                <Ionicons
-                  style={buttonStyles.buttonGroupItemIcon}
-                  name="funnel-outline"
-                />
-                <Text style={buttonStyles.buttonGroupTitle}>sort</Text>
-              </View>
-            </TouchableOpacity>
-            <View style={buttonStyles.buttonGroupDivider} />
-            <TouchableOpacity
-              onPress={() => {
-                setOpenDailog('filter');
-              }}>
-              <View
-                style={{
-                  ...buttonStyles.buttonGroupItem,
-                  ...buttonStyles.buttonSmall,
+                <View
+                  style={{
+                    ...buttonStyles.buttonGroupItem,
+                    ...buttonStyles.buttonSmall,
+                  }}>
+                  <Ionicons
+                    style={buttonStyles.buttonGroupItemIcon}
+                    name="funnel-outline"
+                  />
+                  <Text style={buttonStyles.buttonGroupTitle}>sort</Text>
+                </View>
+              </TouchableOpacity>
+              <View style={buttonStyles.buttonGroupDivider} />
+              <TouchableOpacity
+                onPress={() => {
+                  setOpenDailog('filter');
                 }}>
-                <Ionicons
-                  style={buttonStyles.buttonGroupItemIcon}
-                  name="filter-outline"
-                />
-                <Text style={buttonStyles.buttonGroupTitle}>filter</Text>
-              </View>
-            </TouchableOpacity>
-          </View>
-          <IconButton
-            onPress={() => {
-              addRelative();
-            }}
-            icon={props => <Ionicons name="add" {...props} />}
-            color="secondary"
-            style={stackBarStyles.fab}
-          />
-        </Stack>
-        {openDailog === 'sort' && (
-          <SortRelative
-            setVisible={setOpenDailog}
-            sortBy={sortBy}
-            setSortBy={sortList}
-          />
-        )}
-        {openDailog === 'filter' && (
-          <FilterRelative
-            setVisible={setOpenDailog}
-            filterBy={filterBy}
-            setFilterBy={setFilterBy}
-          />
-        )}
-      </View>
+                <View
+                  style={{
+                    ...buttonStyles.buttonGroupItem,
+                    ...buttonStyles.buttonSmall,
+                  }}>
+                  <Ionicons
+                    style={buttonStyles.buttonGroupItemIcon}
+                    name="filter-outline"
+                  />
+                  <Text style={buttonStyles.buttonGroupTitle}>filter</Text>
+                </View>
+              </TouchableOpacity>
+            </View>
+            <IconButton
+              onPress={() => {
+                addRelative();
+              }}
+              icon={props => <Ionicons name="add" {...props} />}
+              color="secondary"
+              style={stackBarStyles.fab}
+            />
+          </Stack>
+        </View>
+      )}
+      {openDailog === 'sort' && (
+        <SortRelative
+          setVisible={setOpenDailog}
+          sortBy={sortBy}
+          setSortBy={sortList}
+        />
+      )}
+      {openDailog === 'filter' && (
+        <FilterRelative
+          setVisible={setOpenDailog}
+          filterBy={filterBy}
+          setFilterBy={setFilterBy}
+        />
+      )}
     </MenuProvider>
   );
 };

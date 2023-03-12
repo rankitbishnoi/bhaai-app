@@ -109,7 +109,7 @@ const Relative: React.FC<RelativeProps> = ({
   };
 
   const sortList = (by: keyof RelativeType = 'firstName') => {
-    data?.sort((a, b) => {
+    filterList?.sort((a, b) => {
       if (a[by] < b[by]) {
         return -1;
       }

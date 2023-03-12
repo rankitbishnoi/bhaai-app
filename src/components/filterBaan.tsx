@@ -174,7 +174,7 @@ const FilterBaan: React.FC<ComponentProps> = (props: ComponentProps) => {
                 style={styles.textInput}
                 textContentType="telephoneNumber"
                 onChangeText={value => field.onChange(value)}
-                value={field.value.toString()}
+                value={field.value + ''}
               />
             )}
           />

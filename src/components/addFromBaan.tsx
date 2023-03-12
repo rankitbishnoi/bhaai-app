@@ -29,6 +29,8 @@ import {
   MenuTrigger,
 } from 'react-native-popup-menu';
 
+const childPageStates = ['sort', 'filter'];
+
 interface BaanProps {
   setVisible: (visiblity: string) => any;
   invalidateData: (key: number) => any;
@@ -48,7 +50,7 @@ const AddFromBaan: React.FC<BaanProps> = ({
   const [sortBy, setSortBy] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
   const [selectedBaan, setSelectedBaans] = useState([] as string[]);
-  const [filterBy, setFilterBy] = useState({} as any);
+  const [filterBy, setFilterBy] = useState(null as any);
   let {data, isLoading} = useQuery(
     ['baanList', myContext.appSettings.selectedRole],
     () => apiService.getBaanList(),
@@ -104,7 +106,7 @@ const AddFromBaan: React.FC<BaanProps> = ({
   }, [data, filterBy]);
 
   const sortList = (by: keyof BaanType = 'firstName') => {
-    data?.sort((a, b) => {
+    filterList?.sort((a, b) => {
       if (a[by] < b[by]) {
         return -1;
       }
@@ -152,153 +154,155 @@ const AddFromBaan: React.FC<BaanProps> = ({
 
   return (
     <MenuProvider>
-      <View style={styles.container}>
-        {isLoading && (
-          <ProgressBar height={5} indeterminate backgroundColor="#4a0072" />
-        )}
-        <Stack m={4} spacing={4} style={stackBarStyles.stackBar}>
-          <View style={stackBarStyles.empty} />
-          <Text style={styles.heading} variant="button">
-            Baan List
-          </Text>
-          <Menu
-            style={stackBarStyles.empty}
-            onClose={() => {
-              setMenuOpen(false);
-            }}
-            onOpen={() => {
-              setMenuOpen(true);
-            }}>
-            <MenuTrigger>
-              <Ionicons
-                style={stackBarStyles.left}
-                size={24}
-                color={'white'}
-                name={
-                  menuOpen
-                    ? 'ellipsis-horizontal'
-                    : 'ellipsis-horizontal-outline'
+      {!childPageStates.includes(openDailog) && (
+        <View style={styles.container}>
+          {isLoading && (
+            <ProgressBar height={5} indeterminate backgroundColor="#4a0072" />
+          )}
+          <Stack m={4} spacing={4} style={stackBarStyles.stackBar}>
+            <View style={stackBarStyles.empty} />
+            <Text style={styles.heading} variant="button">
+              Baan List
+            </Text>
+            <Menu
+              style={stackBarStyles.empty}
+              onClose={() => {
+                setMenuOpen(false);
+              }}
+              onOpen={() => {
+                setMenuOpen(true);
+              }}>
+              <MenuTrigger>
+                <Ionicons
+                  style={stackBarStyles.left}
+                  size={24}
+                  color={'white'}
+                  name={
+                    menuOpen
+                      ? 'ellipsis-horizontal'
+                      : 'ellipsis-horizontal-outline'
+                  }
+                />
+              </MenuTrigger>
+              <MenuOptions
+                customStyles={{
+                  optionsContainer: {
+                    backgroundColor: '#444',
+                    borderRadius: 5,
+                  },
+                  optionWrapper: {
+                    padding: 10,
+                  },
+                  optionTouchable: {
+                    activeOpacity: 70,
+                  },
+                  optionText: {
+                    color: '#ccc',
+                  },
+                }}>
+                <MenuOption onSelect={selectAll} text="select all" />
+                <Divider color={'#333'} />
+                <MenuOption onSelect={deselectAll} text="deselect all" />
+              </MenuOptions>
+            </Menu>
+          </Stack>
+          <ScrollView>
+            {filterList.map(baan => (
+              <ListItem
+                onPress={() => {
+                  toggleSelect(baan._id);
+                }}
+                key={baan._id}
+                title={`${baan.firstName} ${baan.lastName}${
+                  baan.nickName ? '(' + baan.nickName + ')' : ''
+                } ${baan.fathersName ? 'S/O Shri ' + baan.fathersName : ''}, ${
+                  baan.address
+                }`}
+                secondaryText={`Rs: ${baan.amount}`}
+                style={styles.list}
+                elevation={4}
+                leadingMode="icon"
+                leading={
+                  <RadioButton selected={selectedBaan.includes(baan._id)} />
                 }
               />
-            </MenuTrigger>
-            <MenuOptions
-              customStyles={{
-                optionsContainer: {
-                  backgroundColor: '#444',
-                  borderRadius: 5,
-                },
-                optionWrapper: {
-                  padding: 10,
-                },
-                optionTouchable: {
-                  activeOpacity: 70,
-                },
-                optionText: {
-                  color: '#ccc',
-                },
-              }}>
-              <MenuOption onSelect={selectAll} text="select all" />
-              <Divider color={'#333'} />
-              <MenuOption onSelect={deselectAll} text="deselect all" />
-            </MenuOptions>
-          </Menu>
-        </Stack>
-        <ScrollView>
-          {filterList.map(baan => (
-            <ListItem
+            ))}
+            <SizedBox height={60} />
+          </ScrollView>
+          <Stack
+            style={stackBarStyles.stackBarBottom}
+            fill
+            bottom={1}
+            right={1}
+            spacing={0}>
+            <IconButton
               onPress={() => {
-                toggleSelect(baan._id);
+                setVisible('');
               }}
-              key={baan._id}
-              title={`${baan.firstName} ${baan.lastName}${
-                baan.nickName ? '(' + baan.nickName + ')' : ''
-              } ${baan.fathersName ? 'S/O Shri ' + baan.fathersName : ''}, ${
-                baan.address
-              }`}
-              secondaryText={`Rs: ${baan.amount}`}
-              style={styles.list}
-              elevation={4}
-              leadingMode="icon"
-              leading={
-                <RadioButton selected={selectedBaan.includes(baan._id)} />
-              }
+              icon={props => <Ionicons name="arrow-back-outline" {...props} />}
+              color="secondary"
+              style={stackBarStyles.fab}
             />
-          ))}
-          <SizedBox height={60} />
-        </ScrollView>
-        <Stack
-          style={stackBarStyles.stackBarBottom}
-          fill
-          bottom={1}
-          right={1}
-          spacing={0}>
-          <IconButton
-            onPress={() => {
-              setVisible('');
-            }}
-            icon={props => <Ionicons name="arrow-back-outline" {...props} />}
-            color="secondary"
-            style={stackBarStyles.fab}
-          />
-          <View style={{...buttonStyles.buttonGroup, ...styles.sortFilter}}>
-            <TouchableOpacity
-              onPress={() => {
-                setOpenDailog('sort');
-              }}>
-              <View
-                style={{
-                  ...buttonStyles.buttonGroupItem,
-                  ...buttonStyles.buttonSmall,
+            <View style={{...buttonStyles.buttonGroup, ...styles.sortFilter}}>
+              <TouchableOpacity
+                onPress={() => {
+                  setOpenDailog('sort');
                 }}>
-                <Ionicons
-                  style={buttonStyles.buttonGroupItemIcon}
-                  name="funnel-outline"
-                />
-                <Text style={buttonStyles.buttonGroupTitle}>sort</Text>
-              </View>
-            </TouchableOpacity>
-            <View style={buttonStyles.buttonGroupDivider} />
-            <TouchableOpacity
-              onPress={() => {
-                setOpenDailog('filter');
-              }}>
-              <View
-                style={{
-                  ...buttonStyles.buttonGroupItem,
-                  ...buttonStyles.buttonSmall,
+                <View
+                  style={{
+                    ...buttonStyles.buttonGroupItem,
+                    ...buttonStyles.buttonSmall,
+                  }}>
+                  <Ionicons
+                    style={buttonStyles.buttonGroupItemIcon}
+                    name="funnel-outline"
+                  />
+                  <Text style={buttonStyles.buttonGroupTitle}>sort</Text>
+                </View>
+              </TouchableOpacity>
+              <View style={buttonStyles.buttonGroupDivider} />
+              <TouchableOpacity
+                onPress={() => {
+                  setOpenDailog('filter');
                 }}>
-                <Ionicons
-                  style={buttonStyles.buttonGroupItemIcon}
-                  name="filter-outline"
-                />
-                <Text style={buttonStyles.buttonGroupTitle}>filter</Text>
-              </View>
-            </TouchableOpacity>
-          </View>
-          <IconButton
-            onPress={() => {
-              addBaan();
-            }}
-            icon={props => <Ionicons name="add" {...props} />}
-            color="secondary"
-            style={stackBarStyles.fab}
-          />
-        </Stack>
-        {openDailog === 'sort' && (
-          <SortBaan
-            setVisible={setOpenDailog}
-            sortBy={sortBy}
-            setSortBy={sortList}
-          />
-        )}
-        {openDailog === 'filter' && (
-          <FilterBaan
-            setVisible={setOpenDailog}
-            filterBy={filterBy}
-            setFilterBy={setFilterBy}
-          />
-        )}
-      </View>
+                <View
+                  style={{
+                    ...buttonStyles.buttonGroupItem,
+                    ...buttonStyles.buttonSmall,
+                  }}>
+                  <Ionicons
+                    style={buttonStyles.buttonGroupItemIcon}
+                    name="filter-outline"
+                  />
+                  <Text style={buttonStyles.buttonGroupTitle}>filter</Text>
+                </View>
+              </TouchableOpacity>
+            </View>
+            <IconButton
+              onPress={() => {
+                addBaan();
+              }}
+              icon={props => <Ionicons name="add" {...props} />}
+              color="secondary"
+              style={stackBarStyles.fab}
+            />
+          </Stack>
+        </View>
+      )}
+      {openDailog === 'sort' && (
+        <SortBaan
+          setVisible={setOpenDailog}
+          sortBy={sortBy}
+          setSortBy={sortList}
+        />
+      )}
+      {openDailog === 'filter' && (
+        <FilterBaan
+          setVisible={setOpenDailog}
+          filterBy={filterBy}
+          setFilterBy={setFilterBy}
+        />
+      )}
     </MenuProvider>
   );
 };
