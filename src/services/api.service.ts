@@ -117,38 +117,14 @@ class ApiService {
       });
   }
 
-  async getBaanList(
-    by: BaanBase = {} as any,
-    bhaaiId?: string,
-  ): Promise<BaanList> {
+  async getBaanList(bhaaiId?: string): Promise<BaanList> {
     const url = bhaaiId
       ? `${this.baseURL}/bhaai/${bhaaiId}/baan`
       : `${this.baseURL}/baan`;
     return axios
       .get<BaanList>(url, this.getHeaders())
       .then(response => {
-        return response.data?.filter(a => {
-          let truthy = true;
-          if (by.firstName?.length) {
-            truthy = truthy && a.firstName.includes(by.firstName);
-          }
-          if (by.lastName?.length) {
-            truthy = truthy && a.lastName.includes(by.lastName);
-          }
-          if (by.address?.length) {
-            truthy = truthy && a.address.includes(by.address);
-          }
-          if (by.fathersName?.length) {
-            truthy = truthy && a.fathersName.includes(by.fathersName);
-          }
-          if (by.nickName?.length) {
-            truthy = truthy && a.nickName.includes(by.nickName);
-          }
-          if (by.amount) {
-            truthy = truthy && a.amount === by.amount;
-          }
-          return truthy;
-        });
+        return response.data;
       })
       .catch(error => {
         console.log(JSON.stringify(error));
@@ -351,38 +327,14 @@ class ApiService {
       });
   }
 
-  async getRelativeList(
-    pariwarId: string,
-    by: RelativeBase = {} as any,
-  ): Promise<RelativeList> {
+  async getRelativeList(pariwarId: string): Promise<RelativeList> {
     return axios
       .get<RelativeList>(
         `${this.baseURL}/pariwar/${pariwarId}/relative`,
         this.getHeaders(),
       )
       .then(response => {
-        return response.data?.filter(a => {
-          let truthy = true;
-          if (by.firstName?.length) {
-            truthy = truthy && a.firstName.includes(by.firstName);
-          }
-          if (by.lastName?.length) {
-            truthy = truthy && a.lastName.includes(by.lastName);
-          }
-          if (by.address?.length) {
-            truthy = truthy && a.address.includes(by.address);
-          }
-          if (by.fathersName?.length) {
-            truthy = truthy && a.fathersName.includes(by.fathersName);
-          }
-          if (by.nickName?.length) {
-            truthy = truthy && a.nickName.includes(by.nickName);
-          }
-          if (by.phoneNumber?.length) {
-            truthy = truthy && a.phoneNumber.includes(by.phoneNumber);
-          }
-          return truthy;
-        });
+        return response.data;
       })
       .catch(error => {
         console.log(JSON.stringify(error));

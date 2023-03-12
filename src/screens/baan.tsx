@@ -29,7 +29,7 @@ const Baan: React.FC<BaanProps> = ({bhaaiId, setBaanVisible}) => {
   const [queryKey, setQueryKey] = useState(Date.now());
   const {data, isLoading} = useQuery(['baanList', bhaaiId, queryKey], () =>
     Promise.all([
-      apiService.getBaanList({} as any, bhaaiId),
+      apiService.getBaanList(bhaaiId),
       apiService.getBhaai(bhaaiId, true),
     ]).then(([baanList, bhaaiData]: [BaanList, BhaaiTotal]) => ({
       baanList,

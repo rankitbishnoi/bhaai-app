@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react';
+import React, {useContext, useMemo, useState} from 'react';
 import {TouchableOpacity, View} from 'react-native';
 import {apiService} from '../services/api.service';
 import {IconButton, Stack, Text} from '@react-native-material/core';
@@ -38,45 +38,70 @@ const Relative: React.FC<RelativeProps> = ({
   const buttonStyles = useButtonStyles();
   const [openDailog, setOpenDailog] = useState('');
   const [sortBy, setSortBy] = useState('');
-  const [filterBy, setFilterBy] = useState({} as any);
+  const [filterBy, setFilterBy] = useState(null as any);
   const [queryKey, setQueryKey] = useState(Date.now());
   const [selectedRelative, setSelectedRelative] = useState({} as any);
   const relativeList = relatives || [];
   let {data, isLoading} = useQuery(
-    ['relativeList', myContext.appSettings.selectedRole, filterBy, queryKey],
+    ['relativeList', myContext.appSettings.selectedRole, queryKey],
     () =>
       nimtaBase
-        ? filterList(relativeList)
-        : apiService.getRelativeList(
-            myContext.appSettings.selectedRole,
-            filterBy,
-          ),
+        ? relativeList
+        : apiService.getRelativeList(myContext.appSettings.selectedRole),
   );
 
-  const filterList = (list: RelativeType[]) => {
-    return list.filter(a => {
-      let truthy = true;
-      if (filterBy.firstName?.length) {
-        truthy = truthy && a.firstName.includes(filterBy.firstName);
-      }
-      if (filterBy.lastName?.length) {
-        truthy = truthy && a.lastName.includes(filterBy.lastName);
-      }
-      if (filterBy.address?.length) {
-        truthy = truthy && a.address.includes(filterBy.address);
-      }
-      if (filterBy.fathersName?.length) {
-        truthy = truthy && a.fathersName.includes(filterBy.fathersName);
-      }
-      if (filterBy.nickName?.length) {
-        truthy = truthy && a.nickName.includes(filterBy.nickName);
-      }
-      if (filterBy.phoneNumber?.length) {
-        truthy = truthy && a.phoneNumber.includes(filterBy.phoneNumber);
-      }
-      return truthy;
-    });
-  };
+  const filterList = useMemo(() => {
+    if (!filterBy) {
+      return data ? data : [];
+    }
+
+    return data
+      ? data.filter(a => {
+          let truthy = true;
+          if (filterBy.firstName?.length) {
+            truthy =
+              truthy &&
+              a.firstName
+                .toLowerCase()
+                .includes(filterBy.firstName?.toLowerCase());
+          }
+          if (filterBy.lastName?.length) {
+            truthy =
+              truthy &&
+              a.lastName
+                .toLowerCase()
+                .includes(filterBy.lastName?.toLowerCase());
+          }
+          if (filterBy.address?.length) {
+            truthy =
+              truthy &&
+              a.address.toLowerCase().includes(filterBy.address?.toLowerCase());
+          }
+          if (filterBy.fathersName?.length) {
+            truthy =
+              truthy &&
+              a.fathersName
+                .toLowerCase()
+                .includes(filterBy.fathersName?.toLowerCase());
+          }
+          if (filterBy.nickName?.length) {
+            truthy =
+              truthy &&
+              a.nickName
+                .toLowerCase()
+                .includes(filterBy.nickName?.toLowerCase());
+          }
+          if (filterBy.phoneNumber?.length) {
+            truthy =
+              truthy &&
+              a.phoneNumber
+                .toLowerCase()
+                .includes(filterBy.phoneNumber?.toLowerCase());
+          }
+          return truthy;
+        })
+      : [];
+  }, [data, filterBy]);
 
   const editItem = (relative: RelativeType) => {
     setSelectedRelative(relative);
@@ -148,7 +173,7 @@ const Relative: React.FC<RelativeProps> = ({
           )}
           {myContext.appSettings.selectedRole && data && (
             <SwipeableList
-              items={data.map(relative => {
+              items={filterList.map(relative => {
                 return {
                   key: relative._id,
                   title: `${relative.firstName} ${relative.lastName}${

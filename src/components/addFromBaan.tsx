@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react';
+import React, {useContext, useMemo, useState} from 'react';
 import {ScrollView, TouchableOpacity, View} from 'react-native';
 import {apiService} from '../services/api.service';
 import {
@@ -50,9 +50,58 @@ const AddFromBaan: React.FC<BaanProps> = ({
   const [selectedBaan, setSelectedBaans] = useState([] as string[]);
   const [filterBy, setFilterBy] = useState({} as any);
   let {data, isLoading} = useQuery(
-    ['baanList', myContext.appSettings.selectedRole, filterBy],
-    () => apiService.getBaanList(filterBy),
+    ['baanList', myContext.appSettings.selectedRole],
+    () => apiService.getBaanList(),
   );
+
+  const filterList = useMemo(() => {
+    if (!filterBy) {
+      return data ? data : [];
+    }
+
+    return data
+      ? data.filter(a => {
+          let truthy = true;
+          if (filterBy.firstName?.length) {
+            truthy =
+              truthy &&
+              a.firstName
+                .toLowerCase()
+                .includes(filterBy.firstName?.toLowerCase());
+          }
+          if (filterBy.lastName?.length) {
+            truthy =
+              truthy &&
+              a.lastName
+                .toLowerCase()
+                .includes(filterBy.lastName?.toLowerCase());
+          }
+          if (filterBy.address?.length) {
+            truthy =
+              truthy &&
+              a.address.toLowerCase().includes(filterBy.address?.toLowerCase());
+          }
+          if (filterBy.fathersName?.length) {
+            truthy =
+              truthy &&
+              a.fathersName
+                .toLowerCase()
+                .includes(filterBy.fathersName?.toLowerCase());
+          }
+          if (filterBy.nickName?.length) {
+            truthy =
+              truthy &&
+              a.nickName
+                .toLowerCase()
+                .includes(filterBy.nickName?.toLowerCase());
+          }
+          if (filterBy.amount) {
+            truthy = truthy && a.amount === filterBy.amount;
+          }
+          return truthy;
+        })
+      : [];
+  }, [data, filterBy]);
 
   const sortList = (by: keyof BaanType = 'firstName') => {
     data?.sort((a, b) => {
@@ -155,7 +204,7 @@ const AddFromBaan: React.FC<BaanProps> = ({
           </Menu>
         </Stack>
         <ScrollView>
-          {data?.map(baan => (
+          {filterList.map(baan => (
             <ListItem
               onPress={() => {
                 toggleSelect(baan._id);

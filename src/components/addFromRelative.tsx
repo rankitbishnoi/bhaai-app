@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react';
+import React, {useContext, useMemo, useState} from 'react';
 import {ScrollView, TouchableOpacity, View} from 'react-native';
 import {apiService} from '../services/api.service';
 import {
@@ -50,10 +50,62 @@ const AddFromRelative: React.FC<RelativeProps> = ({
   const [filterBy, setFilterBy] = useState({} as any);
   const [menuOpen, setMenuOpen] = useState(false);
   let {data, isLoading} = useQuery(
-    ['relativeList', myContext.appSettings.selectedRole, filterBy],
-    () =>
-      apiService.getRelativeList(myContext.appSettings.selectedRole, filterBy),
+    ['relativeList', myContext.appSettings.selectedRole],
+    () => apiService.getRelativeList(myContext.appSettings.selectedRole),
   );
+
+  const filterList = useMemo(() => {
+    if (!filterBy) {
+      return data ? data : [];
+    }
+
+    return data
+      ? data.filter(a => {
+          let truthy = true;
+          if (filterBy.firstName?.length) {
+            truthy =
+              truthy &&
+              a.firstName
+                .toLowerCase()
+                .includes(filterBy.firstName?.toLowerCase());
+          }
+          if (filterBy.lastName?.length) {
+            truthy =
+              truthy &&
+              a.lastName
+                .toLowerCase()
+                .includes(filterBy.lastName?.toLowerCase());
+          }
+          if (filterBy.address?.length) {
+            truthy =
+              truthy &&
+              a.address.toLowerCase().includes(filterBy.address?.toLowerCase());
+          }
+          if (filterBy.fathersName?.length) {
+            truthy =
+              truthy &&
+              a.fathersName
+                .toLowerCase()
+                .includes(filterBy.fathersName?.toLowerCase());
+          }
+          if (filterBy.nickName?.length) {
+            truthy =
+              truthy &&
+              a.nickName
+                .toLowerCase()
+                .includes(filterBy.nickName?.toLowerCase());
+          }
+          if (filterBy.phoneNumber?.length) {
+            truthy =
+              truthy &&
+              a.phoneNumber
+                .toLowerCase()
+                .includes(filterBy.phoneNumber?.toLowerCase());
+          }
+          return truthy;
+        })
+      : [];
+  }, [data, filterBy]);
 
   const sortList = (by: keyof RelativeType = 'firstName') => {
     data?.sort((a, b) => {
@@ -156,7 +208,7 @@ const AddFromRelative: React.FC<RelativeProps> = ({
           </Menu>
         </Stack>
         <ScrollView>
-          {data?.map(relative => (
+          {filterList.map(relative => (
             <ListItem
               key={relative._id}
               title={`${relative.firstName} ${relative.lastName}${
