@@ -6,7 +6,6 @@ import useStyles from '../styles/relative';
 import {Relative as RelativeType} from '../types/Relative';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AddRelative from '../components/addRelative';
-import {Image} from 'react-native';
 import ProgressBar from '../components/loader';
 import AppContext from '../services/storage';
 import {useQuery} from 'react-query';
@@ -164,9 +163,10 @@ const Relative: React.FC<RelativeProps> = ({
                   }`,
                   leading: (
                     <TouchableOpacity onPress={() => editItem(relative)}>
-                      <Image
-                        source={require('../assets/edit-icon.png')}
-                        style={{width: 50, height: 50}}
+                      <Ionicons
+                        name="create-outline"
+                        size={25}
+                        color={'white'}
                       />
                     </TouchableOpacity>
                   ),

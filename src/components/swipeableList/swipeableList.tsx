@@ -124,7 +124,7 @@ const SwipeableList: React.FC<SwipeableListOptions> = ({
     data: ListRenderItemInfo<SwipeableListItem>,
     rowMap: RowMap<SwipeableListItem>,
   ) => {
-    const rowHeightAnimatedValue = new Animated.Value(60);
+    const rowHeightAnimatedValue = new Animated.Value(40);
 
     return (
       <VisibleItem

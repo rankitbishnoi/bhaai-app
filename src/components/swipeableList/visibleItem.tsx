@@ -46,7 +46,7 @@ const VisibleItem: React.FC<VisibleItemOptions> = ({
               secondaryText={data.item.subtitle}
               style={styles.list}
               elevation={4}
-              leadingMode="image"
+              leadingMode="icon"
               leading={data.item.leading}
               trailing={data.item.trailing}
             />

@@ -8,7 +8,6 @@ import useStackBarStyles from '../styles/stackBar';
 import {Baan as BaanType} from '../types/Baan';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AddBaan from '../components/addBaan';
-import {Image} from 'react-native';
 import ProgressBar from '../components/loader';
 import {useQuery} from 'react-query';
 import {BaanList} from '../types/BaanList';
@@ -83,9 +82,10 @@ const Baan: React.FC<BaanProps> = ({bhaaiId, setBaanVisible}) => {
                   subtitle: `Rs: ${baan.amount}`,
                   leading: (
                     <TouchableOpacity onPress={() => editItem(baan)}>
-                      <Image
-                        source={require('../assets/edit-icon.png')}
-                        style={{width: 50, height: 50}}
+                      <Ionicons
+                        name="create-outline"
+                        size={25}
+                        color={'white'}
                       />
                     </TouchableOpacity>
                   ),

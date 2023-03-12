@@ -169,7 +169,7 @@ const AddFromBaan: React.FC<BaanProps> = ({
               secondaryText={`Rs: ${baan.amount}`}
               style={styles.list}
               elevation={4}
-              leadingMode="image"
+              leadingMode="icon"
               leading={
                 <RadioButton selected={selectedBaan.includes(baan._id)} />
               }

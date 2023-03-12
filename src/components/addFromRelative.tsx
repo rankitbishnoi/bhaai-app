@@ -169,7 +169,7 @@ const AddFromRelative: React.FC<RelativeProps> = ({
               }`}
               style={styles.list}
               elevation={4}
-              leadingMode="image"
+              leadingMode="icon"
               leading={
                 <TouchableOpacity
                   onPress={() => {

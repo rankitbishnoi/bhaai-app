@@ -13,7 +13,6 @@ import useStackBarStyles from '../styles/stackBar';
 import {Nimta as NimtaType} from '../types/Nimta';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AddNimta from '../components/addNimta';
-import {Image} from 'react-native';
 import ProgressBar from '../components/loader';
 import AppContext from '../services/storage';
 import {useQuery} from 'react-query';
@@ -98,9 +97,10 @@ const Nimta: React.FC = () => {
                   },
                   leading: (
                     <TouchableOpacity onPress={() => editItem(nimta)}>
-                      <Image
-                        source={require('../assets/edit-icon.png')}
-                        style={{width: 50, height: 50}}
+                      <Ionicons
+                        name="create-outline"
+                        size={25}
+                        color={'white'}
                       />
                     </TouchableOpacity>
                   ),

@@ -7,7 +7,6 @@ import useStackBarStyles from '../styles/stackBar';
 import {Bhaai as BhaaiType} from '../types/Bhaai';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AddBhaai from '../components/addBhaai';
-import {Image} from 'react-native';
 import Baan from './baan';
 import ProgressBar from '../components/loader';
 import Search from './search';
@@ -68,9 +67,10 @@ const Bhaai: React.FC = () => {
                   subtitle: new Date(bhaaiItem.date).toDateString(),
                   leading: (
                     <TouchableOpacity onPress={() => editItem(bhaaiItem)}>
-                      <Image
-                        source={require('../assets/edit-icon.png')}
-                        style={{width: 50, height: 50}}
+                      <Ionicons
+                        name="create-outline"
+                        size={25}
+                        color={'white'}
                       />
                     </TouchableOpacity>
                   ),

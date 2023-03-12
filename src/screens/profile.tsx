@@ -71,7 +71,7 @@ const Profile: React.FC = () => {
                   <Text style={buttonStyles.buttonTitle}>logout</Text>
                 </View>
               </TouchableOpacity>
-              <Text style={styles.labelContainer}>Roles</Text>
+              <Text style={styles.labelContainer}>Pariwar</Text>
               <ScrollView>
                 {data?.pariwarRoles.length === 0 && (
                   <TouchableOpacity
@@ -93,7 +93,7 @@ const Profile: React.FC = () => {
                     title={role.pariwarId.name}
                     style={styles.list}
                     elevation={4}
-                    leadingMode="image"
+                    leadingMode="icon"
                     leading={
                       <RadioButton
                         selected={

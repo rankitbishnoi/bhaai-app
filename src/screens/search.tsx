@@ -1,5 +1,5 @@
 import React, {useContext, useEffect, useState} from 'react';
-import {Pressable, TouchableOpacity, View} from 'react-native';
+import {Pressable, ScrollView, TouchableOpacity, View} from 'react-native';
 import {apiService} from '../services/api.service';
 import {
   IconButton,
@@ -93,30 +93,32 @@ const Search: React.FC<SearchProps> = ({setSearchVisible, invalidateData}) => {
               )}
             />
           </Pressable>
-          {data?.baanList &&
-            data.baanList.map((baan: BaanType) => (
-              <ListItem
-                key={baan._id}
-                title={`${baan.firstName} ${baan.lastName}${
-                  baan.nickName ? '(' + baan.nickName + ')' : ''
-                } ${baan.fathersName ? 'S/O ' + baan.fathersName : ''}, ${
-                  baan.address
-                }`}
-                secondaryText={`Rs: ${baan.amount}`}
-                style={styles.list}
-                elevation={4}
-                leadingMode="avatar"
-                leading={
-                  <TouchableOpacity onPress={() => openGiveBaan(baan)}>
-                    <Ionicons
-                      color={'white'}
-                      style={{fontSize: 50}}
-                      name="add"
-                    />
-                  </TouchableOpacity>
-                }
-              />
-            ))}
+          <ScrollView>
+            {data?.baanList &&
+              data.baanList.map((baan: BaanType) => (
+                <ListItem
+                  key={baan._id}
+                  title={`${baan.firstName} ${baan.lastName}${
+                    baan.nickName ? '(' + baan.nickName + ')' : ''
+                  } ${baan.fathersName ? 'S/O ' + baan.fathersName : ''}, ${
+                    baan.address
+                  }`}
+                  secondaryText={`Rs: ${baan.amount}`}
+                  style={styles.list}
+                  elevation={4}
+                  leadingMode="avatar"
+                  leading={
+                    <TouchableOpacity onPress={() => openGiveBaan(baan)}>
+                      <Ionicons
+                        color={'white'}
+                        style={{fontSize: 50}}
+                        name="add"
+                      />
+                    </TouchableOpacity>
+                  }
+                />
+              ))}
+          </ScrollView>
           <Stack
             style={stackBarStyles.stackBarBottom}
             fill
