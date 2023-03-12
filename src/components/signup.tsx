@@ -8,6 +8,7 @@ import mmkv from '../services/mmkv';
 
 import useButtonStyles from '../styles/button';
 import {TextInput} from '@react-native-material/core';
+import {validateEmail, validatePhoneNumber} from '../services/helpers';
 
 interface FormData {
   email: string;
@@ -18,7 +19,13 @@ interface FormData {
 
 const Signup: React.FC<{}> = ({}) => {
   const myContext = useContext(AppContext);
-  const {control, handleSubmit, setFocus, register} = useForm<FormData>({
+  const {
+    control,
+    handleSubmit,
+    setFocus,
+    register,
+    formState: {errors},
+  } = useForm<FormData>({
     defaultValues: {
       email: '',
       password: '',
@@ -60,13 +67,23 @@ const Signup: React.FC<{}> = ({}) => {
   return (
     <>
       <Pressable onPress={() => setFocus('email')}>
+        {errors.email && (
+          <Text style={styles.error}>{errors.email?.message}</Text>
+        )}
         <Controller
           control={control}
           name="email"
           render={({field}) => (
             <TextInput
               {...field}
-              {...register('email')}
+              {...register('email', {
+                required: 'email is required',
+                validate: value => {
+                  return validateEmail(value)
+                    ? undefined
+                    : 'please enter valid email';
+                },
+              })}
               onSubmitEditing={() => setFocus('phoneNumber')}
               autoCapitalize="none"
               autoComplete="email"
@@ -84,13 +101,25 @@ const Signup: React.FC<{}> = ({}) => {
         />
       </Pressable>
       <Pressable onPress={() => setFocus('phoneNumber')}>
+        {errors.phoneNumber && (
+          <Text style={styles.error}>{errors.phoneNumber?.message}</Text>
+        )}
         <Controller
           control={control}
           name="phoneNumber"
           render={({field}) => (
             <TextInput
               {...field}
-              {...register('phoneNumber')}
+              {...register('phoneNumber', {
+                required: 'password is required',
+                minLength: {value: 13, message: 'enter valid phone number'},
+                maxLength: {value: 13, message: 'enter valid phone number'},
+                validate: value => {
+                  return validatePhoneNumber(value)
+                    ? undefined
+                    : 'please enter valid phone number';
+                },
+              })}
               onSubmitEditing={() => setFocus('password')}
               autoCapitalize="none"
               autoComplete="tel"
@@ -108,13 +137,16 @@ const Signup: React.FC<{}> = ({}) => {
         />
       </Pressable>
       <Pressable onPress={() => setFocus('password')}>
+        {errors.password && (
+          <Text style={styles.error}>{errors.password?.message}</Text>
+        )}
         <Controller
           control={control}
           name="password"
           render={({field}) => (
             <TextInput
               {...field}
-              {...register('password')}
+              {...register('password', {required: 'password is required'})}
               onSubmitEditing={() => setFocus('cpassword')}
               autoCapitalize="none"
               autoCorrect={false}
@@ -131,13 +163,23 @@ const Signup: React.FC<{}> = ({}) => {
         />
       </Pressable>
       <Pressable onPress={() => setFocus('cpassword')}>
+        {errors.cpassword && (
+          <Text style={styles.error}>{errors.cpassword?.message}</Text>
+        )}
         <Controller
           control={control}
           name="cpassword"
           render={({field}) => (
             <TextInput
               {...field}
-              {...register('cpassword')}
+              {...register('cpassword', {
+                required: 'confirm password is required',
+                validate: value => {
+                  return control._fields.password?._f.value === value
+                    ? undefined
+                    : 'password does not match';
+                },
+              })}
               autoCapitalize="none"
               autoComplete="password"
               autoCorrect={false}

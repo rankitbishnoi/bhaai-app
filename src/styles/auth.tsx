@@ -48,5 +48,9 @@ export default function useStyles() {
       fontWeight: '700',
       lineHeight: 34,
     },
+    error: {
+      color: 'red',
+      marginBottom: 8,
+    },
   });
 }

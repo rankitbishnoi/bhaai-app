@@ -8,6 +8,7 @@ import useStyles from '../styles/auth';
 import SizedBox from './SizedBox';
 import useButtonStyles from '../styles/button';
 import {TextInput} from '@react-native-material/core';
+import {validateEmail} from '../services/helpers';
 
 interface FormData {
   email: string;
@@ -16,7 +17,13 @@ interface FormData {
 
 const Login: React.FC<{}> = ({}) => {
   const myContext = useContext(AppContext);
-  const {control, handleSubmit, setFocus, register} = useForm<FormData>({
+  const {
+    control,
+    handleSubmit,
+    setFocus,
+    register,
+    formState: {errors},
+  } = useForm<FormData>({
     defaultValues: {
       email: '',
       password: '',
@@ -54,6 +61,9 @@ const Login: React.FC<{}> = ({}) => {
   return (
     <>
       <Pressable onPress={() => setFocus('email')}>
+        {errors.email && (
+          <Text style={styles.error}>{errors.email?.message}</Text>
+        )}
         <Controller
           control={control}
           name="email"
@@ -67,7 +77,14 @@ const Login: React.FC<{}> = ({}) => {
               returnKeyType="next"
               style={styles.textInput}
               textContentType="username"
-              {...register('email')}
+              {...register('email', {
+                required: 'email is required',
+                validate: value => {
+                  return validateEmail(value)
+                    ? undefined
+                    : 'please enter valid email';
+                },
+              })}
               onSubmitEditing={() => setFocus('password')}
               variant="outlined"
               label="email"
@@ -78,13 +95,16 @@ const Login: React.FC<{}> = ({}) => {
         />
       </Pressable>
       <Pressable onPress={() => setFocus('password')}>
+        {errors.password && (
+          <Text style={styles.error}>{errors.password?.message}</Text>
+        )}
         <Controller
           control={control}
           name="password"
           render={({field}) => (
             <TextInput
               {...field}
-              {...register('password')}
+              {...register('password', {required: 'password is required'})}
               autoCapitalize="none"
               autoComplete="password"
               autoCorrect={false}
