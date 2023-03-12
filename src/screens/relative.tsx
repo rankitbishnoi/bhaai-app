@@ -155,7 +155,9 @@ const Relative: React.FC<RelativeProps> = ({
                   title: `${relative.firstName} ${relative.lastName}${
                     relative.nickName ? '(' + relative.nickName + ')' : ''
                   } ${
-                    relative.fathersName ? 'S/O ' + relative.fathersName : ''
+                    relative.fathersName
+                      ? 'S/O Shri ' + relative.fathersName
+                      : ''
                   }, ${relative.address}`,
                   subtitle: `Mobile: ${
                     relative.phoneNumber || 'not available'
@@ -176,7 +178,7 @@ const Relative: React.FC<RelativeProps> = ({
             />
           )}
           <Stack
-            style={stackBarStyles.stackBar}
+            style={stackBarStyles.stackBarBottom}
             fill
             bottom={1}
             right={1}
@@ -232,7 +234,7 @@ const Relative: React.FC<RelativeProps> = ({
             {!!nimtaBase && (
               <IconButton
                 onPress={() => {
-                  setVisible && setVisible('addFromWhere');
+                  setVisible && setVisible('addFromRelative');
                 }}
                 icon={props => (
                   <Ionicons name="person-add-outline" {...props} />

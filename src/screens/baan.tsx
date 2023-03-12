@@ -76,9 +76,9 @@ const Baan: React.FC<BaanProps> = ({bhaaiId, setBaanVisible}) => {
                 return {
                   title: `${baan.firstName} ${baan.lastName}${
                     baan.nickName ? '(' + baan.nickName + ')' : ''
-                  } ${baan.fathersName ? 'S/O ' + baan.fathersName : ''}, ${
-                    baan.address
-                  }`,
+                  } ${
+                    baan.fathersName ? 'S/O Shri ' + baan.fathersName : ''
+                  }, ${baan.address}`,
                   key: baan._id,
                   subtitle: `Rs: ${baan.amount}`,
                   leading: (
@@ -97,7 +97,7 @@ const Baan: React.FC<BaanProps> = ({bhaaiId, setBaanVisible}) => {
             />
           )}
           <Stack
-            style={stackBarStyles.stackBar}
+            style={stackBarStyles.stackBarBottom}
             fill
             bottom={1}
             right={1}

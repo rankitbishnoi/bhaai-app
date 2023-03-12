@@ -1,7 +1,13 @@
 import React, {useContext, useState} from 'react';
-import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import {ScrollView, TouchableOpacity, View} from 'react-native';
 import {apiService} from '../services/api.service';
-import {IconButton, ListItem, Stack} from '@react-native-material/core';
+import {
+  Divider,
+  IconButton,
+  ListItem,
+  Stack,
+  Text,
+} from '@react-native-material/core';
 
 import useStyles from '../styles/baan';
 import {BaanBase as BaanType} from '../types/Baan';
@@ -14,6 +20,14 @@ import useStackBarStyles from '../styles/stackBar';
 import SortBaan from './sortRelative';
 import FilterBaan from './filterBaan';
 import RadioButton from './radioButton';
+import SizedBox from './SizedBox';
+import {
+  Menu,
+  MenuOption,
+  MenuOptions,
+  MenuProvider,
+  MenuTrigger,
+} from 'react-native-popup-menu';
 
 interface BaanProps {
   setVisible: (visiblity: string) => any;
@@ -32,6 +46,7 @@ const AddFromBaan: React.FC<BaanProps> = ({
   const buttonStyles = useButtonStyles();
   const [openDailog, setOpenDailog] = useState('');
   const [sortBy, setSortBy] = useState('');
+  const [menuOpen, setMenuOpen] = useState(false);
   const [selectedBaan, setSelectedBaans] = useState([] as string[]);
   const [filterBy, setFilterBy] = useState({} as any);
   let {data, isLoading} = useQuery(
@@ -61,6 +76,14 @@ const AddFromBaan: React.FC<BaanProps> = ({
     }
   };
 
+  const selectAll = () => {
+    data && setSelectedBaans(data.map(a => a._id));
+  };
+
+  const deselectAll = () => {
+    setSelectedBaans([]);
+  };
+
   const addBaan = () => {
     const addBaanData = {
       baanIds: selectedBaan,
@@ -79,11 +102,58 @@ const AddFromBaan: React.FC<BaanProps> = ({
   };
 
   return (
-    <>
+    <MenuProvider>
       <View style={styles.container}>
         {isLoading && (
           <ProgressBar height={5} indeterminate backgroundColor="#4a0072" />
         )}
+        <Stack m={4} spacing={4} style={stackBarStyles.stackBar}>
+          <View style={stackBarStyles.empty} />
+          <Text style={styles.heading} variant="button">
+            Baan List
+          </Text>
+          <Menu
+            style={stackBarStyles.empty}
+            onClose={() => {
+              setMenuOpen(false);
+            }}
+            onOpen={() => {
+              setMenuOpen(true);
+            }}>
+            <MenuTrigger>
+              <Ionicons
+                style={stackBarStyles.left}
+                size={24}
+                color={'white'}
+                name={
+                  menuOpen
+                    ? 'ellipsis-horizontal'
+                    : 'ellipsis-horizontal-outline'
+                }
+              />
+            </MenuTrigger>
+            <MenuOptions
+              customStyles={{
+                optionsContainer: {
+                  backgroundColor: '#444',
+                  borderRadius: 5,
+                },
+                optionWrapper: {
+                  padding: 10,
+                },
+                optionTouchable: {
+                  activeOpacity: 70,
+                },
+                optionText: {
+                  color: '#ccc',
+                },
+              }}>
+              <MenuOption onSelect={selectAll} text="select all" />
+              <Divider color={'#333'} />
+              <MenuOption onSelect={deselectAll} text="deselect all" />
+            </MenuOptions>
+          </Menu>
+        </Stack>
         <ScrollView>
           {data?.map(baan => (
             <ListItem
@@ -93,7 +163,7 @@ const AddFromBaan: React.FC<BaanProps> = ({
               key={baan._id}
               title={`${baan.firstName} ${baan.lastName}${
                 baan.nickName ? '(' + baan.nickName + ')' : ''
-              } ${baan.fathersName ? 'S/O ' + baan.fathersName : ''}, ${
+              } ${baan.fathersName ? 'S/O Shri ' + baan.fathersName : ''}, ${
                 baan.address
               }`}
               secondaryText={`Rs: ${baan.amount}`}
@@ -103,14 +173,12 @@ const AddFromBaan: React.FC<BaanProps> = ({
               leading={
                 <RadioButton selected={selectedBaan.includes(baan._id)} />
               }
-              trailing={props => (
-                <Ionicons name="chevron-forward-outline" {...props} />
-              )}
             />
           ))}
+          <SizedBox height={60} />
         </ScrollView>
         <Stack
-          style={stackBarStyles.stackBar}
+          style={stackBarStyles.stackBarBottom}
           fill
           bottom={1}
           right={1}
@@ -182,7 +250,7 @@ const AddFromBaan: React.FC<BaanProps> = ({
           />
         )}
       </View>
-    </>
+    </MenuProvider>
   );
 };
 

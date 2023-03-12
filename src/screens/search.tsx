@@ -118,7 +118,7 @@ const Search: React.FC<SearchProps> = ({setSearchVisible, invalidateData}) => {
               />
             ))}
           <Stack
-            style={stackBarStyles.stackBar}
+            style={stackBarStyles.stackBarBottom}
             fill
             bottom={1}
             right={1}

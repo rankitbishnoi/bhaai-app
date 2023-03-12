@@ -1,19 +1,11 @@
 import React, {useContext, useState} from 'react';
-import {
-  KeyboardAvoidingView,
-  Platform,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import {Pressable, TouchableOpacity, View} from 'react-native';
 import {apiService} from '../services/api.service';
 import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogHeader,
+  Divider,
   IconButton,
   Stack,
+  Switch,
   Text,
 } from '@react-native-material/core';
 import useStyles from '../styles/nimta';
@@ -30,7 +22,6 @@ import {useNavigation} from '@react-navigation/native';
 import Relative from './relative';
 import AddFromRelative from '../components/addFromRelative';
 import AddFromBaan from '../components/addFromBaan';
-import SizedBox from '../components/SizedBox';
 import SwipeableList from '../components/swipeableList/swipeableList';
 
 const childPageStates = [
@@ -134,7 +125,7 @@ const Nimta: React.FC = () => {
             />
           )}
           <Stack
-            style={stackBarStyles.stackBar}
+            style={stackBarStyles.stackBarBottom}
             fill
             bottom={1}
             right={1}
@@ -176,6 +167,40 @@ const Nimta: React.FC = () => {
           setVisible={value => setOpenDailog(value)}
         />
       )}
+      {(openDailog === 'addFromRelative' || openDailog === 'addFromBaan') && (
+        <View style={stackBarStyles.background}>
+          <Stack style={stackBarStyles.stackBar} m={0} spacing={0}>
+            <Pressable onPress={() => setOpenDailog('addFromBaan')}>
+              <Text style={stackBarStyles.stackBarHeadings} variant="button">
+                Baan
+              </Text>
+            </Pressable>
+            <Switch
+              thumbColor={'#eee'}
+              trackColor={{true: 'rgb(93, 95, 222)', false: '#666'}}
+              value={openDailog === 'addFromRelative'}
+              onValueChange={() =>
+                setOpenDailog(
+                  openDailog === 'addFromBaan'
+                    ? 'addFromRelative'
+                    : 'addFromBaan',
+                )
+              }
+            />
+            <Pressable onPress={() => setOpenDailog('addFromRelative')}>
+              <Text style={stackBarStyles.stackBarHeadings} variant="button">
+                Relative
+              </Text>
+            </Pressable>
+          </Stack>
+          <Divider
+            style={stackBarStyles.divider}
+            leadingInset={16}
+            trailingInset={16}
+            color={'#333'}
+          />
+        </View>
+      )}
       {openDailog === 'addFromRelative' && (
         <AddFromRelative
           nimtaId={selectedNimta._id}
@@ -191,38 +216,6 @@ const Nimta: React.FC = () => {
           }}
           setVisible={value => setOpenDailog(value)}
         />
-      )}
-      {openDailog === 'addFromWhere' && (
-        <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-          <Dialog
-            visible={openDailog === 'addFromWhere'}
-            onDismiss={() => setOpenDailog('')}>
-            <DialogHeader title={'add from where'} />
-            <DialogContent>
-              <Button
-                color="primary"
-                title="baan"
-                onPress={() => setOpenDailog('addFromBaan')}
-              />
-              <SizedBox height={16} />
-              <Button
-                color="primary"
-                title="relative"
-                onPress={() => setOpenDailog('addFromRelative')}
-              />
-            </DialogContent>
-            <DialogActions>
-              <Button
-                color="secondary"
-                title="cancel"
-                compact
-                variant="text"
-                onPress={() => setOpenDailog('')}
-              />
-            </DialogActions>
-          </Dialog>
-        </KeyboardAvoidingView>
       )}
     </>
   );
