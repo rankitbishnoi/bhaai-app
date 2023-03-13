@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {TouchableOpacity, View} from 'react-native';
 import {apiService} from '../services/api.service';
 import {IconButton, Stack} from '@react-native-material/core';
@@ -14,6 +14,8 @@ import {BaanList} from '../types/BaanList';
 import {BhaaiTotal} from '../types/BhaaiTotal';
 import SwipeableList from '../components/swipeableList/swipeableList';
 import ScreenHeading from '../components/screenHeading';
+import {AppContextState, APP_ACTIONS} from '../services/app.reducer';
+import AppContext from '../services/storage';
 
 const childPageStates = ['edit', 'add'];
 
@@ -23,24 +25,30 @@ interface BaanProps {
 }
 
 const Baan: React.FC<BaanProps> = ({bhaaiId, setBaanVisible}) => {
+  const myContext = useContext<AppContextState>(AppContext);
   const styles = useStyles();
   const stackBarStyles = useStackBarStyles();
   const [openDailog, setOpenDailog] = useState('');
   const [selectedBaan, setSelectedBaan] = useState({} as any);
-  const [queryKey, setQueryKey] = useState(Date.now());
-  const {data, isLoading} = useQuery(['baanList', bhaaiId, queryKey], () =>
-    Promise.all([
-      apiService.getBaanList(bhaaiId),
-      apiService.getBhaai(bhaaiId, true),
-    ]).then(([baanList, bhaaiData]: [BaanList, BhaaiTotal]) => ({
-      baanList,
-      bhaaiData,
-    })),
+  const {data, isLoading} = useQuery(
+    ['baanList', bhaaiId, myContext.appSettings.queryState.baanList],
+    () =>
+      Promise.all([
+        apiService.getBaanList(bhaaiId),
+        apiService.getBhaai(bhaaiId, true),
+      ]).then(([baanList, bhaaiData]: [BaanList, BhaaiTotal]) => ({
+        baanList,
+        bhaaiData,
+      })),
   );
 
   const editItem = (baan: BaanType) => {
     setSelectedBaan(baan);
     setOpenDailog('edit');
+  };
+
+  const refresh = () => {
+    myContext.dispatch({type: APP_ACTIONS.REFETCH_BAAN_LIST});
   };
 
   const deleteBaan = async (id: string) => {
@@ -90,7 +98,7 @@ const Baan: React.FC<BaanProps> = ({bhaaiId, setBaanVisible}) => {
               })}
               deleteItem={deleteBaan}
               refreshing={isLoading}
-              refresh={() => setQueryKey(Date.now())}
+              refresh={refresh}
             />
           )}
           <Stack
@@ -123,7 +131,6 @@ const Baan: React.FC<BaanProps> = ({bhaaiId, setBaanVisible}) => {
           setVisible={value => setOpenDailog(value ? 'add' : '')}
           type="ADD"
           bhaaiId={bhaaiId}
-          invalidateData={setQueryKey}
         />
       )}
       {openDailog === 'edit' && (
@@ -131,7 +138,6 @@ const Baan: React.FC<BaanProps> = ({bhaaiId, setBaanVisible}) => {
           setVisible={value => setOpenDailog(value ? 'edit' : '')}
           type="EDIT"
           bhaaiId={bhaaiId}
-          invalidateData={setQueryKey}
           data={selectedBaan}
         />
       )}

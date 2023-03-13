@@ -14,7 +14,6 @@ import ScreenHeading from './screenHeading';
 
 interface ComponentProps {
   setVisible: (visiblity: boolean) => any;
-  invalidateData: (reason: number) => any;
   type?: 'EDIT' | 'ADD';
   data?: Bhaai;
 }
@@ -47,7 +46,7 @@ const AddBhaai: React.FC<ComponentProps> = (props: ComponentProps) => {
     if (props.type === 'EDIT') {
       apiService.updateBhaai(props.data?._id as string, input).then(data => {
         if (data) {
-          props.invalidateData(Date.now());
+          myContext.dispatch({type: APP_ACTIONS.REFETCH_BHAAI_LIST});
           myContext.dispatch({
             type: APP_ACTIONS.NEW_MESSAGE,
             payload: 'Bhaai has been updated',
@@ -59,7 +58,7 @@ const AddBhaai: React.FC<ComponentProps> = (props: ComponentProps) => {
     } else {
       apiService.createBhaai(input).then(data => {
         if (data) {
-          props.invalidateData(Date.now());
+          myContext.dispatch({type: APP_ACTIONS.REFETCH_BHAAI_LIST});
           myContext.dispatch({
             type: APP_ACTIONS.NEW_MESSAGE,
             payload: 'Bhaai has been added',
@@ -78,7 +77,7 @@ const AddBhaai: React.FC<ComponentProps> = (props: ComponentProps) => {
   const deleteBhaai = () => {
     setProcessingDelete(true);
     apiService.deleteBhaai(props.data?._id as string).then(() => {
-      props.invalidateData(Date.now());
+      myContext.dispatch({type: APP_ACTIONS.REFETCH_BHAAI_LIST});
       myContext.dispatch({
         type: APP_ACTIONS.NEW_MESSAGE,
         payload: 'Bhaai has been deleted',
@@ -132,8 +131,9 @@ const AddBhaai: React.FC<ComponentProps> = (props: ComponentProps) => {
                 <TextInput
                   {...field}
                   {...register('date', {required: 'date is required'})}
+                  onSubmitEditing={onSubmit}
                   autoCorrect={false}
-                  returnKeyType="next"
+                  returnKeyType="done"
                   style={styles.textInput}
                   textContentType="none"
                   variant="outlined"

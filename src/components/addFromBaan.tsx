@@ -28,21 +28,16 @@ import {
   MenuProvider,
   MenuTrigger,
 } from 'react-native-popup-menu';
-import {AppContextState} from '../services/app.reducer';
+import {AppContextState, APP_ACTIONS} from '../services/app.reducer';
 
 const childPageStates = ['sort', 'filter'];
 
 interface BaanProps {
   setVisible: (visiblity: string) => any;
-  invalidateData: (key: number) => any;
   nimtaId: string;
 }
 
-const AddFromBaan: React.FC<BaanProps> = ({
-  setVisible,
-  nimtaId,
-  invalidateData,
-}) => {
+const AddFromBaan: React.FC<BaanProps> = ({setVisible, nimtaId}) => {
   const myContext = useContext<AppContextState>(AppContext);
   const styles = useStyles();
   const stackBarStyles = useStackBarStyles();
@@ -53,7 +48,7 @@ const AddFromBaan: React.FC<BaanProps> = ({
   const [selectedBaan, setSelectedBaans] = useState([] as string[]);
   const [filterBy, setFilterBy] = useState(null as any);
   let {data, isLoading} = useQuery(
-    ['baanList', myContext.appSettings.selectedPariwar],
+    ['baanList', myContext.appSettings.queryState.baanList],
     () => apiService.getBaanList(),
   );
 
@@ -148,7 +143,8 @@ const AddFromBaan: React.FC<BaanProps> = ({
         addBaanData,
       )
       .then(() => {
-        invalidateData(Date.now());
+        myContext.dispatch({type: APP_ACTIONS.REFETCH_NIMTA_LIST});
+        myContext.dispatch({type: APP_ACTIONS.REFETCH_RELATIVE_LIST});
         setVisible('');
       });
   };

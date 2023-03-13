@@ -77,9 +77,10 @@ const GiveBaan: React.FC<ComponentProps> = (props: ComponentProps) => {
                       : 'enter valid amount';
                   },
                 })}
+                onSubmitEditing={onSubmit}
                 autoCorrect={false}
                 keyboardType="number-pad"
-                returnKeyType="next"
+                returnKeyType="done"
                 variant="outlined"
                 label="amount"
                 style={styles.textInput}

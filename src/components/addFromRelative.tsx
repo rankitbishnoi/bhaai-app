@@ -28,21 +28,16 @@ import {
   MenuProvider,
   MenuTrigger,
 } from 'react-native-popup-menu';
-import {AppContextState} from '../services/app.reducer';
+import {AppContextState, APP_ACTIONS} from '../services/app.reducer';
 
 const childPageStates = ['sort', 'filter'];
 
 interface RelativeProps {
   setVisible: (visiblity: string) => any;
-  invalidateData: (key: number) => any;
   nimtaId: string;
 }
 
-const AddFromRelative: React.FC<RelativeProps> = ({
-  setVisible,
-  nimtaId,
-  invalidateData,
-}) => {
+const AddFromRelative: React.FC<RelativeProps> = ({setVisible, nimtaId}) => {
   const myContext = useContext<AppContextState>(AppContext);
   const styles = useStyles();
   const stackBarStyles = useStackBarStyles();
@@ -53,7 +48,11 @@ const AddFromRelative: React.FC<RelativeProps> = ({
   const [filterBy, setFilterBy] = useState({} as any);
   const [menuOpen, setMenuOpen] = useState(false);
   let {data, isLoading} = useQuery(
-    ['relativeList', myContext.appSettings.selectedPariwar],
+    [
+      'relativeList',
+      myContext.appSettings.selectedPariwar,
+      myContext.appSettings.queryState.relativeList,
+    ],
     () => apiService.getRelativeList(myContext.appSettings.selectedPariwar),
   );
 
@@ -152,7 +151,7 @@ const AddFromRelative: React.FC<RelativeProps> = ({
         addRelativeData,
       )
       .then(() => {
-        invalidateData(Date.now());
+        myContext.dispatch({type: APP_ACTIONS.REFETCH_NIMTA_LIST});
         setVisible('');
       });
   };
@@ -230,7 +229,10 @@ const AddFromRelative: React.FC<RelativeProps> = ({
                 elevation={4}
                 leadingMode="icon"
                 leading={
-                  <TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => {
+                      toggleSelect(relative._id);
+                    }}>
                     <RadioButton
                       selected={selectedRelative.includes(relative._id)}
                     />

@@ -25,9 +25,8 @@ const Profile: React.FC = () => {
   const myContext = useContext<AppContextState>(AppContext);
   const [openDailog, setOpenDailog] = useState('');
   const [selectedRole, setSelectedRole] = useState({} as any);
-  const [queryKey, setQueryKey] = useState(Date.now());
   const {data, isLoading, isError, error} = useQuery(
-    ['profile', queryKey],
+    ['profile', myContext.appSettings.queryState.profile],
     () => apiService.getProfile(),
   );
 
@@ -133,14 +132,12 @@ const Profile: React.FC = () => {
       )}
       {openDailog === 'add' && (
         <AddPariwar
-          invalidateData={setQueryKey}
           setVisible={value => setOpenDailog(value ? 'add' : '')}
           type="ADD"
         />
       )}
       {openDailog === 'edit' && (
         <AddPariwar
-          invalidateData={setQueryKey}
           setVisible={value => setOpenDailog(value ? 'edit' : '')}
           type="EDIT"
           data={selectedRole.pariwarId}

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {TouchableOpacity, View} from 'react-native';
 import {apiService} from '../services/api.service';
 import {IconButton, Stack} from '@react-native-material/core';
@@ -13,17 +13,20 @@ import Search from './search';
 import {useQuery} from 'react-query';
 import SwipeableList from '../components/swipeableList/swipeableList';
 import ScreenHeading from '../components/screenHeading';
+import {AppContextState, APP_ACTIONS} from '../services/app.reducer';
+import AppContext from '../services/storage';
 
 const childPageStates = ['baan-list', 'search', 'edit', 'add'];
 
 const Bhaai: React.FC = () => {
+  const myContext = useContext<AppContextState>(AppContext);
   const styles = useStyles();
   const stackBarStyles = useStackBarStyles();
   const [selectedBhaai, setSelectedBhaai] = useState({} as any);
   const [openDailog, setOpenDailog] = useState('');
-  const [queryKey, setQueryKey] = useState(Date.now());
-  const {data, isLoading} = useQuery(['baanList', queryKey], () =>
-    apiService.getBhaaiList(),
+  const {data, isLoading} = useQuery(
+    ['baanList', myContext.appSettings.queryState.bhaaiList],
+    () => apiService.getBhaaiList(),
   );
 
   const editItem = (bhaai: BhaaiType) => {
@@ -34,6 +37,10 @@ const Bhaai: React.FC = () => {
   const openItem = (bhaai: BhaaiType) => {
     setSelectedBhaai(bhaai);
     setOpenDailog('baan-list');
+  };
+
+  const refresh = () => {
+    myContext.dispatch({type: APP_ACTIONS.REFETCH_BHAAI_LIST});
   };
 
   const deleteBhaai = async (id: string) => {
@@ -84,7 +91,7 @@ const Bhaai: React.FC = () => {
               })}
               deleteItem={deleteBhaai}
               refreshing={isLoading}
-              refresh={() => setQueryKey(Date.now())}
+              refresh={refresh}
             />
           )}
           <Stack
@@ -116,14 +123,12 @@ const Bhaai: React.FC = () => {
         <AddBhaai
           setVisible={value => setOpenDailog(value ? 'add' : '')}
           type="ADD"
-          invalidateData={setQueryKey}
         />
       )}
       {openDailog === 'edit' && (
         <AddBhaai
           setVisible={value => setOpenDailog(value ? 'edit' : '')}
           type="EDIT"
-          invalidateData={setQueryKey}
           data={selectedBhaai}
         />
       )}
@@ -136,7 +141,6 @@ const Bhaai: React.FC = () => {
       {openDailog === 'search' && (
         <Search
           setSearchVisible={value => setOpenDailog(value ? 'search' : '')}
-          invalidateData={setQueryKey}
         />
       )}
     </>

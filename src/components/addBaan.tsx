@@ -13,7 +13,6 @@ import ScreenHeading from './screenHeading';
 
 interface ComponentProps {
   setVisible: (visiblity: boolean) => any;
-  invalidateData: (reason: number) => any;
   bhaaiId: string;
   type?: 'EDIT' | 'ADD';
   data?: Baan;
@@ -48,7 +47,7 @@ const AddBaan: React.FC<ComponentProps> = (props: ComponentProps) => {
         .updateBaan(props.data?._id as string, props.bhaaiId, input)
         .then(data => {
           if (data) {
-            props.invalidateData(Date.now());
+            myContext.dispatch({type: APP_ACTIONS.REFETCH_BAAN_LIST});
             myContext.dispatch({
               type: APP_ACTIONS.NEW_MESSAGE,
               payload: 'Baan has been updated',
@@ -60,7 +59,7 @@ const AddBaan: React.FC<ComponentProps> = (props: ComponentProps) => {
     } else {
       apiService.createBaan(props.bhaaiId, input).then(data => {
         if (data) {
-          props.invalidateData(Date.now());
+          myContext.dispatch({type: APP_ACTIONS.REFETCH_BAAN_LIST});
           myContext.dispatch({
             type: APP_ACTIONS.NEW_MESSAGE,
             payload: 'Baan has been added',
@@ -83,7 +82,7 @@ const AddBaan: React.FC<ComponentProps> = (props: ComponentProps) => {
   const deleteBaan = () => {
     setProcessingDelete(true);
     apiService.deleteBaan(props.data?._id as string, props.bhaaiId).then(() => {
-      props.invalidateData(Date.now());
+      myContext.dispatch({type: APP_ACTIONS.REFETCH_BAAN_LIST});
       myContext.dispatch({
         type: APP_ACTIONS.NEW_MESSAGE,
         payload: 'Baan has been deleted',
@@ -254,7 +253,7 @@ const AddBaan: React.FC<ComponentProps> = (props: ComponentProps) => {
                 onSubmitEditing={onSubmit}
                 autoCorrect={false}
                 keyboardType="number-pad"
-                returnKeyType="next"
+                returnKeyType="done"
                 variant="outlined"
                 label="amount"
                 style={styles.textInput}

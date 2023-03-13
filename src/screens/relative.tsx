@@ -15,7 +15,7 @@ import {useNavigation} from '@react-navigation/native';
 import SortRelative from '../components/sortRelative';
 import FilterRelative from '../components/filterRelative';
 import SwipeableList from '../components/swipeableList/swipeableList';
-import {AppContextState} from '../services/app.reducer';
+import {AppContextState, APP_ACTIONS} from '../services/app.reducer';
 import ScreenHeading from '../components/screenHeading';
 
 const childPageStates = ['sort', 'filter', 'add', 'edit'];
@@ -41,11 +41,14 @@ const Relative: React.FC<RelativeProps> = ({
   const [openDailog, setOpenDailog] = useState('');
   const [sortBy, setSortBy] = useState('');
   const [filterBy, setFilterBy] = useState(null as any);
-  const [queryKey, setQueryKey] = useState(Date.now());
   const [selectedRelative, setSelectedRelative] = useState({} as any);
   const relativeList = relatives || [];
   let {data, isLoading} = useQuery(
-    ['relativeList', myContext.appSettings.selectedPariwar, queryKey],
+    [
+      'relativeList',
+      myContext.appSettings.selectedPariwar,
+      myContext.appSettings.queryState.relativeList,
+    ],
     () =>
       nimtaBase
         ? relativeList
@@ -151,6 +154,10 @@ const Relative: React.FC<RelativeProps> = ({
       });
   };
 
+  const refresh = () => {
+    myContext.dispatch({type: APP_ACTIONS.REFETCH_RELATIVE_LIST});
+  };
+
   return (
     <>
       {!childPageStates.includes(openDailog) && (
@@ -197,7 +204,7 @@ const Relative: React.FC<RelativeProps> = ({
               })}
               deleteItem={deleteRelative}
               refreshing={isLoading}
-              refresh={() => setQueryKey(Date.now())}
+              refresh={refresh}
             />
           )}
           <Stack
@@ -281,7 +288,6 @@ const Relative: React.FC<RelativeProps> = ({
       )}
       {openDailog === 'add' && (
         <AddRelative
-          invalidateData={setQueryKey}
           setVisible={setOpenDailog}
           type="ADD"
           pariwarId={myContext.appSettings.selectedPariwar}
@@ -289,7 +295,6 @@ const Relative: React.FC<RelativeProps> = ({
       )}
       {openDailog === 'edit' && (
         <AddRelative
-          invalidateData={setQueryKey}
           setVisible={setOpenDailog}
           type="EDIT"
           data={selectedRelative}

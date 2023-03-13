@@ -12,7 +12,6 @@ import ScreenHeading from './screenHeading';
 
 interface ComponentProps {
   pariwarId: string;
-  invalidateData: (key: number) => any;
   setVisible: (visiblity: boolean) => any;
   type?: 'EDIT' | 'ADD';
   data?: Nimta;
@@ -46,7 +45,7 @@ const AddNimta: React.FC<ComponentProps> = (props: ComponentProps) => {
         .updateNimta(props.data?._id as string, props.pariwarId, input)
         .then(data => {
           if (data) {
-            props.invalidateData(Date.now());
+            myContext.dispatch({type: APP_ACTIONS.REFETCH_NIMTA_LIST});
             myContext.dispatch({
               type: APP_ACTIONS.NEW_MESSAGE,
               payload: 'Nimta has been updated',
@@ -58,7 +57,7 @@ const AddNimta: React.FC<ComponentProps> = (props: ComponentProps) => {
     } else {
       apiService.createNimta(props.pariwarId, input).then(data => {
         if (data) {
-          props.invalidateData(Date.now());
+          myContext.dispatch({type: APP_ACTIONS.REFETCH_NIMTA_LIST});
           myContext.dispatch({
             type: APP_ACTIONS.NEW_MESSAGE,
             payload: 'Nimta has been added',
@@ -79,7 +78,7 @@ const AddNimta: React.FC<ComponentProps> = (props: ComponentProps) => {
     apiService
       .deleteNimta(props.data?._id as string, props.pariwarId)
       .then(() => {
-        props.invalidateData(Date.now());
+        myContext.dispatch({type: APP_ACTIONS.REFETCH_NIMTA_LIST});
         myContext.dispatch({
           type: APP_ACTIONS.NEW_MESSAGE,
           payload: 'Nimta has been deleted',
@@ -107,9 +106,10 @@ const AddNimta: React.FC<ComponentProps> = (props: ComponentProps) => {
               <TextInput
                 {...field}
                 {...register('name', {required: 'name is required'})}
+                onSubmitEditing={onSubmit}
                 autoCorrect={false}
                 keyboardType="default"
-                returnKeyType="next"
+                returnKeyType="done"
                 style={styles.textInput}
                 textContentType="name"
                 variant="outlined"

@@ -21,10 +21,9 @@ import {AppContextState, APP_ACTIONS} from '../services/app.reducer';
 
 interface SearchProps {
   setSearchVisible: (visiblity: boolean) => any;
-  invalidateData: (reason: number) => any;
 }
 
-const Search: React.FC<SearchProps> = ({setSearchVisible, invalidateData}) => {
+const Search: React.FC<SearchProps> = ({setSearchVisible}) => {
   const myContext = useContext<AppContextState>(AppContext);
   const styles = useStyles();
   const stackBarStyles = useStackBarStyles();
@@ -128,7 +127,7 @@ const Search: React.FC<SearchProps> = ({setSearchVisible, invalidateData}) => {
             spacing={4}>
             <IconButton
               onPress={() => {
-                invalidateData(Date.now());
+                myContext.dispatch({type: APP_ACTIONS.REFETCH_BHAAI_LIST});
                 setSearchVisible(false);
               }}
               icon={props => <Ionicons name="arrow-back-outline" {...props} />}

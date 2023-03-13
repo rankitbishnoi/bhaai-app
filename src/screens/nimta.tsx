@@ -22,7 +22,7 @@ import Relative from './relative';
 import AddFromRelative from '../components/addFromRelative';
 import AddFromBaan from '../components/addFromBaan';
 import SwipeableList from '../components/swipeableList/swipeableList';
-import {AppContextState} from '../services/app.reducer';
+import {AppContextState, APP_ACTIONS} from '../services/app.reducer';
 import ScreenHeading from '../components/screenHeading';
 
 const childPageStates = [
@@ -41,15 +41,22 @@ const Nimta: React.FC = () => {
   const buttonStyles = useButtonStyles();
   const [openDailog, setOpenDailog] = useState('');
   const [selectedNimta, setSelectedNimta] = useState({} as any);
-  const [queryKey, setQueryKey] = useState(Date.now());
   const {data, isLoading} = useQuery(
-    ['nimtaList', myContext.appSettings.selectedPariwar, queryKey],
+    [
+      'nimtaList',
+      myContext.appSettings.selectedPariwar,
+      myContext.appSettings.queryState.nimtaList,
+    ],
     () => apiService.getNimtaList(myContext.appSettings.selectedPariwar),
   );
 
   const editItem = (nimta: NimtaType) => {
     setSelectedNimta(nimta);
     setOpenDailog('edit');
+  };
+
+  const refresh = () => {
+    myContext.dispatch({type: APP_ACTIONS.REFETCH_NIMTA_LIST});
   };
 
   const deleteNimta = async (id: string) => {
@@ -119,7 +126,7 @@ const Nimta: React.FC = () => {
               })}
               deleteItem={deleteNimta}
               refreshing={isLoading}
-              refresh={() => setQueryKey(Date.now())}
+              refresh={refresh}
             />
           )}
           <Stack
@@ -145,7 +152,6 @@ const Nimta: React.FC = () => {
           setVisible={value => setOpenDailog(value ? 'add' : '')}
           type="ADD"
           pariwarId={myContext.appSettings.selectedPariwar}
-          invalidateData={setQueryKey}
         />
       )}
       {openDailog === 'edit' && (
@@ -154,7 +160,6 @@ const Nimta: React.FC = () => {
           type="EDIT"
           data={selectedNimta}
           pariwarId={myContext.appSettings.selectedPariwar}
-          invalidateData={setQueryKey}
         />
       )}
       {openDailog === 'relative' && (
@@ -202,16 +207,12 @@ const Nimta: React.FC = () => {
       {openDailog === 'addFromRelative' && (
         <AddFromRelative
           nimtaId={selectedNimta._id}
-          invalidateData={setQueryKey}
           setVisible={value => setOpenDailog(value)}
         />
       )}
       {openDailog === 'addFromBaan' && (
         <AddFromBaan
           nimtaId={selectedNimta._id}
-          invalidateData={value => {
-            setQueryKey(value);
-          }}
           setVisible={value => setOpenDailog(value)}
         />
       )}

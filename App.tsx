@@ -17,6 +17,14 @@ const App: React.FC = () => {
     isLoggedIn: !!mmkv.loadJWT(),
     messages: [],
     selectedPariwar: '',
+    queryState: {
+      baanList: Date.now(),
+      bhaaiList: Date.now(),
+      bhaaiTotal: Date.now(),
+      nimtaList: Date.now(),
+      relativeList: Date.now(),
+      profile: Date.now(),
+    },
   });
   const queryClient = new QueryClient();
 

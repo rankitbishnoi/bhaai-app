@@ -13,7 +13,6 @@ import ScreenHeading from './screenHeading';
 
 interface ComponentProps {
   pariwarId: string;
-  invalidateData: (key: number) => any;
   setVisible: (visiblity: string) => any;
   type?: 'EDIT' | 'ADD';
   data?: Relative;
@@ -52,7 +51,7 @@ const AddRelative: React.FC<ComponentProps> = (props: ComponentProps) => {
         .updateRelative(props.data?._id as string, props.pariwarId, input)
         .then(data => {
           if (data) {
-            props.invalidateData(Date.now());
+            myContext.dispatch({type: APP_ACTIONS.REFETCH_RELATIVE_LIST});
             myContext.dispatch({
               type: APP_ACTIONS.NEW_MESSAGE,
               payload: 'Relative has been updated',
@@ -64,7 +63,7 @@ const AddRelative: React.FC<ComponentProps> = (props: ComponentProps) => {
     } else {
       apiService.createRelative(props.pariwarId, input).then(data => {
         if (data) {
-          props.invalidateData(Date.now());
+          myContext.dispatch({type: APP_ACTIONS.REFETCH_RELATIVE_LIST});
           myContext.dispatch({
             type: APP_ACTIONS.NEW_MESSAGE,
             payload: 'Relative has been added',
@@ -85,7 +84,7 @@ const AddRelative: React.FC<ComponentProps> = (props: ComponentProps) => {
     apiService
       .deleteRelative(props.data?._id as string, props.pariwarId)
       .then(() => {
-        props.invalidateData(Date.now());
+        myContext.dispatch({type: APP_ACTIONS.REFETCH_RELATIVE_LIST});
         myContext.dispatch({
           type: APP_ACTIONS.NEW_MESSAGE,
           payload: 'Relative has been deleted',
@@ -246,11 +245,12 @@ const AddRelative: React.FC<ComponentProps> = (props: ComponentProps) => {
                       : 'please enter valid phone number';
                   },
                 })}
+                onSubmitEditing={onSubmit}
                 autoCapitalize="none"
                 autoComplete="tel"
                 autoCorrect={false}
                 keyboardType="number-pad"
-                returnKeyType="next"
+                returnKeyType="done"
                 style={styles.textInput}
                 textContentType="telephoneNumber"
                 variant="outlined"
