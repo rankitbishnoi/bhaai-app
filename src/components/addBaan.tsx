@@ -1,4 +1,4 @@
-import {Button, TextInput, Stack, Text} from '@react-native-material/core';
+import {Button, TextInput, Text} from '@react-native-material/core';
 import React, {useContext, useEffect, useState} from 'react';
 import {Controller, useForm} from 'react-hook-form';
 import {KeyboardAvoidingView, Platform, Pressable, View} from 'react-native';
@@ -7,7 +7,9 @@ import {BaanBase} from '../types/Baan';
 import useStyles from '../styles/baan';
 import {Baan} from '../types/BaanList';
 import AppContext from '../services/storage';
-import SizedBox from './SizedBox';
+import SizedBox from './sizedBox';
+import {AppContextState, APP_ACTIONS} from '../services/app.reducer';
+import ScreenHeading from './screenHeading';
 
 interface ComponentProps {
   setVisible: (visiblity: boolean) => any;
@@ -18,7 +20,7 @@ interface ComponentProps {
 }
 
 const AddBaan: React.FC<ComponentProps> = (props: ComponentProps) => {
-  const myContext = useContext(AppContext);
+  const myContext = useContext<AppContextState>(AppContext);
   const styles = useStyles();
   const [processingEdit, setProcessingEdit] = useState(false);
   const [processingDelete, setProcessingDelete] = useState(false);
@@ -47,9 +49,9 @@ const AddBaan: React.FC<ComponentProps> = (props: ComponentProps) => {
         .then(data => {
           if (data) {
             props.invalidateData(Date.now());
-            myContext.setAppSettings({
-              ...myContext.appSettings,
-              message: 'Baan has been updated',
+            myContext.dispatch({
+              type: APP_ACTIONS.NEW_MESSAGE,
+              payload: 'Baan has been updated',
             });
             setProcessingEdit(false);
             props.setVisible(false);
@@ -59,9 +61,9 @@ const AddBaan: React.FC<ComponentProps> = (props: ComponentProps) => {
       apiService.createBaan(props.bhaaiId, input).then(data => {
         if (data) {
           props.invalidateData(Date.now());
-          myContext.setAppSettings({
-            ...myContext.appSettings,
-            message: 'Baan has been added',
+          myContext.dispatch({
+            type: APP_ACTIONS.NEW_MESSAGE,
+            payload: 'Baan has been added',
           });
           setProcessingEdit(false);
           props.setVisible(false);
@@ -82,9 +84,9 @@ const AddBaan: React.FC<ComponentProps> = (props: ComponentProps) => {
     setProcessingDelete(true);
     apiService.deleteBaan(props.data?._id as string, props.bhaaiId).then(() => {
       props.invalidateData(Date.now());
-      myContext.setAppSettings({
-        ...myContext.appSettings,
-        message: 'Baan has been deleted',
+      myContext.dispatch({
+        type: APP_ACTIONS.NEW_MESSAGE,
+        payload: 'Baan has been deleted',
       });
       setProcessingDelete(false);
       props.setVisible(false);
@@ -95,11 +97,9 @@ const AddBaan: React.FC<ComponentProps> = (props: ComponentProps) => {
     <View style={styles.container}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-        <Stack m={4} spacing={4}>
-          <Text style={styles.heading} variant="button">
-            {`${props.type === 'ADD' ? 'add' : 'edit'} baan`}
-          </Text>
-        </Stack>
+        <ScreenHeading
+          title={`${props.type === 'ADD' ? 'add' : 'edit'} baan`}
+        />
         <Pressable onPress={() => setFocus('firstName')}>
           {errors.firstName && (
             <Text style={styles.error}>{errors.firstName?.message}</Text>

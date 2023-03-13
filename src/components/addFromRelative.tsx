@@ -20,7 +20,7 @@ import useStackBarStyles from '../styles/stackBar';
 import SortRelative from './sortRelative';
 import FilterRelative from './filterRelative';
 import RadioButton from './radioButton';
-import SizedBox from './SizedBox';
+import SizedBox from './sizedBox';
 import {
   Menu,
   MenuOption,
@@ -28,6 +28,7 @@ import {
   MenuProvider,
   MenuTrigger,
 } from 'react-native-popup-menu';
+import {AppContextState} from '../services/app.reducer';
 
 const childPageStates = ['sort', 'filter'];
 
@@ -42,7 +43,7 @@ const AddFromRelative: React.FC<RelativeProps> = ({
   nimtaId,
   invalidateData,
 }) => {
-  const myContext = useContext(AppContext);
+  const myContext = useContext<AppContextState>(AppContext);
   const styles = useStyles();
   const stackBarStyles = useStackBarStyles();
   const buttonStyles = useButtonStyles();
@@ -52,8 +53,8 @@ const AddFromRelative: React.FC<RelativeProps> = ({
   const [filterBy, setFilterBy] = useState({} as any);
   const [menuOpen, setMenuOpen] = useState(false);
   let {data, isLoading} = useQuery(
-    ['relativeList', myContext.appSettings.selectedRole],
-    () => apiService.getRelativeList(myContext.appSettings.selectedRole),
+    ['relativeList', myContext.appSettings.selectedPariwar],
+    () => apiService.getRelativeList(myContext.appSettings.selectedPariwar),
   );
 
   const filterList = useMemo(() => {
@@ -147,7 +148,7 @@ const AddFromRelative: React.FC<RelativeProps> = ({
     apiService
       .addRelativesInNimta(
         nimtaId,
-        myContext.appSettings.selectedRole,
+        myContext.appSettings.selectedPariwar,
         addRelativeData,
       )
       .then(() => {

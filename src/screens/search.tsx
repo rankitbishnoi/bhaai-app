@@ -17,6 +17,7 @@ import GiveBaan from '../components/giveBaan';
 import AppContext from '../services/storage';
 import useStackBarStyles from '../styles/stackBar';
 import {Controller, useForm} from 'react-hook-form';
+import {AppContextState, APP_ACTIONS} from '../services/app.reducer';
 
 interface SearchProps {
   setSearchVisible: (visiblity: boolean) => any;
@@ -24,7 +25,7 @@ interface SearchProps {
 }
 
 const Search: React.FC<SearchProps> = ({setSearchVisible, invalidateData}) => {
-  const myContext = useContext(AppContext);
+  const myContext = useContext<AppContextState>(AppContext);
   const styles = useStyles();
   const stackBarStyles = useStackBarStyles();
   const [data, setData] = useState({} as any);
@@ -56,9 +57,9 @@ const Search: React.FC<SearchProps> = ({setSearchVisible, invalidateData}) => {
 
   const showMessage = (reason: string) => {
     if (reason === 'GIVEN') {
-      myContext.setAppSettings({
-        ...myContext.appSettings,
-        message: 'Baan has been given',
+      myContext.dispatch({
+        type: APP_ACTIONS.NEW_MESSAGE,
+        payload: 'Baan has been given',
       });
     }
   };

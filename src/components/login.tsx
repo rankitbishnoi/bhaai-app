@@ -3,12 +3,12 @@ import {Controller, useForm} from 'react-hook-form';
 import {Pressable, Text, TouchableOpacity, View} from 'react-native';
 import {apiService} from '../services/api.service';
 import AppContext from '../services/storage';
-import mmkv from '../services/mmkv';
 import useStyles from '../styles/auth';
-import SizedBox from './SizedBox';
+import SizedBox from './sizedBox';
 import useButtonStyles from '../styles/button';
 import {TextInput} from '@react-native-material/core';
 import {validateEmail} from '../services/helpers';
+import {AppContextState, APP_ACTIONS} from '../services/app.reducer';
 
 interface FormData {
   email: string;
@@ -16,7 +16,7 @@ interface FormData {
 }
 
 const Login: React.FC<{}> = ({}) => {
-  const myContext = useContext(AppContext);
+  const myContext = useContext<AppContextState>(AppContext);
   const {
     control,
     handleSubmit,
@@ -41,16 +41,18 @@ const Login: React.FC<{}> = ({}) => {
         password,
       })
       .catch(error => {
-        myContext.setAppSettings({
-          ...myContext.appSettings,
-          message: error.response.data?.message || 'Unable to Login',
+        myContext.dispatch({
+          type: APP_ACTIONS.NEW_MESSAGE,
+          payload: error.response.data?.message || 'Unable to Login',
         });
         return {access_token: ''};
       })
       .then(result => {
         if (result.access_token.length) {
-          mmkv.saveKey('id_token', result.access_token);
-          myContext.setAppSettings({isLoggedIn: true});
+          myContext.dispatch({
+            type: APP_ACTIONS.LOGIN,
+            payload: result.access_token,
+          });
         }
       });
   });

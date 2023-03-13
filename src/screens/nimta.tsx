@@ -22,6 +22,8 @@ import Relative from './relative';
 import AddFromRelative from '../components/addFromRelative';
 import AddFromBaan from '../components/addFromBaan';
 import SwipeableList from '../components/swipeableList/swipeableList';
+import {AppContextState} from '../services/app.reducer';
+import ScreenHeading from '../components/screenHeading';
 
 const childPageStates = [
   'relative',
@@ -32,7 +34,7 @@ const childPageStates = [
 ];
 
 const Nimta: React.FC = () => {
-  const myContext = useContext(AppContext);
+  const myContext = useContext<AppContextState>(AppContext);
   const navigation = useNavigation();
   const styles = useStyles();
   const stackBarStyles = useStackBarStyles();
@@ -41,8 +43,8 @@ const Nimta: React.FC = () => {
   const [selectedNimta, setSelectedNimta] = useState({} as any);
   const [queryKey, setQueryKey] = useState(Date.now());
   const {data, isLoading} = useQuery(
-    ['nimtaList', myContext.appSettings.selectedRole, queryKey],
-    () => apiService.getNimtaList(myContext.appSettings.selectedRole),
+    ['nimtaList', myContext.appSettings.selectedPariwar, queryKey],
+    () => apiService.getNimtaList(myContext.appSettings.selectedPariwar),
   );
 
   const editItem = (nimta: NimtaType) => {
@@ -52,7 +54,7 @@ const Nimta: React.FC = () => {
 
   const deleteNimta = async (id: string) => {
     return apiService
-      .deleteNimta(id, myContext.appSettings.selectedRole)
+      .deleteNimta(id, myContext.appSettings.selectedPariwar)
       .then(() => {
         if (data) {
           const index = data?.findIndex(a => a._id === id);
@@ -69,12 +71,8 @@ const Nimta: React.FC = () => {
           {isLoading && (
             <ProgressBar height={5} indeterminate backgroundColor="#4a0072" />
           )}
-          <Stack m={4} spacing={4}>
-            <Text style={styles.heading} variant="button">
-              Nimta List
-            </Text>
-          </Stack>
-          {!myContext.appSettings.selectedRole && (
+          <ScreenHeading title="Nimta List" />
+          {!myContext.appSettings.selectedPariwar && (
             <TouchableOpacity
               onPress={() => {
                 navigation.navigate('profile' as never);
@@ -84,7 +82,7 @@ const Nimta: React.FC = () => {
               </View>
             </TouchableOpacity>
           )}
-          {myContext.appSettings.selectedRole && data && (
+          {myContext.appSettings.selectedPariwar && data && (
             <SwipeableList
               items={data.map(nimta => {
                 return {
@@ -146,7 +144,7 @@ const Nimta: React.FC = () => {
         <AddNimta
           setVisible={value => setOpenDailog(value ? 'add' : '')}
           type="ADD"
-          pariwarId={myContext.appSettings.selectedRole}
+          pariwarId={myContext.appSettings.selectedPariwar}
           invalidateData={setQueryKey}
         />
       )}
@@ -155,7 +153,7 @@ const Nimta: React.FC = () => {
           setVisible={value => setOpenDailog(value ? 'edit' : '')}
           type="EDIT"
           data={selectedNimta}
-          pariwarId={myContext.appSettings.selectedRole}
+          pariwarId={myContext.appSettings.selectedPariwar}
           invalidateData={setQueryKey}
         />
       )}

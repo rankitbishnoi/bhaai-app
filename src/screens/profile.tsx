@@ -14,6 +14,7 @@ import useStyles from '../styles/profile';
 import useButtonStyles from '../styles/button';
 import useStackBarStyles from '../styles/stackBar';
 import {PariwarRole} from '../types/Profile';
+import {AppContextState, APP_ACTIONS} from '../services/app.reducer';
 
 const childPageStates = ['edit', 'add'];
 
@@ -21,7 +22,7 @@ const Profile: React.FC = () => {
   const styles = useStyles();
   const stackBarStyles = useStackBarStyles();
   const buttonStyles = useButtonStyles();
-  const myContext = useContext(AppContext);
+  const myContext = useContext<AppContextState>(AppContext);
   const [openDailog, setOpenDailog] = useState('');
   const [selectedRole, setSelectedRole] = useState({} as any);
   const [queryKey, setQueryKey] = useState(Date.now());
@@ -32,13 +33,13 @@ const Profile: React.FC = () => {
 
   const logout = () => {
     mmkv.deleteJWT();
-    myContext.setAppSettings({isLoggedIn: false});
+    myContext.dispatch({type: APP_ACTIONS.LOGOUT});
   };
 
   const selectPariwarRole = (id: string) => {
-    myContext.setAppSettings({
-      ...myContext.appSettings,
-      selectedRole: id,
+    myContext.dispatch({
+      type: APP_ACTIONS.SELECT_PARIWAR,
+      payload: id,
     });
   };
 
@@ -98,7 +99,7 @@ const Profile: React.FC = () => {
                       <RadioButton
                         selected={
                           role.pariwarId._id ===
-                          myContext.appSettings.selectedRole
+                          myContext.appSettings.selectedPariwar
                         }
                       />
                     }

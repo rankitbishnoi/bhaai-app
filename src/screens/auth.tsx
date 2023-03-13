@@ -7,7 +7,7 @@ import {
   Platform,
 } from 'react-native';
 // Components
-import SizedBox from '../components/SizedBox';
+import SizedBox from '../components/sizedBox';
 import Login from '../components/login';
 import Signup from '../components/signup';
 

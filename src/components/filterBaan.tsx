@@ -1,10 +1,11 @@
-import {Button, TextInput, Stack, Text} from '@react-native-material/core';
+import {Button, TextInput} from '@react-native-material/core';
 import React, {useEffect} from 'react';
 import {Controller, useForm} from 'react-hook-form';
 import {KeyboardAvoidingView, Platform, Pressable, View} from 'react-native';
 import useStyles from '../styles/baan';
 import {BaanBase} from '../types/Baan';
-import SizedBox from './SizedBox';
+import ScreenHeading from './screenHeading';
+import SizedBox from './sizedBox';
 
 interface ComponentProps {
   setVisible: (visiblity: string) => any;
@@ -41,11 +42,7 @@ const FilterBaan: React.FC<ComponentProps> = (props: ComponentProps) => {
     <View style={styles.container}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-        <Stack m={4} spacing={4}>
-          <Text style={styles.heading} variant="button">
-            {'filter baan'}
-          </Text>
-        </Stack>
+        <ScreenHeading title={'filter baan'} />
         <Pressable onPress={() => setFocus('firstName')}>
           <Controller
             control={control}

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useReducer} from 'react';
 import {KeyboardAvoidingView, Platform, SafeAreaView, View} from 'react-native';
 import {Provider, defaultTheme} from '@react-native-material/core';
 
@@ -9,12 +9,14 @@ import mmkv from './src/services/mmkv';
 import Main from './src/screens/main';
 import MessagePopUp from './src/components/messagePopUp';
 import {QueryClient, QueryClientProvider} from 'react-query';
+import {appReducer} from './src/services/app.reducer';
 
 const App: React.FC = () => {
   const styles = useStyles();
-  const [appSettings, setAppSettings] = useState({
+  const [appSettings, dispatch] = useReducer(appReducer, {
     isLoggedIn: !!mmkv.loadJWT(),
-    message: null,
+    messages: [],
+    selectedPariwar: '',
   });
   const queryClient = new QueryClient();
 
@@ -40,20 +42,13 @@ const App: React.FC = () => {
             },
           },
         }}>
-        <AppContext.Provider value={{appSettings, setAppSettings}}>
+        <AppContext.Provider value={{appSettings, dispatch}}>
           <View style={styles.root}>
             <SafeAreaView style={styles.safeAreaView}>
               {appSettings.isLoggedIn ? <Main /> : <Auth />}
               <KeyboardAvoidingView
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-                {appSettings?.message && (
-                  <MessagePopUp
-                    setVisible={() => {
-                      setAppSettings({...appSettings, message: null});
-                    }}
-                    message={appSettings?.message}
-                  />
-                )}
+                <MessagePopUp />
               </KeyboardAvoidingView>
             </SafeAreaView>
           </View>

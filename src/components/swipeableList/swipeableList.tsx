@@ -8,6 +8,7 @@ import VisibleItem from './visibleItem';
 import useStyles from '../../styles/swipeableList';
 import {Text} from '@react-native-material/core';
 import {RefreshControl} from 'react-native-gesture-handler';
+import {AppContextState, APP_ACTIONS} from '../../services/app.reducer';
 
 type RowMap<T> = {[open_cell_key: string]: SwipeRow<T>};
 
@@ -34,7 +35,7 @@ const SwipeableList: React.FC<SwipeableListOptions> = ({
   refreshing,
 }) => {
   const styles = useStyles();
-  const myContext = useContext(AppContext);
+  const myContext = useContext<AppContextState>(AppContext);
   const [listData, setListData] = useState([
     ...items,
     {
@@ -79,14 +80,14 @@ const SwipeableList: React.FC<SwipeableListOptions> = ({
               const prevIndex = listData.findIndex(item => item.key === rowKey);
               newData.splice(prevIndex, 1);
               setListData(newData);
-              myContext.setAppSettings({
-                ...myContext.appSettings,
-                message: 'Item has been deleted',
+              myContext.dispatch({
+                type: APP_ACTIONS.NEW_MESSAGE,
+                payload: 'Item has been deleted',
               });
             } else {
-              myContext.setAppSettings({
-                ...myContext.appSettings,
-                message: 'Unable to delete. Please try again',
+              myContext.dispatch({
+                type: APP_ACTIONS.NEW_MESSAGE,
+                payload: 'Unable to delete. Please try again',
               });
             }
             closeRow(rowMap, rowKey);
@@ -106,14 +107,14 @@ const SwipeableList: React.FC<SwipeableListOptions> = ({
         const prevIndex = listData.findIndex(item => item.key === rowKey);
         newData.splice(prevIndex, 1);
         setListData(newData);
-        myContext.setAppSettings({
-          ...myContext.appSettings,
-          message: 'Item has been deleted',
+        myContext.dispatch({
+          type: APP_ACTIONS.NEW_MESSAGE,
+          payload: 'Item has been deleted',
         });
       } else {
-        myContext.setAppSettings({
-          ...myContext.appSettings,
-          message: 'Unable to delete. Please try again',
+        myContext.dispatch({
+          type: APP_ACTIONS.NEW_MESSAGE,
+          payload: 'Unable to delete. Please try again',
         });
       }
       closeRow(rowMap, rowKey);

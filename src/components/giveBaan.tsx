@@ -1,11 +1,12 @@
-import {Button, TextInput, Stack, Text} from '@react-native-material/core';
+import {Button, TextInput, Text} from '@react-native-material/core';
 import React, {useEffect, useState} from 'react';
 import {Controller, useForm} from 'react-hook-form';
 import {KeyboardAvoidingView, Platform, Pressable, View} from 'react-native';
 import {apiService} from '../services/api.service';
 import useStyles from '../styles/bhaai';
 import {Baan as BaanType} from '../types/BaanList';
-import SizedBox from './SizedBox';
+import ScreenHeading from './screenHeading';
+import SizedBox from './sizedBox';
 
 interface ComponentProps {
   setVisible: (visiblity: boolean) => any;
@@ -53,11 +54,7 @@ const GiveBaan: React.FC<ComponentProps> = (props: ComponentProps) => {
     <View style={styles.container}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-        <Stack m={4} spacing={4}>
-          <Text style={styles.heading} variant="button">
-            {'give baan'}
-          </Text>
-        </Stack>
+        <ScreenHeading title={'give baan'} />
         <Pressable onPress={() => setFocus('amount')}>
           {errors.amount && (
             <Text style={styles.error}>{errors.amount?.message}</Text>

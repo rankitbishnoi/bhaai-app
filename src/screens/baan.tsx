@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {TouchableOpacity, View} from 'react-native';
 import {apiService} from '../services/api.service';
-import {IconButton, Stack, Text} from '@react-native-material/core';
+import {IconButton, Stack} from '@react-native-material/core';
 
 import useStyles from '../styles/baan';
 import useStackBarStyles from '../styles/stackBar';
@@ -13,6 +13,7 @@ import {useQuery} from 'react-query';
 import {BaanList} from '../types/BaanList';
 import {BhaaiTotal} from '../types/BhaaiTotal';
 import SwipeableList from '../components/swipeableList/swipeableList';
+import ScreenHeading from '../components/screenHeading';
 
 const childPageStates = ['edit', 'add'];
 
@@ -60,14 +61,10 @@ const Baan: React.FC<BaanProps> = ({bhaaiId, setBaanVisible}) => {
             <ProgressBar height={5} indeterminate backgroundColor="#4a0072" />
           )}
           {data?.bhaaiData && (
-            <Stack m={4} spacing={4}>
-              <Text style={styles.heading} variant="button">
-                {data.bhaaiData.marriage}
-              </Text>
-              <Text style={styles.heading} variant="overline">
-                Rs: {data.bhaaiData.total}
-              </Text>
-            </Stack>
+            <ScreenHeading
+              title={data.bhaaiData.marriage}
+              subtitle={`Rs: ${data.bhaaiData.total}`}
+            />
           )}
           {data?.baanList && (
             <SwipeableList

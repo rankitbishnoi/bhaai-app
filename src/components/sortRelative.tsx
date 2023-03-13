@@ -1,4 +1,4 @@
-import {Button, Stack, Text} from '@react-native-material/core';
+import {Button, Text} from '@react-native-material/core';
 import React from 'react';
 import {
   KeyboardAvoidingView,
@@ -10,7 +10,8 @@ import useStyles from '../styles/profile';
 import {BaanBase} from '../types/Baan';
 import {Relative} from '../types/Relative';
 import RadioButton from './radioButton';
-import SizedBox from './SizedBox';
+import ScreenHeading from './screenHeading';
+import SizedBox from './sizedBox';
 
 type sortRelativeKeyType = keyof Relative;
 type sortBaanKeyType = keyof BaanBase;
@@ -37,11 +38,7 @@ const SortRelative: React.FC<ComponentProps> = (props: ComponentProps) => {
     <View style={styles.container}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-        <Stack m={4} spacing={4}>
-          <Text style={styles.heading} variant="button">
-            {'sort'}
-          </Text>
-        </Stack>
+        <ScreenHeading title={'sort'} />
         <TouchableOpacity onPress={() => props.setSortBy('firstName')}>
           <View style={styles.labelContainer}>
             <RadioButton selected={props.sortBy === 'firstName'} />

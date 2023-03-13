@@ -20,7 +20,7 @@ import useStackBarStyles from '../styles/stackBar';
 import SortBaan from './sortRelative';
 import FilterBaan from './filterBaan';
 import RadioButton from './radioButton';
-import SizedBox from './SizedBox';
+import SizedBox from './sizedBox';
 import {
   Menu,
   MenuOption,
@@ -28,6 +28,7 @@ import {
   MenuProvider,
   MenuTrigger,
 } from 'react-native-popup-menu';
+import {AppContextState} from '../services/app.reducer';
 
 const childPageStates = ['sort', 'filter'];
 
@@ -42,7 +43,7 @@ const AddFromBaan: React.FC<BaanProps> = ({
   nimtaId,
   invalidateData,
 }) => {
-  const myContext = useContext(AppContext);
+  const myContext = useContext<AppContextState>(AppContext);
   const styles = useStyles();
   const stackBarStyles = useStackBarStyles();
   const buttonStyles = useButtonStyles();
@@ -52,7 +53,7 @@ const AddFromBaan: React.FC<BaanProps> = ({
   const [selectedBaan, setSelectedBaans] = useState([] as string[]);
   const [filterBy, setFilterBy] = useState(null as any);
   let {data, isLoading} = useQuery(
-    ['baanList', myContext.appSettings.selectedRole],
+    ['baanList', myContext.appSettings.selectedPariwar],
     () => apiService.getBaanList(),
   );
 
@@ -143,7 +144,7 @@ const AddFromBaan: React.FC<BaanProps> = ({
     apiService
       .addRelativesInNimta(
         nimtaId,
-        myContext.appSettings.selectedRole,
+        myContext.appSettings.selectedPariwar,
         addBaanData,
       )
       .then(() => {

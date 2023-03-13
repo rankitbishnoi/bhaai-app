@@ -15,6 +15,8 @@ import {useNavigation} from '@react-navigation/native';
 import SortRelative from '../components/sortRelative';
 import FilterRelative from '../components/filterRelative';
 import SwipeableList from '../components/swipeableList/swipeableList';
+import {AppContextState} from '../services/app.reducer';
+import ScreenHeading from '../components/screenHeading';
 
 const childPageStates = ['sort', 'filter', 'add', 'edit'];
 
@@ -31,7 +33,7 @@ const Relative: React.FC<RelativeProps> = ({
   relatives,
   setVisible,
 }) => {
-  const myContext = useContext(AppContext);
+  const myContext = useContext<AppContextState>(AppContext);
   const navigation = useNavigation();
   const styles = useStyles();
   const stackBarStyles = useStackBarStyles();
@@ -43,11 +45,11 @@ const Relative: React.FC<RelativeProps> = ({
   const [selectedRelative, setSelectedRelative] = useState({} as any);
   const relativeList = relatives || [];
   let {data, isLoading} = useQuery(
-    ['relativeList', myContext.appSettings.selectedRole, queryKey],
+    ['relativeList', myContext.appSettings.selectedPariwar, queryKey],
     () =>
       nimtaBase
         ? relativeList
-        : apiService.getRelativeList(myContext.appSettings.selectedRole),
+        : apiService.getRelativeList(myContext.appSettings.selectedPariwar),
   );
 
   const filterList = useMemo(() => {
@@ -128,7 +130,7 @@ const Relative: React.FC<RelativeProps> = ({
         .removeRelativeFromNimta(
           id,
           nimtaId,
-          myContext.appSettings.selectedRole,
+          myContext.appSettings.selectedPariwar,
         )
         .then(() => {
           if (relatives) {
@@ -139,7 +141,7 @@ const Relative: React.FC<RelativeProps> = ({
         });
     }
     return apiService
-      .deleteRelative(id, myContext.appSettings.selectedRole)
+      .deleteRelative(id, myContext.appSettings.selectedPariwar)
       .then(() => {
         if (data) {
           const index = data?.findIndex(a => a._id === id);
@@ -156,12 +158,8 @@ const Relative: React.FC<RelativeProps> = ({
           {isLoading && (
             <ProgressBar height={5} indeterminate backgroundColor="#4a0072" />
           )}
-          <Stack m={4} spacing={4}>
-            <Text style={styles.heading} variant="button">
-              {nimtaBase ? 'Nimta Relatives' : 'Relatives'}
-            </Text>
-          </Stack>
-          {!myContext.appSettings.selectedRole && (
+          <ScreenHeading title={nimtaBase ? 'Nimta Relatives' : 'Relatives'} />
+          {!myContext.appSettings.selectedPariwar && (
             <TouchableOpacity
               onPress={() => {
                 navigation.navigate('profile' as never);
@@ -171,7 +169,7 @@ const Relative: React.FC<RelativeProps> = ({
               </View>
             </TouchableOpacity>
           )}
-          {myContext.appSettings.selectedRole && data && (
+          {myContext.appSettings.selectedPariwar && data && (
             <SwipeableList
               items={filterList.map(relative => {
                 return {
@@ -286,7 +284,7 @@ const Relative: React.FC<RelativeProps> = ({
           invalidateData={setQueryKey}
           setVisible={setOpenDailog}
           type="ADD"
-          pariwarId={myContext.appSettings.selectedRole}
+          pariwarId={myContext.appSettings.selectedPariwar}
         />
       )}
       {openDailog === 'edit' && (
@@ -295,7 +293,7 @@ const Relative: React.FC<RelativeProps> = ({
           setVisible={setOpenDailog}
           type="EDIT"
           data={selectedRelative}
-          pariwarId={myContext.appSettings.selectedRole}
+          pariwarId={myContext.appSettings.selectedPariwar}
         />
       )}
       {openDailog === 'sort' && (

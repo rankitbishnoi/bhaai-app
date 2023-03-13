@@ -4,11 +4,11 @@ import {Pressable, Text, TouchableOpacity, View} from 'react-native';
 import {apiService} from '../services/api.service';
 import AppContext from '../services/storage';
 import useStyles from '../styles/auth';
-import mmkv from '../services/mmkv';
 
 import useButtonStyles from '../styles/button';
 import {TextInput} from '@react-native-material/core';
 import {validateEmail, validatePhoneNumber} from '../services/helpers';
+import {AppContextState, APP_ACTIONS} from '../services/app.reducer';
 
 interface FormData {
   email: string;
@@ -18,7 +18,7 @@ interface FormData {
 }
 
 const Signup: React.FC<{}> = ({}) => {
-  const myContext = useContext(AppContext);
+  const myContext = useContext<AppContextState>(AppContext);
   const {
     control,
     handleSubmit,
@@ -45,17 +45,19 @@ const Signup: React.FC<{}> = ({}) => {
         password,
       })
       .catch(error => {
-        myContext.setAppSettings({
-          ...myContext.appSettings,
-          message: error.response.data?.message || 'Unable to SignUp',
+        myContext.dispatch({
+          type: APP_ACTIONS.NEW_MESSAGE,
+          payload: error.response.data?.message || 'Unable to SignUp',
         });
         return {access_token: ''};
       })
       .then(data => {
         if (data) {
           apiService.login({email, password}).then(result => {
-            mmkv.saveKey('id_token', result.access_token);
-            myContext.setAppSettings({isLoggedIn: true});
+            myContext.dispatch({
+              type: APP_ACTIONS.LOGIN,
+              payload: result.access_token,
+            });
           });
         }
       });

@@ -1,4 +1,4 @@
-import {Button, TextInput, Stack, Text} from '@react-native-material/core';
+import {Button, TextInput, Text} from '@react-native-material/core';
 import React, {useEffect, useState} from 'react';
 import {Controller, useForm} from 'react-hook-form';
 import {KeyboardAvoidingView, Platform, Pressable, View} from 'react-native';
@@ -6,7 +6,8 @@ import {apiService} from '../services/api.service';
 import {PariwarBase} from '../types/Pariwar';
 import useStyles from '../styles/bhaai';
 import {Pariwar} from '../types/PariwarList';
-import SizedBox from './SizedBox';
+import SizedBox from './sizedBox';
+import ScreenHeading from './screenHeading';
 
 interface ComponentProps {
   invalidateData: (key: number) => any;
@@ -73,11 +74,9 @@ const AddPariwar: React.FC<ComponentProps> = (props: ComponentProps) => {
     <View style={styles.container}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-        <Stack m={4} spacing={4}>
-          <Text style={styles.heading} variant="button">
-            {`${props.type === 'ADD' ? 'add' : 'edit'} pariwar`}
-          </Text>
-        </Stack>
+        <ScreenHeading
+          title={`${props.type === 'ADD' ? 'add' : 'edit'} pariwar`}
+        />
         <Pressable onPress={() => setFocus('name')}>
           {errors.name && (
             <Text style={styles.error}>{errors.name?.message}</Text>
