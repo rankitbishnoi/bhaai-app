@@ -11,7 +11,7 @@ import {
 import useStyles from '../styles/baan';
 import {Baan as BaanType} from '../types/Baan';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import ProgressBar from '../components/loader';
+import ProgressBar from '../components/ui/loader';
 import {BaanBase} from '../types/BaanList';
 import GiveBaan from '../components/giveBaan';
 import AppContext from '../services/storage';

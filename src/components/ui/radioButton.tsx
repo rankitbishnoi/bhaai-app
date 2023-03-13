@@ -1,6 +1,6 @@
 import React from 'react';
 import {View} from 'react-native';
-import useStyles from '../styles/radioButton';
+import useStyles from '../../styles/radioButton';
 
 interface RadioButtonOptions {
   selected: boolean;

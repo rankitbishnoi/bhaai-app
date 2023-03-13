@@ -2,7 +2,7 @@ import {ListItem} from '@react-native-material/core';
 import React from 'react';
 import {Animated, TouchableHighlight, ListRenderItemInfo} from 'react-native';
 import useStyles from '../../styles/swipeableList';
-import SizedBox from '../sizedBox';
+import SizedBox from '../ui/sizedBox';
 import {SwipeableListItem} from './swipeableList';
 
 interface VisibleItemOptions {

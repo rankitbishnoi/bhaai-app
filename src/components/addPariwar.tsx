@@ -1,13 +1,18 @@
 import {Button, TextInput, Text} from '@react-native-material/core';
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {Controller, useForm} from 'react-hook-form';
-import {KeyboardAvoidingView, Platform, Pressable, View} from 'react-native';
+import {
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+} from 'react-native';
 import {apiService} from '../services/api.service';
 import {PariwarBase} from '../types/Pariwar';
 import useStyles from '../styles/bhaai';
 import {Pariwar} from '../types/PariwarList';
-import SizedBox from './sizedBox';
-import ScreenHeading from './screenHeading';
+import SizedBox from './ui/sizedBox';
+import ScreenHeading from './ui/screenHeading';
 import {AppContextState, APP_ACTIONS} from '../services/app.reducer';
 import AppContext from '../services/storage';
 
@@ -33,10 +38,6 @@ const AddPariwar: React.FC<ComponentProps> = (props: ComponentProps) => {
       name: '',
     },
   });
-
-  useEffect(() => {
-    setFocus('name');
-  }, [setFocus]);
 
   const onSubmit = handleSubmit((input: PariwarBase) => {
     setProcessingEdit(true);
@@ -85,7 +86,7 @@ const AddPariwar: React.FC<ComponentProps> = (props: ComponentProps) => {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
         <ScreenHeading
@@ -104,6 +105,7 @@ const AddPariwar: React.FC<ComponentProps> = (props: ComponentProps) => {
                 {...register('name', {required: 'name is required'})}
                 onSubmitEditing={onSubmit}
                 autoCorrect={false}
+                autoFocus={true}
                 keyboardType="default"
                 returnKeyType="done"
                 style={styles.textInput}
@@ -137,7 +139,7 @@ const AddPariwar: React.FC<ComponentProps> = (props: ComponentProps) => {
         )}
         <Button color="secondary" title="cancel" onPress={close} />
       </KeyboardAvoidingView>
-    </View>
+    </ScrollView>
   );
 };
 

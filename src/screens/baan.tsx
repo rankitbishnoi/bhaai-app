@@ -8,12 +8,12 @@ import useStackBarStyles from '../styles/stackBar';
 import {Baan as BaanType} from '../types/Baan';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AddBaan from '../components/addBaan';
-import ProgressBar from '../components/loader';
+import ProgressBar from '../components/ui/loader';
 import {useQuery} from 'react-query';
 import {BaanList} from '../types/BaanList';
 import {BhaaiTotal} from '../types/BhaaiTotal';
 import SwipeableList from '../components/swipeableList/swipeableList';
-import ScreenHeading from '../components/screenHeading';
+import ScreenHeading from '../components/ui/screenHeading';
 import {AppContextState, APP_ACTIONS} from '../services/app.reducer';
 import AppContext from '../services/storage';
 

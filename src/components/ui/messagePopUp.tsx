@@ -2,10 +2,10 @@ import {Snackbar} from '@react-native-material/core';
 import React, {useContext, useEffect} from 'react';
 import {TouchableOpacity} from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import {AppContextState, APP_ACTIONS} from '../services/app.reducer';
-import AppContext from '../services/storage';
-import useStyles from '../styles/messagePopUp';
-import {MessagePopUpInterface} from '../types/MessagePopUp';
+import {AppContextState, APP_ACTIONS} from '../../services/app.reducer';
+import AppContext from '../../services/storage';
+import useStyles from '../../styles/messagePopUp';
+import {MessagePopUpInterface} from '../../types/MessagePopUp';
 
 interface MessagePopUpOptions {}
 

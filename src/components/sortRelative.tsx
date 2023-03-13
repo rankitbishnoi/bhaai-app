@@ -9,9 +9,9 @@ import {
 import useStyles from '../styles/profile';
 import {BaanBase} from '../types/Baan';
 import {Relative} from '../types/Relative';
-import RadioButton from './radioButton';
-import ScreenHeading from './screenHeading';
-import SizedBox from './sizedBox';
+import RadioButton from './ui/radioButton';
+import ScreenHeading from './ui/screenHeading';
+import SizedBox from './ui/sizedBox';
 
 type sortRelativeKeyType = keyof Relative;
 type sortBaanKeyType = keyof BaanBase;

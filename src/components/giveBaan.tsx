@@ -1,12 +1,17 @@
 import {Button, TextInput, Text} from '@react-native-material/core';
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {Controller, useForm} from 'react-hook-form';
-import {KeyboardAvoidingView, Platform, Pressable, View} from 'react-native';
+import {
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+} from 'react-native';
 import {apiService} from '../services/api.service';
 import useStyles from '../styles/bhaai';
 import {Baan as BaanType} from '../types/BaanList';
-import ScreenHeading from './screenHeading';
-import SizedBox from './sizedBox';
+import ScreenHeading from './ui/screenHeading';
+import SizedBox from './ui/sizedBox';
 
 interface ComponentProps {
   setVisible: (visiblity: boolean) => any;
@@ -29,10 +34,6 @@ const GiveBaan: React.FC<ComponentProps> = (props: ComponentProps) => {
     },
   });
 
-  useEffect(() => {
-    setFocus('amount');
-  }, [setFocus]);
-
   const onSubmit = handleSubmit(({amount}) => {
     setProcessing(true);
     apiService
@@ -51,7 +52,7 @@ const GiveBaan: React.FC<ComponentProps> = (props: ComponentProps) => {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
         <ScreenHeading title={'give baan'} />
@@ -79,6 +80,7 @@ const GiveBaan: React.FC<ComponentProps> = (props: ComponentProps) => {
                 })}
                 onSubmitEditing={onSubmit}
                 autoCorrect={false}
+                autoFocus={true}
                 keyboardType="number-pad"
                 returnKeyType="done"
                 variant="outlined"
@@ -99,7 +101,7 @@ const GiveBaan: React.FC<ComponentProps> = (props: ComponentProps) => {
         <SizedBox height={16} />
         <Button color="secondary" title="cancel" onPress={close} />
       </KeyboardAvoidingView>
-    </View>
+    </ScrollView>
   );
 };
 

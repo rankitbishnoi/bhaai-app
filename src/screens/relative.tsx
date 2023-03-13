@@ -6,7 +6,7 @@ import useStyles from '../styles/relative';
 import {Relative as RelativeType} from '../types/Relative';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AddRelative from '../components/addRelative';
-import ProgressBar from '../components/loader';
+import ProgressBar from '../components/ui/loader';
 import AppContext from '../services/storage';
 import {useQuery} from 'react-query';
 import useButtonStyles from '../styles/button';
@@ -16,7 +16,7 @@ import SortRelative from '../components/sortRelative';
 import FilterRelative from '../components/filterRelative';
 import SwipeableList from '../components/swipeableList/swipeableList';
 import {AppContextState, APP_ACTIONS} from '../services/app.reducer';
-import ScreenHeading from '../components/screenHeading';
+import ScreenHeading from '../components/ui/screenHeading';
 
 const childPageStates = ['sort', 'filter', 'add', 'edit'];
 

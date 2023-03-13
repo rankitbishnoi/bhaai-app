@@ -1,14 +1,14 @@
-import React, {useContext, useEffect} from 'react';
+import React, {useContext} from 'react';
 import {Controller, useForm} from 'react-hook-form';
 import {Pressable, Text, TouchableOpacity, View} from 'react-native';
-import {apiService} from '../services/api.service';
-import AppContext from '../services/storage';
-import useStyles from '../styles/auth';
+import {apiService} from '../../services/api.service';
+import AppContext from '../../services/storage';
+import useStyles from '../../styles/auth';
 
-import useButtonStyles from '../styles/button';
+import useButtonStyles from '../../styles/button';
 import {TextInput} from '@react-native-material/core';
-import {validateEmail, validatePhoneNumber} from '../services/helpers';
-import {AppContextState, APP_ACTIONS} from '../services/app.reducer';
+import {validateEmail, validatePhoneNumber} from '../../services/helpers';
+import {AppContextState, APP_ACTIONS} from '../../services/app.reducer';
 
 interface FormData {
   email: string;
@@ -33,10 +33,6 @@ const Signup: React.FC<{}> = ({}) => {
       phoneNumber: '+91',
     },
   });
-
-  useEffect(() => {
-    setFocus('email');
-  }, [setFocus]);
 
   const onSubmit = handleSubmit(({email, password}) => {
     apiService
@@ -90,6 +86,7 @@ const Signup: React.FC<{}> = ({}) => {
               autoCapitalize="none"
               autoComplete="email"
               autoCorrect={false}
+              autoFocus={true}
               keyboardType="email-address"
               returnKeyType="next"
               style={styles.textInput}

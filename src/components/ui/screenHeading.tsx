@@ -1,6 +1,6 @@
 import {Stack, Text} from '@react-native-material/core';
 import React from 'react';
-import useStyles from '../styles/screenHeading';
+import useStyles from '../../styles/screenHeading';
 
 interface Props {
   title: string;

@@ -1,11 +1,16 @@
 import {Button, TextInput} from '@react-native-material/core';
-import React, {useEffect} from 'react';
+import React from 'react';
 import {Controller, useForm} from 'react-hook-form';
-import {KeyboardAvoidingView, Platform, Pressable, View} from 'react-native';
+import {
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+} from 'react-native';
 import useStyles from '../styles/relative';
 import {RelativeBase} from '../types/Relative';
-import ScreenHeading from './screenHeading';
-import SizedBox from './sizedBox';
+import ScreenHeading from './ui/screenHeading';
+import SizedBox from './ui/sizedBox';
 
 interface ComponentProps {
   setVisible: (visiblity: string) => any;
@@ -26,10 +31,6 @@ const FilterRelative: React.FC<ComponentProps> = (props: ComponentProps) => {
     },
   });
 
-  useEffect(() => {
-    setFocus('firstName');
-  }, [setFocus]);
-
   const onSubmit = handleSubmit((input: RelativeBase) => {
     props.setFilterBy(input);
     props.setVisible('');
@@ -41,7 +42,7 @@ const FilterRelative: React.FC<ComponentProps> = (props: ComponentProps) => {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
         <ScreenHeading title={'filter relative'} />
@@ -55,6 +56,7 @@ const FilterRelative: React.FC<ComponentProps> = (props: ComponentProps) => {
                 {...register('firstName')}
                 onSubmitEditing={() => setFocus('lastName')}
                 autoCorrect={false}
+                autoFocus={true}
                 keyboardType="default"
                 returnKeyType="next"
                 style={styles.textInput}
@@ -182,7 +184,7 @@ const FilterRelative: React.FC<ComponentProps> = (props: ComponentProps) => {
         <SizedBox height={16} />
         <Button color="secondary" title="cancel" onPress={close} />
       </KeyboardAvoidingView>
-    </View>
+    </ScrollView>
   );
 };
 

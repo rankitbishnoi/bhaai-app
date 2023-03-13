@@ -1,16 +1,21 @@
 import {Button, TextInput, Text} from '@react-native-material/core';
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {Controller, useForm} from 'react-hook-form';
-import {KeyboardAvoidingView, Platform, Pressable, View} from 'react-native';
+import {
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+} from 'react-native';
 import {apiService} from '../services/api.service';
 import {BhaaiBase} from '../types/Bhaai';
 import useStyles from '../styles/bhaai';
 import DatePicker from 'react-native-date-picker';
 import {Bhaai} from '../types/BhaaiList';
 import AppContext from '../services/storage';
-import SizedBox from './sizedBox';
+import SizedBox from './ui/sizedBox';
 import {AppContextState, APP_ACTIONS} from '../services/app.reducer';
-import ScreenHeading from './screenHeading';
+import ScreenHeading from './ui/screenHeading';
 
 interface ComponentProps {
   setVisible: (visiblity: boolean) => any;
@@ -36,10 +41,6 @@ const AddBhaai: React.FC<ComponentProps> = (props: ComponentProps) => {
       date: '',
     },
   });
-
-  useEffect(() => {
-    setFocus('marriage');
-  }, [setFocus]);
 
   const onSubmit = handleSubmit((input: BhaaiBase) => {
     setProcessingEdit(true);
@@ -88,7 +89,7 @@ const AddBhaai: React.FC<ComponentProps> = (props: ComponentProps) => {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
         <ScreenHeading
@@ -107,6 +108,7 @@ const AddBhaai: React.FC<ComponentProps> = (props: ComponentProps) => {
                 {...register('marriage', {required: 'marriage is required'})}
                 onSubmitEditing={() => setFocus('date')}
                 autoCorrect={false}
+                autoFocus={true}
                 keyboardType="default"
                 returnKeyType="next"
                 style={styles.textInput}
@@ -182,7 +184,7 @@ const AddBhaai: React.FC<ComponentProps> = (props: ComponentProps) => {
         )}
         <Button color="secondary" title="cancel" onPress={close} />
       </KeyboardAvoidingView>
-    </View>
+    </ScrollView>
   );
 };
 

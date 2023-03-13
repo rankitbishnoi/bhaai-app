@@ -8,11 +8,11 @@ import {Bhaai as BhaaiType} from '../types/Bhaai';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AddBhaai from '../components/addBhaai';
 import Baan from './baan';
-import ProgressBar from '../components/loader';
+import ProgressBar from '../components/ui/loader';
 import Search from './search';
 import {useQuery} from 'react-query';
 import SwipeableList from '../components/swipeableList/swipeableList';
-import ScreenHeading from '../components/screenHeading';
+import ScreenHeading from '../components/ui/screenHeading';
 import {AppContextState, APP_ACTIONS} from '../services/app.reducer';
 import AppContext from '../services/storage';
 

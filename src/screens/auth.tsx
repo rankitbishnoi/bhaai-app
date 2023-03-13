@@ -7,9 +7,9 @@ import {
   Platform,
 } from 'react-native';
 // Components
-import SizedBox from '../components/sizedBox';
-import Login from '../components/login';
-import Signup from '../components/signup';
+import SizedBox from '../components/ui/sizedBox';
+import Login from '../components/auth/login';
+import Signup from '../components/auth/signup';
 
 import useStyles from '../styles/auth';
 import useButtonStyles from '../styles/button';

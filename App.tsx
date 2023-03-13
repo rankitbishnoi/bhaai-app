@@ -7,7 +7,7 @@ import Auth from './src/screens/auth';
 import AppContext from './src/services/storage';
 import mmkv from './src/services/mmkv';
 import Main from './src/screens/main';
-import MessagePopUp from './src/components/messagePopUp';
+import MessagePopUp from './src/components/ui/messagePopUp';
 import {QueryClient, QueryClientProvider} from 'react-query';
 import {appReducer} from './src/services/app.reducer';
 

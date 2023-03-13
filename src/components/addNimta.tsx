@@ -1,14 +1,19 @@
 import {Button, TextInput, Text} from '@react-native-material/core';
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {Controller, useForm} from 'react-hook-form';
-import {KeyboardAvoidingView, Platform, Pressable, View} from 'react-native';
+import {
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+} from 'react-native';
 import {apiService} from '../services/api.service';
 import {Nimta, NimtaBase} from '../types/Nimta';
 import useStyles from '../styles/nimta';
 import AppContext from '../services/storage';
-import SizedBox from './sizedBox';
+import SizedBox from './ui/sizedBox';
 import {AppContextState, APP_ACTIONS} from '../services/app.reducer';
-import ScreenHeading from './screenHeading';
+import ScreenHeading from './ui/screenHeading';
 
 interface ComponentProps {
   pariwarId: string;
@@ -33,10 +38,6 @@ const AddNimta: React.FC<ComponentProps> = (props: ComponentProps) => {
       name: '',
     },
   });
-
-  useEffect(() => {
-    setFocus('name');
-  }, [setFocus]);
 
   const onSubmit = handleSubmit((input: NimtaBase) => {
     setProcessingEdit(true);
@@ -89,7 +90,7 @@ const AddNimta: React.FC<ComponentProps> = (props: ComponentProps) => {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
         <ScreenHeading
@@ -108,6 +109,7 @@ const AddNimta: React.FC<ComponentProps> = (props: ComponentProps) => {
                 {...register('name', {required: 'name is required'})}
                 onSubmitEditing={onSubmit}
                 autoCorrect={false}
+                autoFocus={true}
                 keyboardType="default"
                 returnKeyType="done"
                 style={styles.textInput}
@@ -141,7 +143,7 @@ const AddNimta: React.FC<ComponentProps> = (props: ComponentProps) => {
         )}
         <Button color="secondary" title="cancel" onPress={close} />
       </KeyboardAvoidingView>
-    </View>
+    </ScrollView>
   );
 };
 

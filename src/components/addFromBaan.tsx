@@ -12,15 +12,15 @@ import {
 import useStyles from '../styles/baan';
 import {BaanBase as BaanType} from '../types/Baan';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import ProgressBar from './loader';
+import ProgressBar from './ui/loader';
 import AppContext from '../services/storage';
 import {useQuery} from 'react-query';
 import useButtonStyles from '../styles/button';
 import useStackBarStyles from '../styles/stackBar';
 import SortBaan from './sortRelative';
 import FilterBaan from './filterBaan';
-import RadioButton from './radioButton';
-import SizedBox from './sizedBox';
+import RadioButton from './ui/radioButton';
+import SizedBox from './ui/sizedBox';
 import {
   Menu,
   MenuOption,

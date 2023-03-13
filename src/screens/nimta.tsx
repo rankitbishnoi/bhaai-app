@@ -13,7 +13,7 @@ import useStackBarStyles from '../styles/stackBar';
 import {Nimta as NimtaType} from '../types/Nimta';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AddNimta from '../components/addNimta';
-import ProgressBar from '../components/loader';
+import ProgressBar from '../components/ui/loader';
 import AppContext from '../services/storage';
 import {useQuery} from 'react-query';
 import useButtonStyles from '../styles/button';
@@ -23,7 +23,7 @@ import AddFromRelative from '../components/addFromRelative';
 import AddFromBaan from '../components/addFromBaan';
 import SwipeableList from '../components/swipeableList/swipeableList';
 import {AppContextState, APP_ACTIONS} from '../services/app.reducer';
-import ScreenHeading from '../components/screenHeading';
+import ScreenHeading from '../components/ui/screenHeading';
 
 const childPageStates = [
   'relative',

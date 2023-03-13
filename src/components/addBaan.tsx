@@ -1,15 +1,20 @@
 import {Button, TextInput, Text} from '@react-native-material/core';
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {Controller, useForm} from 'react-hook-form';
-import {KeyboardAvoidingView, Platform, Pressable, View} from 'react-native';
+import {
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+} from 'react-native';
 import {apiService} from '../services/api.service';
 import {BaanBase} from '../types/Baan';
 import useStyles from '../styles/baan';
 import {Baan} from '../types/BaanList';
 import AppContext from '../services/storage';
-import SizedBox from './sizedBox';
+import SizedBox from './ui/sizedBox';
 import {AppContextState, APP_ACTIONS} from '../services/app.reducer';
-import ScreenHeading from './screenHeading';
+import ScreenHeading from './ui/screenHeading';
 
 interface ComponentProps {
   setVisible: (visiblity: boolean) => any;
@@ -75,10 +80,6 @@ const AddBaan: React.FC<ComponentProps> = (props: ComponentProps) => {
     props.setVisible(false);
   };
 
-  useEffect(() => {
-    setFocus('firstName');
-  }, [setFocus]);
-
   const deleteBaan = () => {
     setProcessingDelete(true);
     apiService.deleteBaan(props.data?._id as string, props.bhaaiId).then(() => {
@@ -93,7 +94,7 @@ const AddBaan: React.FC<ComponentProps> = (props: ComponentProps) => {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
         <ScreenHeading
@@ -112,6 +113,7 @@ const AddBaan: React.FC<ComponentProps> = (props: ComponentProps) => {
                 {...register('firstName', {required: 'first name is required'})}
                 onSubmitEditing={() => setFocus('lastName')}
                 autoCorrect={false}
+                autoFocus={true}
                 keyboardType="default"
                 returnKeyType="next"
                 style={styles.textInput}
@@ -284,7 +286,7 @@ const AddBaan: React.FC<ComponentProps> = (props: ComponentProps) => {
         )}
         <Button color="secondary" title="cancel" onPress={close} />
       </KeyboardAvoidingView>
-    </View>
+    </ScrollView>
   );
 };
 export default AddBaan;
