@@ -114,7 +114,7 @@ const Nimta: React.FC = () => {
                       <Ionicons
                         name="create-outline"
                         size={25}
-                        color={'white'}
+                        color={'#101957'}
                       />
                     </TouchableOpacity>
                   ),
@@ -127,7 +127,7 @@ const Nimta: React.FC = () => {
                       <Ionicons
                         name="chevron-forward-outline"
                         size={25}
-                        color={'white'}
+                        color={'#101957'}
                       />
                     </TouchableOpacity>
                   ),
@@ -141,15 +141,16 @@ const Nimta: React.FC = () => {
           <Stack
             style={stackBarStyles.stackBarBottom}
             fill
-            bottom={1}
-            right={1}
-            spacing={4}>
+            bottom={0}
+            spacing={0}>
             <View />
             <IconButton
               onPress={() => {
                 setOpenDailog('add');
               }}
-              icon={props => <Ionicons name="add" {...props} />}
+              icon={props => (
+                <Ionicons name="add" {...props} color={'#101957'} />
+              )}
               color="secondary"
               style={stackBarStyles.fab}
             />
@@ -189,7 +190,7 @@ const Nimta: React.FC = () => {
             </Pressable>
             <Switch
               thumbColor={'#eee'}
-              trackColor={{true: 'rgb(93, 95, 222)', false: '#666'}}
+              trackColor={{true: '#101957', false: '#666'}}
               value={openDailog === 'addFromRelative'}
               onValueChange={() =>
                 setOpenDailog(

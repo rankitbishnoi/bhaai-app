@@ -3,13 +3,14 @@ import {StyleSheet} from 'react-native';
 export default function useStyles() {
   return StyleSheet.create({
     container: {
-      backgroundColor: '#000',
+      backgroundColor: 'rgba(230, 230, 230, 0.1)',
       flex: 1,
-      color: '#ddd',
+      color: '#111',
+      paddingHorizontal: 8,
     },
     list: {
-      backgroundColor: '#000',
-      color: '#ddd',
+      backgroundColor: '#fff',
+      color: '#111',
     },
     loader: {
       width: 1000,
@@ -21,7 +22,7 @@ export default function useStyles() {
     },
     heading: {
       textAlign: 'center',
-      color: 'rgb(93, 95, 222)',
+      color: '#101957',
       marginBottom: 16,
     },
     form: {
@@ -33,26 +34,26 @@ export default function useStyles() {
       paddingHorizontal: 16,
     },
     label: {
-      color: 'rgba(235, 235, 245, 0.6)',
+      color: '#101957',
       fontSize: 15,
       fontWeight: '400',
       lineHeight: 20,
       width: 80,
     },
     subtitle: {
-      color: 'rgba(235, 235, 245, 0.6)',
+      color: '#101957',
       fontSize: 17,
       fontWeight: '400',
       lineHeight: 22,
     },
     textButton: {
-      color: '#FFFFFF',
+      color: '#111',
       fontSize: 15,
       fontWeight: '400',
       lineHeight: 20,
     },
     textInput: {
-      color: '#FFFFFF',
+      color: '#111',
       marginBottom: 16,
     },
     sortFilter: {

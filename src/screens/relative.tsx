@@ -204,7 +204,7 @@ const Relative: React.FC<RelativeProps> = ({
                       <Ionicons
                         name="create-outline"
                         size={25}
-                        color={'white'}
+                        color={'#101957'}
                       />
                     </TouchableOpacity>
                   ),
@@ -218,8 +218,7 @@ const Relative: React.FC<RelativeProps> = ({
           <Stack
             style={stackBarStyles.stackBarBottom}
             fill
-            bottom={1}
-            right={1}
+            bottom={0}
             spacing={0}>
             {!!nimtaBase && (
               <IconButton
@@ -227,7 +226,11 @@ const Relative: React.FC<RelativeProps> = ({
                   setVisible && setVisible('');
                 }}
                 icon={props => (
-                  <Ionicons name="arrow-back-outline" {...props} />
+                  <Ionicons
+                    name="arrow-back-outline"
+                    {...props}
+                    color={'#101957'}
+                  />
                 )}
                 color="secondary"
                 style={stackBarStyles.fab}
@@ -275,7 +278,11 @@ const Relative: React.FC<RelativeProps> = ({
                   setVisible && setVisible('addFromRelative');
                 }}
                 icon={props => (
-                  <Ionicons name="person-add-outline" {...props} />
+                  <Ionicons
+                    name="person-add-outline"
+                    {...props}
+                    color={'#101957'}
+                  />
                 )}
                 color="secondary"
                 style={stackBarStyles.fab}
@@ -286,7 +293,9 @@ const Relative: React.FC<RelativeProps> = ({
                 onPress={() => {
                   setOpenDailog('add');
                 }}
-                icon={props => <Ionicons name="add" {...props} />}
+                icon={props => (
+                  <Ionicons name="add" {...props} color={'#101957'} />
+                )}
                 color="secondary"
                 style={stackBarStyles.fab}
               />

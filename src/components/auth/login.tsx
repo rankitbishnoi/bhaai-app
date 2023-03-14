@@ -73,7 +73,6 @@ const Login: React.FC<{}> = ({}) => {
               autoCorrect={false}
               keyboardType="email-address"
               returnKeyType="next"
-              autoFocus={true}
               style={styles.textInput}
               textContentType="username"
               {...register('email', {

@@ -3,14 +3,14 @@ import {StyleSheet} from 'react-native';
 export default function useStyles() {
   return StyleSheet.create({
     container: {
-      backgroundColor: 'rgb(10, 10, 10)',
+      backgroundColor: 'rgba(230, 230, 230, 0.1)',
       flex: 1,
     },
     backTextWhite: {
-      color: '#FFF',
+      color: '#111',
     },
     noItems: {
-      color: '#aaa',
+      color: '#666',
       fontSize: 14,
       fontWeight: 'bold',
       position: 'absolute',
@@ -19,9 +19,9 @@ export default function useStyles() {
       top: '50%',
     },
     rowFront: {
-      backgroundColor: 'rgb(10, 10, 10)',
+      backgroundColor: 'rgba(230, 230, 230, 0.1)',
       borderRadius: 5,
-      margin: 5,
+      marginTop: 5,
       marginBottom: 5,
       shadowColor: '#999',
       shadowOffset: {width: 0, height: 1},
@@ -30,19 +30,19 @@ export default function useStyles() {
       elevation: 5,
     },
     rowFrontVisible: {
-      backgroundColor: 'rgb(10, 10, 10)',
+      backgroundColor: 'rgba(230, 230, 230, 0.1)',
       borderRadius: 5,
       padding: 0,
     },
     rowBack: {
       alignItems: 'center',
-      backgroundColor: 'rgb(10, 10, 10)',
+      backgroundColor: 'rgba(230, 230, 230, 0.1)',
       flex: 1,
       flexDirection: 'row',
       justifyContent: 'space-between',
       paddingLeft: 15,
       margin: 5,
-      marginBottom: 5,
+      marginBottom: 6,
       borderRadius: 5,
     },
     backRightBtn: {
@@ -55,7 +55,7 @@ export default function useStyles() {
       paddingRight: 17,
     },
     backRightBtnLeft: {
-      backgroundColor: 'rgb(93, 95, 222)',
+      backgroundColor: '#101957',
       right: 75,
     },
     backRightBtnRight: {
@@ -80,8 +80,8 @@ export default function useStyles() {
       color: '#999',
     },
     list: {
-      backgroundColor: '#000',
-      color: '#ddd',
+      backgroundColor: '#fff',
+      color: '#111',
     },
   });
 }

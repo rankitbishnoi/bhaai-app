@@ -3,7 +3,7 @@ import {StyleSheet} from 'react-native';
 export default function useStyles() {
   return StyleSheet.create({
     root: {
-      backgroundColor: '#000000',
+      backgroundColor: '#ffffff',
       flex: 1,
     },
     safeAreaView: {
@@ -16,8 +16,8 @@ export default function useStyles() {
       paddingVertical: 32,
     },
     list: {
-      backgroundColor: '#000',
-      color: '#ddd',
+      backgroundColor: '#fff',
+      color: '#111',
     },
   });
 }

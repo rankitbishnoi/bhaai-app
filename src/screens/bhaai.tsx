@@ -90,7 +90,7 @@ const Bhaai: React.FC = () => {
                       <Ionicons
                         name="create-outline"
                         size={25}
-                        color={'white'}
+                        color={'#101957'}
                       />
                     </TouchableOpacity>
                   ),
@@ -99,7 +99,7 @@ const Bhaai: React.FC = () => {
                       <Ionicons
                         name="chevron-forward-outline"
                         size={25}
-                        color={'white'}
+                        color={'#101957'}
                       />
                     </TouchableOpacity>
                   ),
@@ -113,14 +113,15 @@ const Bhaai: React.FC = () => {
           <Stack
             style={stackBarStyles.stackBarBottom}
             fill
-            bottom={1}
-            right={1}
-            spacing={4}>
+            bottom={0}
+            spacing={0}>
             <IconButton
               onPress={() => {
                 setOpenDailog('search');
               }}
-              icon={props => <Ionicons name="search" {...props} />}
+              icon={props => (
+                <Ionicons name="search" {...props} color={'#101957'} />
+              )}
               color="secondary"
               style={stackBarStyles.fab}
             />
@@ -128,7 +129,9 @@ const Bhaai: React.FC = () => {
               onPress={() => {
                 setOpenDailog('add');
               }}
-              icon={props => <Ionicons name="add" {...props} />}
+              icon={props => (
+                <Ionicons name="add" {...props} color={'#101957'} />
+              )}
               color="secondary"
               style={stackBarStyles.fab}
             />

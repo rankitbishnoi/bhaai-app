@@ -7,6 +7,7 @@ export default function useStyles() {
       justifyContent: 'center',
       paddingHorizontal: 16,
       paddingVertical: 32,
+      backgroundColor: 'rgba(230, 230, 230, 0.1)',
     },
     forgotPasswordContainer: {
       alignItems: 'flex-end',
@@ -20,30 +21,30 @@ export default function useStyles() {
       paddingHorizontal: 16,
     },
     label: {
-      color: 'rgba(235, 235, 245, 0.6)',
+      color: '#101957',
       fontSize: 15,
       fontWeight: '400',
       lineHeight: 20,
       width: 80,
     },
     subtitle: {
-      color: 'rgba(235, 235, 245, 0.6)',
+      color: '#101957',
       fontSize: 17,
       fontWeight: '400',
       lineHeight: 22,
     },
     textButton: {
-      color: '#FFFFFF',
+      color: '#111',
       fontSize: 15,
       fontWeight: '400',
       lineHeight: 20,
     },
     textInput: {
-      color: '#FFFFFF',
+      color: '#111',
       marginBottom: 16,
     },
     title: {
-      color: '#FFFFFF',
+      color: '#c9b79c',
       fontSize: 28,
       fontWeight: '700',
       lineHeight: 34,

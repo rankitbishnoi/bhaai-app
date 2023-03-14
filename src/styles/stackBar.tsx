@@ -16,6 +16,7 @@ export default function useStyles() {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
+      alignSelf: 'center',
       position: 'absolute',
       width: '100%',
     },
@@ -28,7 +29,7 @@ export default function useStyles() {
     },
     stackBarHeadings: {
       textAlign: 'center',
-      color: 'rgb(93, 95, 222)',
+      color: '#101957',
       width: 100,
       height: 30,
       lineHeight: 30,
@@ -37,7 +38,7 @@ export default function useStyles() {
       marginVertical: 8,
     },
     background: {
-      backgroundColor: '#000',
+      backgroundColor: '#fff',
     },
   });
 }

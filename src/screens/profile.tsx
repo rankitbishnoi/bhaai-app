@@ -104,7 +104,11 @@ const Profile: React.FC = () => {
                     }
                     trailing={props => (
                       <TouchableOpacity onPress={() => editItem(role)}>
-                        <Ionicons name="chevron-forward-outline" {...props} />
+                        <Ionicons
+                          name="chevron-forward-outline"
+                          {...props}
+                          color={'#101957'}
+                        />
                       </TouchableOpacity>
                     )}
                   />
@@ -113,15 +117,16 @@ const Profile: React.FC = () => {
               <Stack
                 style={stackBarStyles.stackBarBottom}
                 fill
-                bottom={1}
-                right={1}
-                spacing={4}>
+                bottom={0}
+                spacing={0}>
                 <View />
                 <IconButton
                   onPress={() => {
                     setOpenDailog('add');
                   }}
-                  icon={props => <Ionicons name="add" {...props} />}
+                  icon={props => (
+                    <Ionicons name="add" {...props} color={'#101957'} />
+                  )}
                   color="secondary"
                   style={stackBarStyles.fab}
                 />

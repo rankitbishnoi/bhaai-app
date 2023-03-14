@@ -86,7 +86,6 @@ const Signup: React.FC<{}> = ({}) => {
               autoCapitalize="none"
               autoComplete="email"
               autoCorrect={false}
-              autoFocus={true}
               keyboardType="email-address"
               returnKeyType="next"
               style={styles.textInput}

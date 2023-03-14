@@ -136,7 +136,7 @@ const ProgressBar = (props: {
 };
 
 ProgressBar.defaultProps = {
-  state: 'black',
+  state: '#111',
   height: 2,
   progress: 0,
   animated: true,

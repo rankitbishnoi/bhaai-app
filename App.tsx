@@ -36,17 +36,21 @@ const App: React.FC = () => {
           colorScheme: 'dark',
           palette: {
             ...defaultTheme.palette,
+            primary: {
+              main: '#c9b79c',
+              on: '#fff',
+            },
             secondary: {
-              main: 'rgb(0, 100, 100)',
-              on: '#ddd',
+              main: '#101957',
+              on: '#fff',
             },
             background: {
-              main: '#111',
-              on: '#ddd',
+              main: '#fff',
+              on: '#111',
             },
             surface: {
-              main: '#111',
-              on: '#ddd',
+              main: '#fff',
+              on: '#111',
             },
           },
         }}>

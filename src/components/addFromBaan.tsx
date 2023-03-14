@@ -180,7 +180,7 @@ const AddFromBaan: React.FC<BaanProps> = ({setVisible, nimtaId}) => {
                 <Ionicons
                   style={stackBarStyles.left}
                   size={24}
-                  color={'white'}
+                  color={'#101957'}
                   name={
                     menuOpen
                       ? 'ellipsis-horizontal'
@@ -236,14 +236,19 @@ const AddFromBaan: React.FC<BaanProps> = ({setVisible, nimtaId}) => {
           <Stack
             style={stackBarStyles.stackBarBottom}
             fill
-            bottom={1}
-            right={1}
+            bottom={0}
             spacing={0}>
             <IconButton
               onPress={() => {
                 setVisible('');
               }}
-              icon={props => <Ionicons name="arrow-back-outline" {...props} />}
+              icon={props => (
+                <Ionicons
+                  name="arrow-back-outline"
+                  {...props}
+                  color={'#101957'}
+                />
+              )}
               color="secondary"
               style={stackBarStyles.fab}
             />
@@ -286,7 +291,9 @@ const AddFromBaan: React.FC<BaanProps> = ({setVisible, nimtaId}) => {
               onPress={() => {
                 addBaan();
               }}
-              icon={props => <Ionicons name="add" {...props} />}
+              icon={props => (
+                <Ionicons name="add" {...props} color={'#101957'} />
+              )}
               color="secondary"
               style={stackBarStyles.fab}
             />

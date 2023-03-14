@@ -111,7 +111,7 @@ const Baan: React.FC<BaanProps> = ({bhaaiId, setBaanVisible}) => {
                       <Ionicons
                         name="create-outline"
                         size={25}
-                        color={'white'}
+                        color={'#101957'}
                       />
                     </TouchableOpacity>
                   ),
@@ -125,14 +125,19 @@ const Baan: React.FC<BaanProps> = ({bhaaiId, setBaanVisible}) => {
           <Stack
             style={stackBarStyles.stackBarBottom}
             fill
-            bottom={1}
-            right={1}
-            spacing={4}>
+            bottom={0}
+            spacing={0}>
             <IconButton
               onPress={() => {
                 setBaanVisible(false);
               }}
-              icon={props => <Ionicons name="arrow-back-outline" {...props} />}
+              icon={props => (
+                <Ionicons
+                  name="arrow-back-outline"
+                  {...props}
+                  color={'#101957'}
+                />
+              )}
               color="secondary"
               style={stackBarStyles.fab}
             />
@@ -140,7 +145,9 @@ const Baan: React.FC<BaanProps> = ({bhaaiId, setBaanVisible}) => {
               onPress={() => {
                 setOpenDailog('add');
               }}
-              icon={props => <Ionicons name="add" {...props} />}
+              icon={props => (
+                <Ionicons name="add" {...props} color={'#101957'} />
+              )}
               color="secondary"
               style={stackBarStyles.fab}
             />

@@ -43,10 +43,10 @@ const Main: React.FC = () => {
       return <Ionicons name={iconName} size={size} color={color} />;
     },
     tabBarStyle: {
-      backgroundColor: 'black',
+      backgroundColor: '#E6E6E6',
     },
-    tabBarActiveTintColor: 'rgb(93, 95, 222)',
-    tabBarInactiveTintColor: 'white',
+    tabBarActiveTintColor: 'rgb(16, 25, 87)',
+    tabBarInactiveTintColor: 'rgb(171, 178, 227)',
     headerShown: false,
   });
 

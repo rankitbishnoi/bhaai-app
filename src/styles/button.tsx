@@ -4,22 +4,24 @@ export default function useStyles() {
   return StyleSheet.create({
     buttonSecondary: {
       alignItems: 'center',
-      backgroundColor: 'rgb(93, 95, 222)',
+      backgroundColor: '#101957',
       borderRadius: 8,
       height: 48,
       justifyContent: 'center',
       marginVertical: 8,
+      marginHorizontal: 4,
     },
     button: {
       alignItems: 'center',
-      backgroundColor: 'rgb(0, 100, 100)',
+      backgroundColor: '#101957',
       borderRadius: 8,
       height: 48,
       justifyContent: 'center',
       marginVertical: 8,
+      marginHorizontal: 4,
     },
     buttonTitle: {
-      color: '#FFFFFF',
+      color: '#fff',
       fontSize: 17,
       fontWeight: '600',
       lineHeight: 22,
@@ -30,7 +32,7 @@ export default function useStyles() {
       alignItems: 'center',
       borderRadius: 8,
       width: 'auto',
-      backgroundColor: 'rgb(0, 100, 100)',
+      backgroundColor: '#c9b79c',
     },
     buttonGroupItem: {
       flexDirection: 'row',
@@ -39,11 +41,11 @@ export default function useStyles() {
       gap: 3,
     },
     buttonGroupItemIcon: {
-      color: '#ffffff',
+      color: '#fff',
       fontWeight: '600',
     },
     buttonGroupTitle: {
-      color: '#FFFFFF',
+      color: '#fff',
       fontSize: 18,
       fontWeight: '600',
       lineHeight: 32,
@@ -56,7 +58,7 @@ export default function useStyles() {
     buttonGroupDivider: {
       height: '80%',
       width: 1,
-      backgroundColor: '#cccccc',
+      backgroundColor: '#666',
     },
   });
 }
