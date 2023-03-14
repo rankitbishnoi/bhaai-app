@@ -1,10 +1,10 @@
 import React, {useContext, useState} from 'react';
 import {
-  Text,
   View,
   TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
+  Pressable,
 } from 'react-native';
 // Components
 import SizedBox from '../components/ui/sizedBox';
@@ -12,19 +12,31 @@ import Login from '../components/auth/login';
 import Signup from '../components/auth/signup';
 
 import useStyles from '../styles/auth';
+import useStackBarStyles from '../styles/stackBar';
 import useButtonStyles from '../styles/button';
 import AppContext from '../services/storage';
-import {AppContextState} from '../services/app.reducer';
+import {
+  AppContextState,
+  APP_ACTIONS,
+  themeColor,
+} from '../services/app.reducer';
+import {Stack, Text} from '@react-native-material/core';
 
 const Auth: React.FC = () => {
   const myContext = useContext<AppContextState>(AppContext);
   const styles = useStyles(myContext.appSettings.theme);
+  const stackBarStyles = useStackBarStyles(myContext.appSettings.theme);
   const buttonStyles = useButtonStyles(myContext.appSettings.theme);
   const [login, setLogin] = useState(true);
 
   const handleToggle = () => {
     setLogin((current: any) => !current);
   };
+
+  const toggleTheme = () => {
+    myContext.dispatch({type: APP_ACTIONS.TOGGLE_THEME});
+  };
+
   return (
     <>
       <KeyboardAvoidingView
@@ -49,6 +61,18 @@ const Auth: React.FC = () => {
         </TouchableOpacity>
       </KeyboardAvoidingView>
       <SizedBox height={60} />
+      <Stack style={stackBarStyles.stackBarBottom} fill top={8} spacing={0}>
+        <View style={stackBarStyles.fab} />
+        <Pressable onPress={toggleTheme} style={stackBarStyles.fab}>
+          <Text variant="button">
+            {`${
+              myContext.appSettings.theme === themeColor.LIGHT
+                ? themeColor.DARK
+                : themeColor.LIGHT
+            } mode`}
+          </Text>
+        </Pressable>
+      </Stack>
     </>
   );
 };

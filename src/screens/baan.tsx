@@ -89,10 +89,10 @@ const Baan: React.FC<BaanProps> = ({bhaaiId, setBaanVisible}) => {
           {isLoading && (
             <ProgressBar height={5} indeterminate backgroundColor="#4a0072" />
           )}
-          {data?.bhaaiData && (
+          {data?.baanList && data?.bhaaiData && (
             <ScreenHeading
               title={data.bhaaiData.marriage}
-              subtitle={`Rs: ${data.bhaaiData.total}`}
+              subtitle={`Rs: ${data.bhaaiData.total}, ${data.baanList.length} entries`}
             />
           )}
           {data?.baanList && (

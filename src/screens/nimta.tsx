@@ -48,16 +48,19 @@ const Nimta: React.FC = () => {
       myContext.appSettings.queryState.nimtaList,
     ],
     () =>
-      apiService
-        .getNimtaList(myContext.appSettings.selectedPariwar)
-        .catch(error => {
-          if (error.type === 'NOT_AUTHENTICATED') {
-            myContext.dispatch({type: APP_ACTIONS.LOGOUT});
-          }
+      myContext.appSettings.selectedPariwar
+        ? apiService
+            .getNimtaList(myContext.appSettings.selectedPariwar)
+            .catch(error => {
+              if (error.type === 'NOT_AUTHENTICATED') {
+                myContext.dispatch({type: APP_ACTIONS.LOGOUT});
+              }
 
-          return [];
-        }),
+              return [];
+            })
+        : [],
   );
+  const selectedPariwar = myContext.appSettings.selectedPariwar || '';
 
   const editItem = (nimta: NimtaType) => {
     setSelectedNimta(nimta);
@@ -69,15 +72,13 @@ const Nimta: React.FC = () => {
   };
 
   const deleteNimta = async (id: string) => {
-    return apiService
-      .deleteNimta(id, myContext.appSettings.selectedPariwar)
-      .then(() => {
-        if (data) {
-          const index = data?.findIndex(a => a._id === id);
-          data.splice(index, 1);
-        }
-        return true;
-      });
+    return apiService.deleteNimta(id, selectedPariwar).then(() => {
+      if (data) {
+        const index = data?.findIndex(a => a._id === id);
+        data.splice(index, 1);
+      }
+      return true;
+    });
   };
 
   return (
@@ -87,8 +88,11 @@ const Nimta: React.FC = () => {
           {isLoading && (
             <ProgressBar height={5} indeterminate backgroundColor="#4a0072" />
           )}
-          <ScreenHeading title="Nimta List" />
-          {!myContext.appSettings.selectedPariwar && (
+          <ScreenHeading
+            title="Nimta List"
+            subtitle={`${data ? data.length : 0} entries`}
+          />
+          {!selectedPariwar && (
             <TouchableOpacity
               onPress={() => {
                 navigation.navigate('profile' as never);
@@ -98,7 +102,7 @@ const Nimta: React.FC = () => {
               </View>
             </TouchableOpacity>
           )}
-          {myContext.appSettings.selectedPariwar && data && (
+          {selectedPariwar && data && (
             <SwipeableList
               items={data.map(nimta => {
                 return {
@@ -165,7 +169,7 @@ const Nimta: React.FC = () => {
         <AddNimta
           setVisible={value => setOpenDailog(value ? 'add' : '')}
           type="ADD"
-          pariwarId={myContext.appSettings.selectedPariwar}
+          pariwarId={selectedPariwar}
         />
       )}
       {openDailog === 'edit' && (
@@ -173,7 +177,7 @@ const Nimta: React.FC = () => {
           setVisible={value => setOpenDailog(value ? 'edit' : '')}
           type="EDIT"
           data={selectedNimta}
-          pariwarId={myContext.appSettings.selectedPariwar}
+          pariwarId={selectedPariwar}
         />
       )}
       {openDailog === 'relative' && (

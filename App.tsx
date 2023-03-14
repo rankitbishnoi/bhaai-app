@@ -11,12 +11,13 @@ import Main from './src/screens/main';
 import MessagePopUp from './src/components/ui/messagePopUp';
 import {QueryClient, QueryClientProvider} from 'react-query';
 import {appReducer, themeColor} from './src/services/app.reducer';
+import {Appearance} from 'react-native';
 
 const App: React.FC = () => {
   const [appSettings, dispatch] = useReducer(appReducer, {
     isLoggedIn: !!mmkv.loadJWT(),
     messages: [],
-    selectedPariwar: '',
+    selectedPariwar: null,
     queryState: {
       baanList: Date.now(),
       bhaaiList: Date.now(),
@@ -25,7 +26,7 @@ const App: React.FC = () => {
       relativeList: Date.now(),
       profile: Date.now(),
     },
-    theme: themeColor.LIGHT,
+    theme: (Appearance.getColorScheme() || themeColor.LIGHT) as themeColor,
   });
   const styles = useStyles(appSettings.theme);
   const theme = themeStyles[appSettings.theme === 'dark' ? 'dark' : 'light'];

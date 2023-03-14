@@ -15,6 +15,15 @@ export default function useStyles(colorScheme: string) {
       backgroundColor: theme.backgroundSecondary,
       color: theme.frontColor,
     },
+    noItems: {
+      color: theme.frontColorInvert,
+      fontSize: 14,
+      fontWeight: 'bold',
+      position: 'absolute',
+      alignSelf: 'center',
+      textAlign: 'center',
+      top: '50%',
+    },
     loader: {
       width: 1000,
       height: 1000,

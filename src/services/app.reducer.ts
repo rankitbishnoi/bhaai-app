@@ -38,7 +38,7 @@ export interface AppContextState {
 export interface AppContextInterface {
   isLoggedIn: boolean;
   messages: MessagePopUpInterface[];
-  selectedPariwar: string;
+  selectedPariwar: string | null;
   queryState: QueryState;
   theme: themeColor;
 }

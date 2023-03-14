@@ -76,7 +76,10 @@ const Bhaai: React.FC = () => {
           {isLoading && (
             <ProgressBar height={5} indeterminate backgroundColor="#4a0072" />
           )}
-          <ScreenHeading title="Bhaai List" />
+          <ScreenHeading
+            title="Bhaai List"
+            subtitle={`${data ? data.length : 0} entries`}
+          />
           {data && (
             <SwipeableList
               items={data.map(bhaaiItem => {

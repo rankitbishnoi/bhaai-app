@@ -146,7 +146,7 @@ const AddFromBaan: React.FC<BaanProps> = ({setVisible, nimtaId}) => {
     apiService
       .addRelativesInNimta(
         nimtaId,
-        myContext.appSettings.selectedPariwar,
+        myContext.appSettings.selectedPariwar || '',
         addBaanData,
       )
       .then(() => {

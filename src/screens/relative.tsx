@@ -52,7 +52,8 @@ const Relative: React.FC<RelativeProps> = ({
     () =>
       nimtaBase
         ? relativeList
-        : apiService
+        : myContext.appSettings.selectedPariwar
+        ? apiService
             .getRelativeList(myContext.appSettings.selectedPariwar)
             .catch(error => {
               if (error.type === 'NOT_AUTHENTICATED') {
@@ -60,8 +61,10 @@ const Relative: React.FC<RelativeProps> = ({
               }
 
               return [];
-            }),
+            })
+        : [],
   );
+  const selectedPariwar = myContext.appSettings.selectedPariwar || '';
 
   const filterList = useMemo(() => {
     if (!filterBy) {
@@ -138,11 +141,7 @@ const Relative: React.FC<RelativeProps> = ({
   const deleteRelative = async (id: string) => {
     if (nimtaBase && nimtaId) {
       return apiService
-        .removeRelativeFromNimta(
-          id,
-          nimtaId,
-          myContext.appSettings.selectedPariwar,
-        )
+        .removeRelativeFromNimta(id, nimtaId, selectedPariwar)
         .then(() => {
           if (relatives) {
             const index = relatives?.findIndex(a => a._id === id);
@@ -151,15 +150,13 @@ const Relative: React.FC<RelativeProps> = ({
           return true;
         });
     }
-    return apiService
-      .deleteRelative(id, myContext.appSettings.selectedPariwar)
-      .then(() => {
-        if (data) {
-          const index = data?.findIndex(a => a._id === id);
-          data.splice(index, 1);
-        }
-        return true;
-      });
+    return apiService.deleteRelative(id, selectedPariwar).then(() => {
+      if (data) {
+        const index = data?.findIndex(a => a._id === id);
+        data.splice(index, 1);
+      }
+      return true;
+    });
   };
 
   const refresh = () => {
@@ -173,8 +170,11 @@ const Relative: React.FC<RelativeProps> = ({
           {isLoading && (
             <ProgressBar height={5} indeterminate backgroundColor="#4a0072" />
           )}
-          <ScreenHeading title={nimtaBase ? 'Nimta Relatives' : 'Relatives'} />
-          {!myContext.appSettings.selectedPariwar && (
+          <ScreenHeading
+            title={nimtaBase ? 'Nimta Relatives' : 'Relatives'}
+            subtitle={`${filterList ? filterList.length : 0} entries`}
+          />
+          {!selectedPariwar && (
             <TouchableOpacity
               onPress={() => {
                 navigation.navigate('profile' as never);
@@ -184,7 +184,7 @@ const Relative: React.FC<RelativeProps> = ({
               </View>
             </TouchableOpacity>
           )}
-          {myContext.appSettings.selectedPariwar && data && (
+          {selectedPariwar && data && (
             <>
               <SwipeableList
                 items={filterList.map(relative => {
@@ -314,7 +314,7 @@ const Relative: React.FC<RelativeProps> = ({
         <AddRelative
           setVisible={setOpenDailog}
           type="ADD"
-          pariwarId={myContext.appSettings.selectedPariwar}
+          pariwarId={selectedPariwar}
         />
       )}
       {openDailog === 'edit' && (
@@ -322,7 +322,7 @@ const Relative: React.FC<RelativeProps> = ({
           setVisible={setOpenDailog}
           type="EDIT"
           data={selectedRelative}
-          pariwarId={myContext.appSettings.selectedPariwar}
+          pariwarId={selectedPariwar}
         />
       )}
       {openDailog === 'sort' && (

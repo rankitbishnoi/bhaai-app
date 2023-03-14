@@ -5,6 +5,7 @@ import {
   IconButton,
   ListItem,
   Stack,
+  Text,
   TextInput,
 } from '@react-native-material/core';
 
@@ -128,6 +129,9 @@ const Search: React.FC<SearchProps> = ({setSearchVisible}) => {
                 />
               ))}
           </ScrollView>
+          {data?.baanList?.length === 0 && (
+            <Text style={styles.noItems}>no items available</Text>
+          )}
           <Stack
             style={stackBarStyles.stackBarBottom}
             fill
