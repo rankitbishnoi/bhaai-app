@@ -13,6 +13,12 @@ export enum APP_ACTIONS {
   REFETCH_NIMTA_LIST = 'refetch-nimta-list',
   REFETCH_RELATIVE_LIST = 'refetch-relative-list',
   REFETCH_PROFILE = 'refetch-profile',
+  TOGGLE_THEME = 'toggle-theme',
+}
+
+export enum themeColor {
+  DARK = 'dark',
+  LIGHT = 'light',
 }
 
 export interface QueryState {
@@ -34,6 +40,7 @@ export interface AppContextInterface {
   messages: MessagePopUpInterface[];
   selectedPariwar: string;
   queryState: QueryState;
+  theme: themeColor;
 }
 
 export interface AppContextAction {
@@ -136,6 +143,13 @@ export const appReducer = (
           ...state.queryState,
           profile: Date.now(),
         },
+      };
+
+    case APP_ACTIONS.TOGGLE_THEME:
+      return {
+        ...state,
+        theme:
+          state.theme === themeColor.DARK ? themeColor.LIGHT : themeColor.DARK,
       };
 
     default:

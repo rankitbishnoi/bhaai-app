@@ -1,16 +1,19 @@
 import {StyleSheet} from 'react-native';
+import {styles} from './theme';
 
-export default function useStyles() {
+export default function useStyles(colorScheme: string) {
+  const theme = styles[colorScheme === 'dark' ? 'dark' : 'light'];
+
   return StyleSheet.create({
     container: {
-      backgroundColor: 'rgba(230, 230, 230, 0.1)',
+      backgroundColor: theme.backgroundScreen,
       flex: 1,
     },
     backTextWhite: {
-      color: '#111',
+      color: theme.frontColor,
     },
     noItems: {
-      color: '#666',
+      color: theme.frontColorInvert,
       fontSize: 14,
       fontWeight: 'bold',
       position: 'absolute',
@@ -19,7 +22,7 @@ export default function useStyles() {
       top: '50%',
     },
     rowFront: {
-      backgroundColor: 'rgba(230, 230, 230, 0.1)',
+      backgroundColor: theme.backgroundSecondary,
       borderRadius: 5,
       marginTop: 5,
       marginBottom: 5,
@@ -30,13 +33,13 @@ export default function useStyles() {
       elevation: 5,
     },
     rowFrontVisible: {
-      backgroundColor: 'rgba(230, 230, 230, 0.1)',
+      backgroundColor: theme.backgroundSecondary,
       borderRadius: 5,
       padding: 0,
     },
     rowBack: {
       alignItems: 'center',
-      backgroundColor: 'rgba(230, 230, 230, 0.1)',
+      backgroundColor: theme.backgroundSecondary,
       flex: 1,
       flexDirection: 'row',
       justifyContent: 'space-between',
@@ -55,7 +58,7 @@ export default function useStyles() {
       paddingRight: 17,
     },
     backRightBtnLeft: {
-      backgroundColor: '#101957',
+      backgroundColor: theme.primary,
       right: 75,
     },
     backRightBtnRight: {
@@ -73,15 +76,15 @@ export default function useStyles() {
       fontSize: 14,
       fontWeight: 'bold',
       marginBottom: 5,
-      color: '#666',
+      color: theme.frontColorInvert,
     },
     details: {
       fontSize: 12,
       color: '#999',
     },
     list: {
-      backgroundColor: '#fff',
-      color: '#111',
+      backgroundColor: theme.backgroundSecondary,
+      color: theme.frontColor,
     },
   });
 }

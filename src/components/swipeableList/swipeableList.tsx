@@ -34,8 +34,8 @@ const SwipeableList: React.FC<SwipeableListOptions> = ({
   refresh,
   refreshing,
 }) => {
-  const styles = useStyles();
   const myContext = useContext<AppContextState>(AppContext);
+  const styles = useStyles(myContext.appSettings.theme);
   const [listData, setListData] = useState([
     ...items,
     {

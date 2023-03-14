@@ -1,0 +1,26 @@
+export const styles = {
+  dark: {
+    backgroundScreen: '#000',
+    backgroundSecondary: '#111',
+    primary: 'rgb(93, 95, 222)',
+    secondary: 'rgb(0, 100, 100)',
+    tertiary: '#111',
+    primaryBlur: '#fff',
+    frontColor: '#fff',
+    frontColorInvert: '#ddd',
+    popupBackground: '#666',
+    popupFront: '#ccc',
+  },
+  light: {
+    backgroundScreen: 'rgba(230, 230, 230, 0.1)',
+    backgroundSecondary: '#fff',
+    primary: '#101957',
+    secondary: '#c9b79c',
+    tertiary: 'rgb(230, 230, 230)',
+    primaryBlur: 'rgb(171, 178, 227)',
+    frontColor: '#111',
+    frontColorInvert: '#666',
+    popupBackground: '#ccc',
+    popupFront: '#666',
+  },
+};

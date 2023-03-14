@@ -1,9 +1,12 @@
 import {StyleSheet} from 'react-native';
+import {styles} from './theme';
 
-export default function useStyles() {
+export default function useStyles(colorScheme: string) {
+  const theme = styles[colorScheme === 'dark' ? 'dark' : 'light'];
+
   return StyleSheet.create({
     root: {
-      backgroundColor: '#ffffff',
+      backgroundColor: theme.backgroundScreen,
       flex: 1,
     },
     safeAreaView: {
@@ -16,8 +19,8 @@ export default function useStyles() {
       paddingVertical: 32,
     },
     list: {
-      backgroundColor: '#fff',
-      color: '#111',
+      backgroundColor: theme.backgroundSecondary,
+      color: theme.frontColor,
     },
   });
 }

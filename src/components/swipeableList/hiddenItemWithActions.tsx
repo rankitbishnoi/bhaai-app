@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import {
   Animated,
   ListRenderItemInfo,
@@ -8,6 +8,8 @@ import {
 } from 'react-native';
 import {RowMap} from 'react-native-swipe-list-view';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import {AppContextState} from '../../services/app.reducer';
+import AppContext from '../../services/storage';
 import useStyles from '../../styles/swipeableList';
 import {SwipeableListItem} from './swipeableList';
 
@@ -32,7 +34,8 @@ const HiddenItemWithActions: React.FC<HiddenItemWithActionsOptions> = ({
   onClose,
   onDelete,
 }) => {
-  const styles = useStyles();
+  const myContext = useContext<AppContextState>(AppContext);
+  const styles = useStyles(myContext.appSettings.theme);
   if (rightActionActivated) {
     Animated.spring(rowActionAnimatedValue, {
       toValue: 500,

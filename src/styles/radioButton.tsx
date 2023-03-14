@@ -1,13 +1,16 @@
 import {StyleSheet} from 'react-native';
+import {styles} from './theme';
 
-export default function useStyles() {
+export default function useStyles(colorScheme: string) {
+  const theme = styles[colorScheme === 'dark' ? 'dark' : 'light'];
+
   return StyleSheet.create({
     container: {
       height: 24,
       width: 24,
       borderRadius: 12,
       borderWidth: 2,
-      borderColor: '#101957',
+      borderColor: theme.primary,
       alignItems: 'center',
       justifyContent: 'center',
     },
@@ -15,7 +18,7 @@ export default function useStyles() {
       height: 12,
       width: 12,
       borderRadius: 6,
-      backgroundColor: '#101957',
+      backgroundColor: theme.primary,
     },
   });
 }

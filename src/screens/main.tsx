@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useContext} from 'react';
 
 import {NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
@@ -7,10 +7,15 @@ import Bhaai from './bhaai';
 import Profile from './profile';
 import Nimta from './nimta';
 import Relative from './relative';
+import AppContext from '../services/storage';
+import {AppContextState} from '../services/app.reducer';
+import useStyles from '../styles/main';
 
 const Tab = createBottomTabNavigator();
 
 const Main: React.FC = () => {
+  const myContext = useContext<AppContextState>(AppContext);
+  const styles = useStyles(myContext.appSettings.theme);
   const screenoption = ({route}: any) => ({
     // eslint-disable-next-line react/no-unstable-nested-components
     tabBarIcon: ({
@@ -43,10 +48,10 @@ const Main: React.FC = () => {
       return <Ionicons name={iconName} size={size} color={color} />;
     },
     tabBarStyle: {
-      backgroundColor: '#E6E6E6',
+      backgroundColor: styles.tabBarStyle.backgroundColor,
     },
-    tabBarActiveTintColor: 'rgb(16, 25, 87)',
-    tabBarInactiveTintColor: 'rgb(171, 178, 227)',
+    tabBarActiveTintColor: styles.tabBarStyle.active,
+    tabBarInactiveTintColor: styles.tabBarStyle.inactive,
     headerShown: false,
   });
 

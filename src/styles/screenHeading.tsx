@@ -1,14 +1,17 @@
 import {StyleSheet} from 'react-native';
+import {styles} from './theme';
 
-export default function useStyles() {
+export default function useStyles(colorScheme: string) {
+  const theme = styles[colorScheme === 'dark' ? 'dark' : 'light'];
+
   return StyleSheet.create({
     root: {
-      backgroundColor: '#ffffff',
+      backgroundColor: theme.backgroundScreen,
       flex: 1,
     },
     heading: {
       textAlign: 'center',
-      color: '#101957',
+      color: theme.primary,
       marginBottom: 16,
     },
   });

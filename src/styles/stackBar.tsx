@@ -1,6 +1,9 @@
 import {StyleSheet} from 'react-native';
+import {styles} from './theme';
 
-export default function useStyles() {
+export default function useStyles(colorScheme: string) {
+  const theme = styles[colorScheme === 'dark' ? 'dark' : 'light'];
+
   return StyleSheet.create({
     fab: {
       width: 55,
@@ -29,7 +32,7 @@ export default function useStyles() {
     },
     stackBarHeadings: {
       textAlign: 'center',
-      color: '#101957',
+      color: theme.primary,
       width: 100,
       height: 30,
       lineHeight: 30,
@@ -38,7 +41,19 @@ export default function useStyles() {
       marginVertical: 8,
     },
     background: {
-      backgroundColor: '#fff',
+      backgroundColor: theme.backgroundScreen,
     },
+    iconColor: {
+      color: theme.primary,
+    },
+    toggleColor: {
+      thumb: theme.frontColor,
+      active: theme.primary,
+      inactive: theme.primaryBlur,
+    } as any,
+    popUp: {
+      back: theme.popupBackground,
+      front: theme.popupFront,
+    } as any,
   });
 }

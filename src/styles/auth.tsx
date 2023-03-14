@@ -1,13 +1,16 @@
 import {StyleSheet} from 'react-native';
+import {styles} from './theme';
 
-export default function useStyles() {
+export default function useStyles(colorScheme: string) {
+  const theme = styles[colorScheme === 'dark' ? 'dark' : 'light'];
+
   return StyleSheet.create({
     content: {
       flex: 1,
       justifyContent: 'center',
       paddingHorizontal: 16,
       paddingVertical: 32,
-      backgroundColor: 'rgba(230, 230, 230, 0.1)',
+      backgroundColor: theme.backgroundScreen,
     },
     forgotPasswordContainer: {
       alignItems: 'flex-end',
@@ -21,30 +24,30 @@ export default function useStyles() {
       paddingHorizontal: 16,
     },
     label: {
-      color: '#101957',
+      color: theme.primary,
       fontSize: 15,
       fontWeight: '400',
       lineHeight: 20,
       width: 80,
     },
     subtitle: {
-      color: '#101957',
+      color: theme.primary,
       fontSize: 17,
       fontWeight: '400',
       lineHeight: 22,
     },
     textButton: {
-      color: '#111',
+      color: theme.frontColor,
       fontSize: 15,
       fontWeight: '400',
       lineHeight: 20,
     },
     textInput: {
-      color: '#111',
+      color: theme.frontColor,
       marginBottom: 16,
     },
     title: {
-      color: '#c9b79c',
+      color: theme.secondary,
       fontSize: 28,
       fontWeight: '700',
       lineHeight: 34,

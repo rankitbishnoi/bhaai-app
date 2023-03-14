@@ -39,9 +39,9 @@ interface RelativeProps {
 
 const AddFromRelative: React.FC<RelativeProps> = ({setVisible, nimtaId}) => {
   const myContext = useContext<AppContextState>(AppContext);
-  const styles = useStyles();
-  const stackBarStyles = useStackBarStyles();
-  const buttonStyles = useButtonStyles();
+  const styles = useStyles(myContext.appSettings.theme);
+  const stackBarStyles = useStackBarStyles(myContext.appSettings.theme);
+  const buttonStyles = useButtonStyles(myContext.appSettings.theme);
   const [openDailog, setOpenDailog] = useState('');
   const [sortBy, setSortBy] = useState('');
   const [selectedRelative, setSelectedRelatives] = useState([] as string[]);
@@ -189,7 +189,7 @@ const AddFromRelative: React.FC<RelativeProps> = ({setVisible, nimtaId}) => {
                 <Ionicons
                   style={stackBarStyles.left}
                   size={24}
-                  color={'#101957'}
+                  color={stackBarStyles.iconColor.color}
                   name={
                     menuOpen
                       ? 'ellipsis-horizontal'
@@ -200,7 +200,7 @@ const AddFromRelative: React.FC<RelativeProps> = ({setVisible, nimtaId}) => {
               <MenuOptions
                 customStyles={{
                   optionsContainer: {
-                    backgroundColor: '#444',
+                    backgroundColor: stackBarStyles.popUp.back,
                     borderRadius: 5,
                   },
                   optionWrapper: {
@@ -210,7 +210,7 @@ const AddFromRelative: React.FC<RelativeProps> = ({setVisible, nimtaId}) => {
                     activeOpacity: 70,
                   },
                   optionText: {
-                    color: '#ccc',
+                    color: stackBarStyles.popUp.front,
                   },
                 }}>
                 <MenuOption onSelect={selectAll} text="select all" />
@@ -264,7 +264,7 @@ const AddFromRelative: React.FC<RelativeProps> = ({setVisible, nimtaId}) => {
                 <Ionicons
                   name="arrow-back-outline"
                   {...props}
-                  color={'#101957'}
+                  color={stackBarStyles.iconColor.color}
                 />
               )}
               color="secondary"
@@ -310,7 +310,11 @@ const AddFromRelative: React.FC<RelativeProps> = ({setVisible, nimtaId}) => {
                 addRelative();
               }}
               icon={props => (
-                <Ionicons name="add" {...props} color={'#101957'} />
+                <Ionicons
+                  name="add"
+                  {...props}
+                  color={stackBarStyles.iconColor.color}
+                />
               )}
               color="secondary"
               style={stackBarStyles.fab}

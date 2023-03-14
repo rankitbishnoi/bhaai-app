@@ -3,16 +3,16 @@ import {KeyboardAvoidingView, Platform, SafeAreaView, View} from 'react-native';
 import {Provider, defaultTheme} from '@react-native-material/core';
 
 import useStyles from './src/styles/root';
+import {styles as themeStyles} from './src/styles/theme';
 import Auth from './src/screens/auth';
 import AppContext from './src/services/storage';
 import mmkv from './src/services/mmkv';
 import Main from './src/screens/main';
 import MessagePopUp from './src/components/ui/messagePopUp';
 import {QueryClient, QueryClientProvider} from 'react-query';
-import {appReducer} from './src/services/app.reducer';
+import {appReducer, themeColor} from './src/services/app.reducer';
 
 const App: React.FC = () => {
-  const styles = useStyles();
   const [appSettings, dispatch] = useReducer(appReducer, {
     isLoggedIn: !!mmkv.loadJWT(),
     messages: [],
@@ -25,7 +25,10 @@ const App: React.FC = () => {
       relativeList: Date.now(),
       profile: Date.now(),
     },
+    theme: themeColor.LIGHT,
   });
+  const styles = useStyles(appSettings.theme);
+  const theme = themeStyles[appSettings.theme === 'dark' ? 'dark' : 'light'];
   const queryClient = new QueryClient();
 
   return (
@@ -33,24 +36,24 @@ const App: React.FC = () => {
       <Provider
         theme={{
           ...defaultTheme,
-          colorScheme: 'dark',
+          colorScheme: appSettings.theme,
           palette: {
             ...defaultTheme.palette,
             primary: {
-              main: '#c9b79c',
-              on: '#fff',
+              main: theme.secondary,
+              on: theme.frontColorInvert,
             },
             secondary: {
-              main: '#101957',
-              on: '#fff',
+              main: theme.primary,
+              on: theme.frontColorInvert,
             },
             background: {
-              main: '#fff',
-              on: '#111',
+              main: theme.backgroundScreen,
+              on: theme.frontColorInvert,
             },
             surface: {
-              main: '#fff',
-              on: '#111',
+              main: theme.backgroundSecondary,
+              on: theme.frontColor,
             },
           },
         }}>

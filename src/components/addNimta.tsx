@@ -26,7 +26,7 @@ const AddNimta: React.FC<ComponentProps> = (props: ComponentProps) => {
   const [processingEdit, setProcessingEdit] = useState(false);
   const [processingDelete, setProcessingDelete] = useState(false);
   const myContext = useContext<AppContextState>(AppContext);
-  const styles = useStyles();
+  const styles = useStyles(myContext.appSettings.theme);
   const {
     control,
     handleSubmit,

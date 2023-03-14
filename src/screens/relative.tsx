@@ -35,9 +35,9 @@ const Relative: React.FC<RelativeProps> = ({
 }) => {
   const myContext = useContext<AppContextState>(AppContext);
   const navigation = useNavigation();
-  const styles = useStyles();
-  const stackBarStyles = useStackBarStyles();
-  const buttonStyles = useButtonStyles();
+  const styles = useStyles(myContext.appSettings.theme);
+  const stackBarStyles = useStackBarStyles(myContext.appSettings.theme);
+  const buttonStyles = useButtonStyles(myContext.appSettings.theme);
   const [openDailog, setOpenDailog] = useState('');
   const [sortBy, setSortBy] = useState('');
   const [filterBy, setFilterBy] = useState(null as any);
@@ -204,7 +204,7 @@ const Relative: React.FC<RelativeProps> = ({
                       <Ionicons
                         name="create-outline"
                         size={25}
-                        color={'#101957'}
+                        color={stackBarStyles.iconColor.color}
                       />
                     </TouchableOpacity>
                   ),
@@ -229,7 +229,7 @@ const Relative: React.FC<RelativeProps> = ({
                   <Ionicons
                     name="arrow-back-outline"
                     {...props}
-                    color={'#101957'}
+                    color={stackBarStyles.iconColor.color}
                   />
                 )}
                 color="secondary"
@@ -281,7 +281,7 @@ const Relative: React.FC<RelativeProps> = ({
                   <Ionicons
                     name="person-add-outline"
                     {...props}
-                    color={'#101957'}
+                    color={stackBarStyles.iconColor.color}
                   />
                 )}
                 color="secondary"
@@ -294,7 +294,11 @@ const Relative: React.FC<RelativeProps> = ({
                   setOpenDailog('add');
                 }}
                 icon={props => (
-                  <Ionicons name="add" {...props} color={'#101957'} />
+                  <Ionicons
+                    name="add"
+                    {...props}
+                    color={stackBarStyles.iconColor.color}
+                  />
                 )}
                 color="secondary"
                 style={stackBarStyles.fab}

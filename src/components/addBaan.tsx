@@ -25,7 +25,7 @@ interface ComponentProps {
 
 const AddBaan: React.FC<ComponentProps> = (props: ComponentProps) => {
   const myContext = useContext<AppContextState>(AppContext);
-  const styles = useStyles();
+  const styles = useStyles(myContext.appSettings.theme);
   const [processingEdit, setProcessingEdit] = useState(false);
   const [processingDelete, setProcessingDelete] = useState(false);
   const {

@@ -1,5 +1,5 @@
 import {Button, TextInput} from '@react-native-material/core';
-import React from 'react';
+import React, {useContext} from 'react';
 import {Controller, useForm} from 'react-hook-form';
 import {
   KeyboardAvoidingView,
@@ -7,6 +7,8 @@ import {
   Pressable,
   ScrollView,
 } from 'react-native';
+import {AppContextState} from '../services/app.reducer';
+import AppContext from '../services/storage';
 import useStyles from '../styles/baan';
 import {BaanBase} from '../types/Baan';
 import ScreenHeading from './ui/screenHeading';
@@ -19,7 +21,8 @@ interface ComponentProps {
 }
 
 const FilterBaan: React.FC<ComponentProps> = (props: ComponentProps) => {
-  const styles = useStyles();
+  const myContext = useContext<AppContextState>(AppContext);
+  const styles = useStyles(myContext.appSettings.theme);
   const {control, handleSubmit, setFocus, register} = useForm<BaanBase>({
     defaultValues: props.filterBy || {
       firstName: '',

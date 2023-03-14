@@ -28,7 +28,7 @@ const AddBhaai: React.FC<ComponentProps> = (props: ComponentProps) => {
   const [processingEdit, setProcessingEdit] = useState(false);
   const [processingDelete, setProcessingDelete] = useState(false);
   const [openDatePicker, setOpenDatePicker] = useState(false);
-  const styles = useStyles();
+  const styles = useStyles(myContext.appSettings.theme);
   const {
     control,
     handleSubmit,

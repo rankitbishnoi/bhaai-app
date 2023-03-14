@@ -1,10 +1,13 @@
 import {StyleSheet} from 'react-native';
+import {styles} from './theme';
 
-export default function useStyles() {
+export default function useStyles(colorScheme: string) {
+  const theme = styles[colorScheme === 'dark' ? 'dark' : 'light'];
+
   return StyleSheet.create({
     buttonSecondary: {
       alignItems: 'center',
-      backgroundColor: '#101957',
+      backgroundColor: theme.primary,
       borderRadius: 8,
       height: 48,
       justifyContent: 'center',
@@ -13,7 +16,7 @@ export default function useStyles() {
     },
     button: {
       alignItems: 'center',
-      backgroundColor: '#101957',
+      backgroundColor: theme.primary,
       borderRadius: 8,
       height: 48,
       justifyContent: 'center',
@@ -32,7 +35,7 @@ export default function useStyles() {
       alignItems: 'center',
       borderRadius: 8,
       width: 'auto',
-      backgroundColor: '#c9b79c',
+      backgroundColor: theme.secondary,
     },
     buttonGroupItem: {
       flexDirection: 'row',
@@ -41,11 +44,11 @@ export default function useStyles() {
       gap: 3,
     },
     buttonGroupItemIcon: {
-      color: '#fff',
+      color: theme.frontColor,
       fontWeight: '600',
     },
     buttonGroupTitle: {
-      color: '#fff',
+      color: theme.frontColor,
       fontSize: 18,
       fontWeight: '600',
       lineHeight: 32,
@@ -58,7 +61,7 @@ export default function useStyles() {
     buttonGroupDivider: {
       height: '80%',
       width: 1,
-      backgroundColor: '#666',
+      backgroundColor: theme.frontColorInvert,
     },
   });
 }

@@ -1,6 +1,13 @@
-import {IconButton, ListItem, Stack} from '@react-native-material/core';
+import {
+  IconButton,
+  ListItem,
+  Pressable,
+  Stack,
+  Switch,
+  Text,
+} from '@react-native-material/core';
 import React, {useContext, useState} from 'react';
-import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import {ScrollView, TouchableOpacity, View} from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {useQuery} from 'react-query';
 import AddPariwar from '../components/addPariwar';
@@ -14,15 +21,19 @@ import useStyles from '../styles/profile';
 import useButtonStyles from '../styles/button';
 import useStackBarStyles from '../styles/stackBar';
 import {PariwarRole} from '../types/Profile';
-import {AppContextState, APP_ACTIONS} from '../services/app.reducer';
+import {
+  AppContextState,
+  APP_ACTIONS,
+  themeColor,
+} from '../services/app.reducer';
 
 const childPageStates = ['edit', 'add'];
 
 const Profile: React.FC = () => {
-  const styles = useStyles();
-  const stackBarStyles = useStackBarStyles();
-  const buttonStyles = useButtonStyles();
   const myContext = useContext<AppContextState>(AppContext);
+  const styles = useStyles(myContext.appSettings.theme);
+  const stackBarStyles = useStackBarStyles(myContext.appSettings.theme);
+  const buttonStyles = useButtonStyles(myContext.appSettings.theme);
   const [openDailog, setOpenDailog] = useState('');
   const [selectedRole, setSelectedRole] = useState({} as any);
   const {data, isLoading, isError, error} = useQuery(
@@ -33,6 +44,10 @@ const Profile: React.FC = () => {
   const logout = () => {
     mmkv.deleteJWT();
     myContext.dispatch({type: APP_ACTIONS.LOGOUT});
+  };
+
+  const toggleTheme = () => {
+    myContext.dispatch({type: APP_ACTIONS.TOGGLE_THEME});
   };
 
   const selectPariwarRole = (id: string) => {
@@ -71,6 +86,32 @@ const Profile: React.FC = () => {
                   <Text style={buttonStyles.buttonTitle}>logout</Text>
                 </View>
               </TouchableOpacity>
+              <Text style={styles.labelContainer}>Theme</Text>
+              <Stack style={stackBarStyles.stackBar} m={0} spacing={0}>
+                <Pressable onPress={() => setOpenDailog('addFromBaan')}>
+                  <Text
+                    style={stackBarStyles.stackBarHeadings}
+                    variant="button">
+                    light
+                  </Text>
+                </Pressable>
+                <Switch
+                  thumbColor={stackBarStyles.toggleColor.thumb}
+                  trackColor={{
+                    true: stackBarStyles.toggleColor.active,
+                    false: stackBarStyles.toggleColor.inactive,
+                  }}
+                  value={myContext.appSettings.theme === themeColor.DARK}
+                  onValueChange={toggleTheme}
+                />
+                <Pressable onPress={() => setOpenDailog('addFromRelative')}>
+                  <Text
+                    style={stackBarStyles.stackBarHeadings}
+                    variant="button">
+                    dark
+                  </Text>
+                </Pressable>
+              </Stack>
               <Text style={styles.labelContainer}>Pariwar</Text>
               <ScrollView>
                 {data?.pariwarRoles.length === 0 && (
@@ -107,7 +148,7 @@ const Profile: React.FC = () => {
                         <Ionicons
                           name="chevron-forward-outline"
                           {...props}
-                          color={'#101957'}
+                          color={stackBarStyles.iconColor.color}
                         />
                       </TouchableOpacity>
                     )}
@@ -125,7 +166,11 @@ const Profile: React.FC = () => {
                     setOpenDailog('add');
                   }}
                   icon={props => (
-                    <Ionicons name="add" {...props} color={'#101957'} />
+                    <Ionicons
+                      name="add"
+                      {...props}
+                      color={stackBarStyles.iconColor.color}
+                    />
                   )}
                   color="secondary"
                   style={stackBarStyles.fab}

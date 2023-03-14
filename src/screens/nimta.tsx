@@ -36,9 +36,9 @@ const childPageStates = [
 const Nimta: React.FC = () => {
   const myContext = useContext<AppContextState>(AppContext);
   const navigation = useNavigation();
-  const styles = useStyles();
-  const stackBarStyles = useStackBarStyles();
-  const buttonStyles = useButtonStyles();
+  const styles = useStyles(myContext.appSettings.theme);
+  const stackBarStyles = useStackBarStyles(myContext.appSettings.theme);
+  const buttonStyles = useButtonStyles(myContext.appSettings.theme);
   const [openDailog, setOpenDailog] = useState('');
   const [selectedNimta, setSelectedNimta] = useState({} as any);
   const {data, isLoading} = useQuery(
@@ -114,7 +114,7 @@ const Nimta: React.FC = () => {
                       <Ionicons
                         name="create-outline"
                         size={25}
-                        color={'#101957'}
+                        color={stackBarStyles.iconColor.color}
                       />
                     </TouchableOpacity>
                   ),
@@ -127,7 +127,7 @@ const Nimta: React.FC = () => {
                       <Ionicons
                         name="chevron-forward-outline"
                         size={25}
-                        color={'#101957'}
+                        color={stackBarStyles.iconColor.color}
                       />
                     </TouchableOpacity>
                   ),
@@ -149,7 +149,11 @@ const Nimta: React.FC = () => {
                 setOpenDailog('add');
               }}
               icon={props => (
-                <Ionicons name="add" {...props} color={'#101957'} />
+                <Ionicons
+                  name="add"
+                  {...props}
+                  color={stackBarStyles.iconColor.color}
+                />
               )}
               color="secondary"
               style={stackBarStyles.fab}
@@ -189,8 +193,11 @@ const Nimta: React.FC = () => {
               </Text>
             </Pressable>
             <Switch
-              thumbColor={'#eee'}
-              trackColor={{true: '#101957', false: '#666'}}
+              thumbColor={stackBarStyles.toggleColor.thumb}
+              trackColor={{
+                true: stackBarStyles.toggleColor.active,
+                false: stackBarStyles.toggleColor.inactive,
+              }}
               value={openDailog === 'addFromRelative'}
               onValueChange={() =>
                 setOpenDailog(

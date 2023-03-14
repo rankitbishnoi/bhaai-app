@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {
   Text,
   View,
@@ -13,10 +13,13 @@ import Signup from '../components/auth/signup';
 
 import useStyles from '../styles/auth';
 import useButtonStyles from '../styles/button';
+import AppContext from '../services/storage';
+import {AppContextState} from '../services/app.reducer';
 
 const Auth: React.FC = () => {
-  const styles = useStyles();
-  const buttonStyles = useButtonStyles();
+  const myContext = useContext<AppContextState>(AppContext);
+  const styles = useStyles(myContext.appSettings.theme);
+  const buttonStyles = useButtonStyles(myContext.appSettings.theme);
   const [login, setLogin] = useState(true);
 
   const handleToggle = () => {

@@ -53,8 +53,8 @@ const Login: React.FC<{}> = ({}) => {
       });
   });
 
-  const styles = useStyles();
-  const buttonStyles = useButtonStyles();
+  const styles = useStyles(myContext.appSettings.theme);
+  const buttonStyles = useButtonStyles(myContext.appSettings.theme);
 
   return (
     <>

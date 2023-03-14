@@ -25,8 +25,8 @@ interface SearchProps {
 
 const Search: React.FC<SearchProps> = ({setSearchVisible}) => {
   const myContext = useContext<AppContextState>(AppContext);
-  const styles = useStyles();
-  const stackBarStyles = useStackBarStyles();
+  const styles = useStyles(myContext.appSettings.theme);
+  const stackBarStyles = useStackBarStyles(myContext.appSettings.theme);
   const [data, setData] = useState({} as any);
   const [loading, setLoading] = useState(false);
   const [giveBaanVisible, setGiveBaanVisible] = useState(false);
@@ -91,7 +91,11 @@ const Search: React.FC<SearchProps> = ({setSearchVisible}) => {
                   value={field.value}
                   trailing={props => (
                     <TouchableOpacity onPress={() => search(field.value)}>
-                      <Ionicons name="search" {...props} color={'#101957'} />
+                      <Ionicons
+                        name="search"
+                        {...props}
+                        color={stackBarStyles.iconColor.color}
+                      />
                     </TouchableOpacity>
                   )}
                 />
@@ -115,7 +119,7 @@ const Search: React.FC<SearchProps> = ({setSearchVisible}) => {
                   leading={
                     <TouchableOpacity onPress={() => openGiveBaan(baan)}>
                       <Ionicons
-                        color={'#101957'}
+                        color={stackBarStyles.iconColor.color}
                         style={{fontSize: 50}}
                         name="add"
                       />
@@ -138,7 +142,7 @@ const Search: React.FC<SearchProps> = ({setSearchVisible}) => {
                 <Ionicons
                   name="arrow-back-outline"
                   {...props}
-                  color={'#101957'}
+                  color={stackBarStyles.iconColor.color}
                 />
               )}
               color="secondary"

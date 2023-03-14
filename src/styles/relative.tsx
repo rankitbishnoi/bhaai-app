@@ -1,16 +1,19 @@
 import {StyleSheet} from 'react-native';
+import {styles} from './theme';
 
-export default function useStyles() {
+export default function useStyles(colorScheme: string) {
+  const theme = styles[colorScheme === 'dark' ? 'dark' : 'light'];
+
   return StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: 'rgba(230, 230, 230, 0.1)',
-      color: '#111',
+      backgroundColor: theme.backgroundScreen,
+      color: theme.frontColor,
       paddingHorizontal: 8,
     },
     list: {
-      backgroundColor: '#fff',
-      color: '#111',
+      backgroundColor: theme.backgroundSecondary,
+      color: theme.frontColor,
     },
     loader: {
       width: 100,
@@ -18,7 +21,7 @@ export default function useStyles() {
     },
     heading: {
       textAlign: 'center',
-      color: '#101957',
+      color: theme.primary,
       marginBottom: 16,
     },
     form: {
@@ -30,26 +33,26 @@ export default function useStyles() {
       paddingHorizontal: 16,
     },
     label: {
-      color: '#101957',
+      color: theme.primary,
       fontSize: 15,
       fontWeight: '400',
       lineHeight: 20,
       width: 80,
     },
     subtitle: {
-      color: '#101957',
+      color: theme.primary,
       fontSize: 17,
       fontWeight: '400',
       lineHeight: 22,
     },
     textButton: {
-      color: '#111',
+      color: theme.frontColor,
       fontSize: 15,
       fontWeight: '400',
       lineHeight: 20,
     },
     textInput: {
-      color: '#111',
+      color: theme.frontColor,
       marginBottom: 16,
     },
     sortFilter: {

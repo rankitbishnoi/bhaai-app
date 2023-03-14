@@ -26,8 +26,8 @@ interface BaanProps {
 
 const Baan: React.FC<BaanProps> = ({bhaaiId, setBaanVisible}) => {
   const myContext = useContext<AppContextState>(AppContext);
-  const styles = useStyles();
-  const stackBarStyles = useStackBarStyles();
+  const styles = useStyles(myContext.appSettings.theme);
+  const stackBarStyles = useStackBarStyles(myContext.appSettings.theme);
   const [openDailog, setOpenDailog] = useState('');
   const [selectedBaan, setSelectedBaan] = useState({} as any);
   const {data, isLoading} = useQuery(
@@ -111,7 +111,7 @@ const Baan: React.FC<BaanProps> = ({bhaaiId, setBaanVisible}) => {
                       <Ionicons
                         name="create-outline"
                         size={25}
-                        color={'#101957'}
+                        color={stackBarStyles.iconColor.color}
                       />
                     </TouchableOpacity>
                   ),
@@ -135,7 +135,7 @@ const Baan: React.FC<BaanProps> = ({bhaaiId, setBaanVisible}) => {
                 <Ionicons
                   name="arrow-back-outline"
                   {...props}
-                  color={'#101957'}
+                  color={stackBarStyles.iconColor.color}
                 />
               )}
               color="secondary"
@@ -146,7 +146,11 @@ const Baan: React.FC<BaanProps> = ({bhaaiId, setBaanVisible}) => {
                 setOpenDailog('add');
               }}
               icon={props => (
-                <Ionicons name="add" {...props} color={'#101957'} />
+                <Ionicons
+                  name="add"
+                  {...props}
+                  color={stackBarStyles.iconColor.color}
+                />
               )}
               color="secondary"
               style={stackBarStyles.fab}
