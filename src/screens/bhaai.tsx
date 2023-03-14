@@ -26,7 +26,14 @@ const Bhaai: React.FC = () => {
   const [openDailog, setOpenDailog] = useState('');
   const {data, isLoading} = useQuery(
     ['baanList', myContext.appSettings.queryState.bhaaiList],
-    () => apiService.getBhaaiList(),
+    () =>
+      apiService.getBhaaiList().catch(error => {
+        if (error.type === 'NOT_AUTHENTICATED') {
+          myContext.dispatch({type: APP_ACTIONS.LOGOUT});
+        }
+
+        return [];
+      }),
   );
 
   const editItem = (bhaai: BhaaiType) => {
@@ -44,13 +51,22 @@ const Bhaai: React.FC = () => {
   };
 
   const deleteBhaai = async (id: string) => {
-    return apiService.deleteBhaai(id).then(() => {
-      if (data) {
-        const index = data?.findIndex(a => a._id === id);
-        data.splice(index, 1);
-      }
-      return true;
-    });
+    return apiService
+      .deleteBhaai(id)
+      .catch(error => {
+        if (error.type === 'NOT_AUTHENTICATED') {
+          myContext.dispatch({type: APP_ACTIONS.LOGOUT});
+        }
+
+        return null;
+      })
+      .then(() => {
+        if (data) {
+          const index = data?.findIndex(a => a._id === id);
+          data.splice(index, 1);
+        }
+        return true;
+      });
   };
 
   return (

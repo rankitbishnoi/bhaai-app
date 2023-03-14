@@ -42,29 +42,47 @@ const AddPariwar: React.FC<ComponentProps> = (props: ComponentProps) => {
   const onSubmit = handleSubmit((input: PariwarBase) => {
     setProcessingEdit(true);
     if (props.type === 'EDIT') {
-      apiService.updatePariwar(props.data?._id as string, input).then(data => {
-        if (data) {
-          myContext.dispatch({type: APP_ACTIONS.REFETCH_PROFILE});
-          myContext.dispatch({
-            type: APP_ACTIONS.NEW_MESSAGE,
-            payload: 'Pariwar has been updated',
-          });
-          setProcessingEdit(false);
-          props.setVisible(false);
-        }
-      });
+      apiService
+        .updatePariwar(props.data?._id as string, input)
+        .catch(error => {
+          if (error.type === 'NOT_AUTHENTICATED') {
+            myContext.dispatch({type: APP_ACTIONS.LOGOUT});
+          }
+
+          return null;
+        })
+        .then(data => {
+          if (data) {
+            myContext.dispatch({type: APP_ACTIONS.REFETCH_PROFILE});
+            myContext.dispatch({
+              type: APP_ACTIONS.NEW_MESSAGE,
+              payload: 'Pariwar has been updated',
+            });
+            setProcessingEdit(false);
+            props.setVisible(false);
+          }
+        });
     } else {
-      apiService.createPariwar(input).then(data => {
-        if (data) {
-          myContext.dispatch({type: APP_ACTIONS.REFETCH_PROFILE});
-          myContext.dispatch({
-            type: APP_ACTIONS.NEW_MESSAGE,
-            payload: 'Pariwar has been added',
-          });
-          setProcessingEdit(false);
-          props.setVisible(false);
-        }
-      });
+      apiService
+        .createPariwar(input)
+        .catch(error => {
+          if (error.type === 'NOT_AUTHENTICATED') {
+            myContext.dispatch({type: APP_ACTIONS.LOGOUT});
+          }
+
+          return null;
+        })
+        .then(data => {
+          if (data) {
+            myContext.dispatch({type: APP_ACTIONS.REFETCH_PROFILE});
+            myContext.dispatch({
+              type: APP_ACTIONS.NEW_MESSAGE,
+              payload: 'Pariwar has been added',
+            });
+            setProcessingEdit(false);
+            props.setVisible(false);
+          }
+        });
     }
   });
 
@@ -74,15 +92,24 @@ const AddPariwar: React.FC<ComponentProps> = (props: ComponentProps) => {
 
   const deletePariwar = () => {
     setProcessingDelete(true);
-    apiService.deletePariwar(props.data?._id as string).then(() => {
-      myContext.dispatch({type: APP_ACTIONS.REFETCH_PROFILE});
-      myContext.dispatch({
-        type: APP_ACTIONS.NEW_MESSAGE,
-        payload: 'Pariwar has been deleted',
+    apiService
+      .deletePariwar(props.data?._id as string)
+      .catch(error => {
+        if (error.type === 'NOT_AUTHENTICATED') {
+          myContext.dispatch({type: APP_ACTIONS.LOGOUT});
+        }
+
+        return null;
+      })
+      .then(() => {
+        myContext.dispatch({type: APP_ACTIONS.REFETCH_PROFILE});
+        myContext.dispatch({
+          type: APP_ACTIONS.NEW_MESSAGE,
+          payload: 'Pariwar has been deleted',
+        });
+        setProcessingDelete(false);
+        props.setVisible(false);
       });
-      setProcessingDelete(false);
-      props.setVisible(false);
-    });
   };
 
   return (

@@ -60,10 +60,7 @@ class ApiService {
 
         return response.data;
       })
-      .catch(error => {
-        console.log(JSON.stringify(error));
-        return [] as any;
-      });
+      .catch(this.handleError([]));
   }
 
   async createBhaai(bhaai: BhaaiBase): Promise<Bhaai> {
@@ -72,10 +69,7 @@ class ApiService {
       .then(response => {
         return response.data;
       })
-      .catch(error => {
-        console.log(JSON.stringify(error));
-        return {} as any;
-      });
+      .catch(this.handleError({}));
   }
 
   async updateBhaai(id: string, bhaai: BhaaiBase): Promise<Bhaai> {
@@ -84,10 +78,7 @@ class ApiService {
       .then(response => {
         return response.data;
       })
-      .catch(error => {
-        console.log(JSON.stringify(error));
-        return {} as any;
-      });
+      .catch(this.handleError({}));
   }
 
   async deleteBhaai(id: string): Promise<void> {
@@ -96,10 +87,7 @@ class ApiService {
       .then(response => {
         return response.data;
       })
-      .catch(error => {
-        console.log(JSON.stringify(error));
-        return {} as any;
-      });
+      .catch(this.handleError({}));
   }
 
   async getBhaai(id: string, total: boolean = false): Promise<BhaaiTotal> {
@@ -111,10 +99,7 @@ class ApiService {
       .then(response => {
         return response.data;
       })
-      .catch(error => {
-        console.log(JSON.stringify(error));
-        return {} as any;
-      });
+      .catch(this.handleError({}));
   }
 
   async getBaanList(bhaaiId?: string): Promise<BaanList> {
@@ -126,10 +111,7 @@ class ApiService {
       .then(response => {
         return response.data;
       })
-      .catch(error => {
-        console.log(JSON.stringify(error));
-        return [] as any;
-      });
+      .catch(this.handleError([]));
   }
 
   async createBaan(bhaaiId: string, baan: BaanBase): Promise<Baan> {
@@ -142,10 +124,7 @@ class ApiService {
       .then(response => {
         return response.data;
       })
-      .catch(error => {
-        console.log(JSON.stringify(error));
-        return {} as any;
-      });
+      .catch(this.handleError({}));
   }
 
   async updateBaan(id: string, bhaaiId: string, baan: BaanBase): Promise<Baan> {
@@ -158,10 +137,7 @@ class ApiService {
       .then(response => {
         return response.data;
       })
-      .catch(error => {
-        console.log(JSON.stringify(error));
-        return {} as any;
-      });
+      .catch(this.handleError({}));
   }
 
   async deleteBaan(id: string, bhaaiId: string): Promise<void> {
@@ -173,10 +149,7 @@ class ApiService {
       .then(response => {
         return response.data;
       })
-      .catch(error => {
-        console.log(JSON.stringify(error));
-        return {} as any;
-      });
+      .catch(this.handleError({}));
   }
 
   async searchBaan(input: string): Promise<BaanList> {
@@ -188,10 +161,7 @@ class ApiService {
       .then(response => {
         return response.data;
       })
-      .catch(error => {
-        console.log(JSON.stringify(error));
-        return [] as any;
-      });
+      .catch(this.handleError([]));
   }
 
   async giveBaan(baanId: string, amount: number): Promise<Baan> {
@@ -207,10 +177,7 @@ class ApiService {
       .then(response => {
         return response.data;
       })
-      .catch(error => {
-        console.log(JSON.stringify(error));
-        return {} as any;
-      });
+      .catch(this.handleError({}));
   }
 
   async getProfile(): Promise<Profile> {
@@ -219,10 +186,7 @@ class ApiService {
       .then(response => {
         return response.data;
       })
-      .catch(error => {
-        console.log(JSON.stringify(error));
-        return {} as any;
-      });
+      .catch(this.handleError({}));
   }
 
   async createPariwar(pariwar: PariwarBase): Promise<Pariwar> {
@@ -231,10 +195,7 @@ class ApiService {
       .then(response => {
         return response.data;
       })
-      .catch(error => {
-        console.log(JSON.stringify(error));
-        return {} as any;
-      });
+      .catch(this.handleError({}));
   }
 
   async updatePariwar(id: string, pariwar: PariwarBase): Promise<Pariwar> {
@@ -243,10 +204,7 @@ class ApiService {
       .then(response => {
         return response.data;
       })
-      .catch(error => {
-        console.log(JSON.stringify(error));
-        return {} as any;
-      });
+      .catch(this.handleError({}));
   }
 
   async deletePariwar(id: string): Promise<void> {
@@ -255,10 +213,7 @@ class ApiService {
       .then(response => {
         return response.data;
       })
-      .catch(error => {
-        console.log(JSON.stringify(error));
-        return {} as any;
-      });
+      .catch(this.handleError({}));
   }
 
   async getNimtaList(pariwarId: string): Promise<NimtaList> {
@@ -270,10 +225,7 @@ class ApiService {
       .then(response => {
         return response.data;
       })
-      .catch(error => {
-        console.log(JSON.stringify(error));
-        return [] as any;
-      });
+      .catch(this.handleError([]));
   }
 
   async createNimta(pariwarId: string, nimta: NimtaBase): Promise<Nimta> {
@@ -286,10 +238,7 @@ class ApiService {
       .then(response => {
         return response.data;
       })
-      .catch(error => {
-        console.log(JSON.stringify(error));
-        return {} as any;
-      });
+      .catch(this.handleError({}));
   }
 
   async updateNimta(
@@ -306,10 +255,7 @@ class ApiService {
       .then(response => {
         return response.data;
       })
-      .catch(error => {
-        console.log(JSON.stringify(error));
-        return {} as any;
-      });
+      .catch(this.handleError({}));
   }
 
   async deleteNimta(id: string, pariwarId: string): Promise<void> {
@@ -321,10 +267,7 @@ class ApiService {
       .then(response => {
         return response.data;
       })
-      .catch(error => {
-        console.log(JSON.stringify(error));
-        return {} as any;
-      });
+      .catch(this.handleError({}));
   }
 
   async getRelativeList(pariwarId: string): Promise<RelativeList> {
@@ -336,10 +279,7 @@ class ApiService {
       .then(response => {
         return response.data;
       })
-      .catch(error => {
-        console.log(JSON.stringify(error));
-        return [] as any;
-      });
+      .catch(this.handleError([]));
   }
 
   async createRelative(
@@ -355,10 +295,7 @@ class ApiService {
       .then(response => {
         return response.data;
       })
-      .catch(error => {
-        console.log(JSON.stringify(error));
-        return {} as any;
-      });
+      .catch(this.handleError({}));
   }
 
   async updateRelative(
@@ -375,10 +312,7 @@ class ApiService {
       .then(response => {
         return response.data;
       })
-      .catch(error => {
-        console.log(JSON.stringify(error));
-        return {} as any;
-      });
+      .catch(this.handleError({}));
   }
 
   async addRelativesInNimta(
@@ -395,10 +329,7 @@ class ApiService {
       .then(() => {
         return;
       })
-      .catch(error => {
-        console.log(JSON.stringify(error));
-        return;
-      });
+      .catch(this.handleError(undefined));
   }
 
   async deleteRelative(id: string, pariwarId: string): Promise<void> {
@@ -410,10 +341,7 @@ class ApiService {
       .then(response => {
         return response.data;
       })
-      .catch(error => {
-        console.log(JSON.stringify(error));
-        return {} as any;
-      });
+      .catch(this.handleError({}));
   }
 
   async removeRelativeFromNimta(
@@ -429,10 +357,18 @@ class ApiService {
       .then(response => {
         return response.data;
       })
-      .catch(error => {
-        console.log(JSON.stringify(error));
-        return {} as any;
-      });
+      .catch(this.handleError({}));
+  }
+
+  handleError(returnObj: any) {
+    return (error: any) => {
+      if (error.response.data?.type === 'NOT_AUTHENTICATED') {
+        throw error.response.data;
+      }
+
+      console.log(JSON.stringify(error));
+      return returnObj;
+    };
   }
 }
 

@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {Pressable, ScrollView, TouchableOpacity, View} from 'react-native';
 import {apiService} from '../services/api.service';
 import {
@@ -39,12 +39,16 @@ const Search: React.FC<SearchProps> = ({setSearchVisible}) => {
       searchText: '',
     },
   });
-  useEffect(() => {
-    setFocus('searchText');
-  }, [setFocus]);
+
   const search = async (input: string) => {
     setLoading(true);
-    const baanList = await apiService.searchBaan(input);
+    const baanList = await apiService.searchBaan(input).catch(error => {
+      if (error.type === 'NOT_AUTHENTICATED') {
+        myContext.dispatch({type: APP_ACTIONS.LOGOUT});
+      }
+
+      return [];
+    });
     setData({baanList});
     setLoading(false);
   };
@@ -80,6 +84,7 @@ const Search: React.FC<SearchProps> = ({setSearchVisible}) => {
                   {...register('searchText')}
                   variant="outlined"
                   label="Search"
+                  autoFocus={true}
                   style={{margin: 16}}
                   onSubmitEditing={() => search(field.value)}
                   onChangeText={value => field.onChange(value)}

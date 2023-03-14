@@ -47,7 +47,16 @@ const Nimta: React.FC = () => {
       myContext.appSettings.selectedPariwar,
       myContext.appSettings.queryState.nimtaList,
     ],
-    () => apiService.getNimtaList(myContext.appSettings.selectedPariwar),
+    () =>
+      apiService
+        .getNimtaList(myContext.appSettings.selectedPariwar)
+        .catch(error => {
+          if (error.type === 'NOT_AUTHENTICATED') {
+            myContext.dispatch({type: APP_ACTIONS.LOGOUT});
+          }
+
+          return [];
+        }),
   );
 
   const editItem = (nimta: NimtaType) => {

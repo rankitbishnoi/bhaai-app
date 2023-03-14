@@ -52,7 +52,15 @@ const Relative: React.FC<RelativeProps> = ({
     () =>
       nimtaBase
         ? relativeList
-        : apiService.getRelativeList(myContext.appSettings.selectedPariwar),
+        : apiService
+            .getRelativeList(myContext.appSettings.selectedPariwar)
+            .catch(error => {
+              if (error.type === 'NOT_AUTHENTICATED') {
+                myContext.dispatch({type: APP_ACTIONS.LOGOUT});
+              }
+
+              return [];
+            }),
   );
 
   const filterList = useMemo(() => {

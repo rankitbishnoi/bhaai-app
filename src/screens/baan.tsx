@@ -34,8 +34,20 @@ const Baan: React.FC<BaanProps> = ({bhaaiId, setBaanVisible}) => {
     ['baanList', bhaaiId, myContext.appSettings.queryState.baanList],
     () =>
       Promise.all([
-        apiService.getBaanList(bhaaiId),
-        apiService.getBhaai(bhaaiId, true),
+        apiService.getBaanList(bhaaiId).catch(error => {
+          if (error.type === 'NOT_AUTHENTICATED') {
+            myContext.dispatch({type: APP_ACTIONS.LOGOUT});
+          }
+
+          return [];
+        }),
+        apiService.getBhaai(bhaaiId, true).catch(error => {
+          if (error.type === 'NOT_AUTHENTICATED') {
+            myContext.dispatch({type: APP_ACTIONS.LOGOUT});
+          }
+
+          return {} as BhaaiTotal;
+        }),
       ]).then(([baanList, bhaaiData]: [BaanList, BhaaiTotal]) => ({
         baanList,
         bhaaiData,
@@ -52,13 +64,22 @@ const Baan: React.FC<BaanProps> = ({bhaaiId, setBaanVisible}) => {
   };
 
   const deleteBaan = async (id: string) => {
-    return apiService.deleteBaan(id, bhaaiId).then(() => {
-      if (data) {
-        const index = data?.baanList.findIndex(a => a._id === id);
-        data.baanList.splice(index, 1);
-      }
-      return true;
-    });
+    return apiService
+      .deleteBaan(id, bhaaiId)
+      .catch(error => {
+        if (error.type === 'NOT_AUTHENTICATED') {
+          myContext.dispatch({type: APP_ACTIONS.LOGOUT});
+        }
+
+        return null;
+      })
+      .then(() => {
+        if (data) {
+          const index = data?.baanList.findIndex(a => a._id === id);
+          data.baanList.splice(index, 1);
+        }
+        return true;
+      });
   };
 
   return (

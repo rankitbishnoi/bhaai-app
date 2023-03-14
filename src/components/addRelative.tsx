@@ -62,17 +62,26 @@ const AddRelative: React.FC<ComponentProps> = (props: ComponentProps) => {
           }
         });
     } else {
-      apiService.createRelative(props.pariwarId, input).then(data => {
-        if (data) {
-          myContext.dispatch({type: APP_ACTIONS.REFETCH_RELATIVE_LIST});
-          myContext.dispatch({
-            type: APP_ACTIONS.NEW_MESSAGE,
-            payload: 'Relative has been added',
-          });
-          setProcessingEdit(false);
-          props.setVisible('');
-        }
-      });
+      apiService
+        .createRelative(props.pariwarId, input)
+        .catch(error => {
+          if (error.type === 'NOT_AUTHENTICATED') {
+            myContext.dispatch({type: APP_ACTIONS.LOGOUT});
+          }
+
+          return null;
+        })
+        .then(data => {
+          if (data) {
+            myContext.dispatch({type: APP_ACTIONS.REFETCH_RELATIVE_LIST});
+            myContext.dispatch({
+              type: APP_ACTIONS.NEW_MESSAGE,
+              payload: 'Relative has been added',
+            });
+            setProcessingEdit(false);
+            props.setVisible('');
+          }
+        });
     }
   });
 

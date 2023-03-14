@@ -49,7 +49,14 @@ const AddFromBaan: React.FC<BaanProps> = ({setVisible, nimtaId}) => {
   const [filterBy, setFilterBy] = useState(null as any);
   let {data, isLoading} = useQuery(
     ['baanList', myContext.appSettings.queryState.baanList],
-    () => apiService.getBaanList(),
+    () =>
+      apiService.getBaanList().catch(error => {
+        if (error.type === 'NOT_AUTHENTICATED') {
+          myContext.dispatch({type: APP_ACTIONS.LOGOUT});
+        }
+
+        return [];
+      }),
   );
 
   const filterList = useMemo(() => {

@@ -45,29 +45,47 @@ const AddBhaai: React.FC<ComponentProps> = (props: ComponentProps) => {
   const onSubmit = handleSubmit((input: BhaaiBase) => {
     setProcessingEdit(true);
     if (props.type === 'EDIT') {
-      apiService.updateBhaai(props.data?._id as string, input).then(data => {
-        if (data) {
-          myContext.dispatch({type: APP_ACTIONS.REFETCH_BHAAI_LIST});
-          myContext.dispatch({
-            type: APP_ACTIONS.NEW_MESSAGE,
-            payload: 'Bhaai has been updated',
-          });
-          setProcessingEdit(false);
-          props.setVisible(false);
-        }
-      });
+      apiService
+        .updateBhaai(props.data?._id as string, input)
+        .catch(error => {
+          if (error.type === 'NOT_AUTHENTICATED') {
+            myContext.dispatch({type: APP_ACTIONS.LOGOUT});
+          }
+
+          return null;
+        })
+        .then(data => {
+          if (data) {
+            myContext.dispatch({type: APP_ACTIONS.REFETCH_BHAAI_LIST});
+            myContext.dispatch({
+              type: APP_ACTIONS.NEW_MESSAGE,
+              payload: 'Bhaai has been updated',
+            });
+            setProcessingEdit(false);
+            props.setVisible(false);
+          }
+        });
     } else {
-      apiService.createBhaai(input).then(data => {
-        if (data) {
-          myContext.dispatch({type: APP_ACTIONS.REFETCH_BHAAI_LIST});
-          myContext.dispatch({
-            type: APP_ACTIONS.NEW_MESSAGE,
-            payload: 'Bhaai has been added',
-          });
-          setProcessingEdit(false);
-          props.setVisible(false);
-        }
-      });
+      apiService
+        .createBhaai(input)
+        .catch(error => {
+          if (error.type === 'NOT_AUTHENTICATED') {
+            myContext.dispatch({type: APP_ACTIONS.LOGOUT});
+          }
+
+          return null;
+        })
+        .then(data => {
+          if (data) {
+            myContext.dispatch({type: APP_ACTIONS.REFETCH_BHAAI_LIST});
+            myContext.dispatch({
+              type: APP_ACTIONS.NEW_MESSAGE,
+              payload: 'Bhaai has been added',
+            });
+            setProcessingEdit(false);
+            props.setVisible(false);
+          }
+        });
     }
   });
 
@@ -77,15 +95,24 @@ const AddBhaai: React.FC<ComponentProps> = (props: ComponentProps) => {
 
   const deleteBhaai = () => {
     setProcessingDelete(true);
-    apiService.deleteBhaai(props.data?._id as string).then(() => {
-      myContext.dispatch({type: APP_ACTIONS.REFETCH_BHAAI_LIST});
-      myContext.dispatch({
-        type: APP_ACTIONS.NEW_MESSAGE,
-        payload: 'Bhaai has been deleted',
+    apiService
+      .deleteBhaai(props.data?._id as string)
+      .catch(error => {
+        if (error.type === 'NOT_AUTHENTICATED') {
+          myContext.dispatch({type: APP_ACTIONS.LOGOUT});
+        }
+
+        return null;
+      })
+      .then(() => {
+        myContext.dispatch({type: APP_ACTIONS.REFETCH_BHAAI_LIST});
+        myContext.dispatch({
+          type: APP_ACTIONS.NEW_MESSAGE,
+          payload: 'Bhaai has been deleted',
+        });
+        setProcessingDelete(false);
+        props.setVisible(false);
       });
-      setProcessingDelete(false);
-      props.setVisible(false);
-    });
   };
 
   return (

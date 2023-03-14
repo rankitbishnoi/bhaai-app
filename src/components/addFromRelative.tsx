@@ -53,7 +53,16 @@ const AddFromRelative: React.FC<RelativeProps> = ({setVisible, nimtaId}) => {
       myContext.appSettings.selectedPariwar,
       myContext.appSettings.queryState.relativeList,
     ],
-    () => apiService.getRelativeList(myContext.appSettings.selectedPariwar),
+    () =>
+      apiService
+        .getRelativeList(myContext.appSettings.selectedPariwar)
+        .catch(error => {
+          if (error.type === 'NOT_AUTHENTICATED') {
+            myContext.dispatch({type: APP_ACTIONS.LOGOUT});
+          }
+
+          return [];
+        }),
   );
 
   const filterList = useMemo(() => {

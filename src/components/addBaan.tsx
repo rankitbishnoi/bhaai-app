@@ -50,6 +50,13 @@ const AddBaan: React.FC<ComponentProps> = (props: ComponentProps) => {
     if (props.type === 'EDIT') {
       apiService
         .updateBaan(props.data?._id as string, props.bhaaiId, input)
+        .catch(error => {
+          if (error.type === 'NOT_AUTHENTICATED') {
+            myContext.dispatch({type: APP_ACTIONS.LOGOUT});
+          }
+
+          return null;
+        })
         .then(data => {
           if (data) {
             myContext.dispatch({type: APP_ACTIONS.REFETCH_BAAN_LIST});
@@ -62,17 +69,26 @@ const AddBaan: React.FC<ComponentProps> = (props: ComponentProps) => {
           }
         });
     } else {
-      apiService.createBaan(props.bhaaiId, input).then(data => {
-        if (data) {
-          myContext.dispatch({type: APP_ACTIONS.REFETCH_BAAN_LIST});
-          myContext.dispatch({
-            type: APP_ACTIONS.NEW_MESSAGE,
-            payload: 'Baan has been added',
-          });
-          setProcessingEdit(false);
-          props.setVisible(false);
-        }
-      });
+      apiService
+        .createBaan(props.bhaaiId, input)
+        .catch(error => {
+          if (error.type === 'NOT_AUTHENTICATED') {
+            myContext.dispatch({type: APP_ACTIONS.LOGOUT});
+          }
+
+          return null;
+        })
+        .then(data => {
+          if (data) {
+            myContext.dispatch({type: APP_ACTIONS.REFETCH_BAAN_LIST});
+            myContext.dispatch({
+              type: APP_ACTIONS.NEW_MESSAGE,
+              payload: 'Baan has been added',
+            });
+            setProcessingEdit(false);
+            props.setVisible(false);
+          }
+        });
     }
   });
 
@@ -82,15 +98,24 @@ const AddBaan: React.FC<ComponentProps> = (props: ComponentProps) => {
 
   const deleteBaan = () => {
     setProcessingDelete(true);
-    apiService.deleteBaan(props.data?._id as string, props.bhaaiId).then(() => {
-      myContext.dispatch({type: APP_ACTIONS.REFETCH_BAAN_LIST});
-      myContext.dispatch({
-        type: APP_ACTIONS.NEW_MESSAGE,
-        payload: 'Baan has been deleted',
+    apiService
+      .deleteBaan(props.data?._id as string, props.bhaaiId)
+      .catch(error => {
+        if (error.type === 'NOT_AUTHENTICATED') {
+          myContext.dispatch({type: APP_ACTIONS.LOGOUT});
+        }
+
+        return null;
+      })
+      .then(() => {
+        myContext.dispatch({type: APP_ACTIONS.REFETCH_BAAN_LIST});
+        myContext.dispatch({
+          type: APP_ACTIONS.NEW_MESSAGE,
+          payload: 'Baan has been deleted',
+        });
+        setProcessingDelete(false);
+        props.setVisible(false);
       });
-      setProcessingDelete(false);
-      props.setVisible(false);
-    });
   };
 
   return (
