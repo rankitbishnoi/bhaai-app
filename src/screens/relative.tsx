@@ -17,6 +17,7 @@ import FilterRelative from '../components/filterRelative';
 import SwipeableList from '../components/swipeableList/swipeableList';
 import {AppContextState, APP_ACTIONS} from '../services/app.reducer';
 import ScreenHeading from '../components/ui/screenHeading';
+import {callNumber} from '../services/callANumber';
 
 const childPageStates = ['sort', 'filter', 'add', 'edit'];
 
@@ -209,6 +210,16 @@ const Relative: React.FC<RelativeProps> = ({
                         />
                       </TouchableOpacity>
                     ),
+                    trailing: relative.phoneNumber ? (
+                      <TouchableOpacity
+                        onPress={() => callNumber(relative.phoneNumber)}>
+                        <Ionicons
+                          name="call-outline"
+                          size={25}
+                          color={stackBarStyles.iconColor.color}
+                        />
+                      </TouchableOpacity>
+                    ) : undefined,
                   };
                 })}
                 deleteItem={deleteRelative}
