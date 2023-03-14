@@ -211,6 +211,7 @@ const AddBhaai: React.FC<ComponentProps> = (props: ComponentProps) => {
         )}
         <Button color="secondary" title="cancel" onPress={close} />
       </KeyboardAvoidingView>
+      <SizedBox height={60} />
     </ScrollView>
   );
 };

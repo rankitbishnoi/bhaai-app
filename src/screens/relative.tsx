@@ -185,126 +185,129 @@ const Relative: React.FC<RelativeProps> = ({
             </TouchableOpacity>
           )}
           {myContext.appSettings.selectedPariwar && data && (
-            <SwipeableList
-              items={filterList.map(relative => {
-                return {
-                  key: relative._id,
-                  title: `${relative.firstName} ${relative.lastName}${
-                    relative.nickName ? '(' + relative.nickName + ')' : ''
-                  } ${
-                    relative.fathersName
-                      ? 'S/O Shri ' + relative.fathersName
-                      : ''
-                  }, ${relative.address}`,
-                  subtitle: `Mobile: ${
-                    relative.phoneNumber || 'not available'
-                  }`,
-                  leading: (
-                    <TouchableOpacity onPress={() => editItem(relative)}>
+            <>
+              <SwipeableList
+                items={filterList.map(relative => {
+                  return {
+                    key: relative._id,
+                    title: `${relative.firstName} ${relative.lastName}${
+                      relative.nickName ? '(' + relative.nickName + ')' : ''
+                    } ${
+                      relative.fathersName
+                        ? 'S/O Shri ' + relative.fathersName
+                        : ''
+                    }, ${relative.address}`,
+                    subtitle: `Mobile: ${
+                      relative.phoneNumber || 'not available'
+                    }`,
+                    leading: (
+                      <TouchableOpacity onPress={() => editItem(relative)}>
+                        <Ionicons
+                          name="create-outline"
+                          size={25}
+                          color={stackBarStyles.iconColor.color}
+                        />
+                      </TouchableOpacity>
+                    ),
+                  };
+                })}
+                deleteItem={deleteRelative}
+                refreshing={isLoading}
+                refresh={refresh}
+              />
+              <Stack
+                style={stackBarStyles.stackBarBottom}
+                fill
+                bottom={0}
+                spacing={0}>
+                {!!nimtaBase && (
+                  <IconButton
+                    onPress={() => {
+                      setVisible && setVisible('');
+                    }}
+                    icon={props => (
                       <Ionicons
-                        name="create-outline"
-                        size={25}
+                        name="arrow-back-outline"
+                        {...props}
                         color={stackBarStyles.iconColor.color}
                       />
-                    </TouchableOpacity>
-                  ),
-                };
-              })}
-              deleteItem={deleteRelative}
-              refreshing={isLoading}
-              refresh={refresh}
-            />
+                    )}
+                    color="secondary"
+                    style={stackBarStyles.fab}
+                  />
+                )}
+                {!nimtaBase && <View style={stackBarStyles.fab} />}
+                <View
+                  style={{...buttonStyles.buttonGroup, ...styles.sortFilter}}>
+                  <TouchableOpacity
+                    onPress={() => {
+                      setOpenDailog('sort');
+                    }}>
+                    <View
+                      style={{
+                        ...buttonStyles.buttonGroupItem,
+                        ...buttonStyles.buttonSmall,
+                      }}>
+                      <Ionicons
+                        style={buttonStyles.buttonGroupItemIcon}
+                        name="funnel-outline"
+                      />
+                      <Text style={buttonStyles.buttonGroupTitle}>sort</Text>
+                    </View>
+                  </TouchableOpacity>
+                  <View style={buttonStyles.buttonGroupDivider} />
+                  <TouchableOpacity
+                    onPress={() => {
+                      setOpenDailog('filter');
+                    }}>
+                    <View
+                      style={{
+                        ...buttonStyles.buttonGroupItem,
+                        ...buttonStyles.buttonSmall,
+                      }}>
+                      <Ionicons
+                        style={buttonStyles.buttonGroupItemIcon}
+                        name="filter-outline"
+                      />
+                      <Text style={buttonStyles.buttonGroupTitle}>filter</Text>
+                    </View>
+                  </TouchableOpacity>
+                </View>
+                {!!nimtaBase && (
+                  <IconButton
+                    onPress={() => {
+                      setVisible && setVisible('addFromRelative');
+                    }}
+                    icon={props => (
+                      <Ionicons
+                        name="person-add-outline"
+                        {...props}
+                        color={stackBarStyles.iconColor.color}
+                      />
+                    )}
+                    color="secondary"
+                    style={stackBarStyles.fab}
+                  />
+                )}
+                {!nimtaBase && (
+                  <IconButton
+                    onPress={() => {
+                      setOpenDailog('add');
+                    }}
+                    icon={props => (
+                      <Ionicons
+                        name="add"
+                        {...props}
+                        color={stackBarStyles.iconColor.color}
+                      />
+                    )}
+                    color="secondary"
+                    style={stackBarStyles.fab}
+                  />
+                )}
+              </Stack>
+            </>
           )}
-          <Stack
-            style={stackBarStyles.stackBarBottom}
-            fill
-            bottom={0}
-            spacing={0}>
-            {!!nimtaBase && (
-              <IconButton
-                onPress={() => {
-                  setVisible && setVisible('');
-                }}
-                icon={props => (
-                  <Ionicons
-                    name="arrow-back-outline"
-                    {...props}
-                    color={stackBarStyles.iconColor.color}
-                  />
-                )}
-                color="secondary"
-                style={stackBarStyles.fab}
-              />
-            )}
-            {!nimtaBase && <View style={stackBarStyles.fab} />}
-            <View style={{...buttonStyles.buttonGroup, ...styles.sortFilter}}>
-              <TouchableOpacity
-                onPress={() => {
-                  setOpenDailog('sort');
-                }}>
-                <View
-                  style={{
-                    ...buttonStyles.buttonGroupItem,
-                    ...buttonStyles.buttonSmall,
-                  }}>
-                  <Ionicons
-                    style={buttonStyles.buttonGroupItemIcon}
-                    name="funnel-outline"
-                  />
-                  <Text style={buttonStyles.buttonGroupTitle}>sort</Text>
-                </View>
-              </TouchableOpacity>
-              <View style={buttonStyles.buttonGroupDivider} />
-              <TouchableOpacity
-                onPress={() => {
-                  setOpenDailog('filter');
-                }}>
-                <View
-                  style={{
-                    ...buttonStyles.buttonGroupItem,
-                    ...buttonStyles.buttonSmall,
-                  }}>
-                  <Ionicons
-                    style={buttonStyles.buttonGroupItemIcon}
-                    name="filter-outline"
-                  />
-                  <Text style={buttonStyles.buttonGroupTitle}>filter</Text>
-                </View>
-              </TouchableOpacity>
-            </View>
-            {!!nimtaBase && (
-              <IconButton
-                onPress={() => {
-                  setVisible && setVisible('addFromRelative');
-                }}
-                icon={props => (
-                  <Ionicons
-                    name="person-add-outline"
-                    {...props}
-                    color={stackBarStyles.iconColor.color}
-                  />
-                )}
-                color="secondary"
-                style={stackBarStyles.fab}
-              />
-            )}
-            {!nimtaBase && (
-              <IconButton
-                onPress={() => {
-                  setOpenDailog('add');
-                }}
-                icon={props => (
-                  <Ionicons
-                    name="add"
-                    {...props}
-                    color={stackBarStyles.iconColor.color}
-                  />
-                )}
-                color="secondary"
-                style={stackBarStyles.fab}
-              />
-            )}
-          </Stack>
         </View>
       )}
       {openDailog === 'add' && (
