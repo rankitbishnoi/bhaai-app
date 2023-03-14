@@ -110,8 +110,6 @@ const Signup: React.FC<{}> = ({}) => {
               {...field}
               {...register('phoneNumber', {
                 required: 'password is required',
-                minLength: {value: 13, message: 'enter valid phone number'},
-                maxLength: {value: 13, message: 'enter valid phone number'},
                 validate: value => {
                   return validatePhoneNumber(value)
                     ? undefined
