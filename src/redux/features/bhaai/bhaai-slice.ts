@@ -3,15 +3,14 @@ import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {persistReducer} from 'redux-persist';
 
+import {Bhaai} from '../../../types/Bhaai';
+import {BhaaiList} from '../../../types/BhaaiList';
+import {apiService} from '../../../services/api.service';
+
 const persistConfig = {
   key: 'bhaaiList',
   storage: AsyncStorage,
 };
-
-import {Bhaai, BhaaiBase} from '../../../types/Bhaai';
-import {BhaaiList} from '../../../types/BhaaiList';
-import uuid from 'react-native-uuid';
-import {apiService} from '../../../services/api.service';
 
 const initialState: BhaaiList = [];
 
@@ -30,27 +29,49 @@ export const bhaaiListApi = createApi({
     },
   }),
   endpoints: builder => ({
-    getBhaaiList: builder.query<BhaaiList, string>({
+    getBhaaiList: builder.query<BhaaiList, void>({
       query: () => ({
         url: 'bhaai',
         method: 'GET',
       }),
     }),
+    createBhaai: builder.mutation<Bhaai, Bhaai>({
+      query: body => ({
+        url: 'bhaai',
+        method: 'POST',
+        body,
+      }),
+    }),
+    updatedBhaai: builder.mutation<Bhaai, Bhaai>({
+      query: body => ({
+        url: `bhaai/${body._id}`,
+        method: 'PUT',
+        body,
+      }),
+    }),
+    deleteBhaai: builder.mutation<Bhaai, string>({
+      query: id => ({
+        url: `bhaai/${id}`,
+        method: 'DELETE',
+      }),
+    }),
   }),
 });
 
-export const {useGetBhaaiListQuery} = bhaaiListApi;
+export const {
+  useGetBhaaiListQuery,
+  useCreateBhaaiMutation,
+  useDeleteBhaaiMutation,
+  useUpdatedBhaaiMutation,
+} = bhaaiListApi;
 
 const bhaaiSlice = createSlice({
   name: 'bhaaiList',
   initialState,
   reducers: {
     // createBhaai
-    createdBhaai(state, action: PayloadAction<BhaaiBase>) {
-      state.push({
-        ...action.payload,
-        _id: uuid.v4().toString(),
-      });
+    createdBhaai(state, action: PayloadAction<Bhaai>) {
+      state.push(action.payload);
     },
     // updateBhaai
     updatedBhaai(state, action: PayloadAction<Bhaai>) {
@@ -71,7 +92,6 @@ const bhaaiSlice = createSlice({
     builder.addMatcher(
       bhaaiListApi.endpoints.getBhaaiList.matchFulfilled,
       (state, {payload}) => {
-        console.log(state, {payload}, 'state, {payload}');
         return payload;
       },
     );

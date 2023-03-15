@@ -7,7 +7,6 @@ import {
   Pressable,
   ScrollView,
 } from 'react-native';
-import {apiService} from '../services/api.service';
 import {BaanBase} from '../types/Baan';
 import useStyles from '../styles/baan';
 import {Baan} from '../types/BaanList';
@@ -15,6 +14,14 @@ import AppContext from '../services/storage';
 import SizedBox from './ui/sizedBox';
 import {AppContextState, APP_ACTIONS} from '../services/app.reducer';
 import ScreenHeading from './ui/screenHeading';
+import {useAppDispatch} from '../redux/hooks';
+import {
+  baanListApi,
+  createdBaan,
+  deletedBaan,
+  updatedBaan,
+} from '../redux/features/bhaai/baan-slice';
+import uuid from 'react-native-uuid';
 
 interface ComponentProps {
   setVisible: (visiblity: boolean) => any;
@@ -28,6 +35,7 @@ const AddBaan: React.FC<ComponentProps> = (props: ComponentProps) => {
   const styles = useStyles(myContext.appSettings.theme);
   const [processingEdit, setProcessingEdit] = useState(false);
   const [processingDelete, setProcessingDelete] = useState(false);
+  const dispatch = useAppDispatch();
   const {
     control,
     handleSubmit,
@@ -47,49 +55,30 @@ const AddBaan: React.FC<ComponentProps> = (props: ComponentProps) => {
 
   const onSubmit = handleSubmit((input: BaanBase) => {
     setProcessingEdit(true);
+    const newBaanPayload = {
+      bhaaiId: props.bhaaiId,
+      body: {
+        ...input,
+        _id: props.data?._id || uuid.v4().toString(),
+      },
+    };
     if (props.type === 'EDIT') {
-      apiService
-        .updateBaan(props.data?._id as string, props.bhaaiId, input)
-        .catch(error => {
-          if (error.type === 'NOT_AUTHENTICATED') {
-            myContext.dispatch({type: APP_ACTIONS.LOGOUT});
-          }
-
-          return null;
-        })
-        .then(data => {
-          if (data) {
-            myContext.dispatch({type: APP_ACTIONS.REFETCH_BAAN_LIST});
-            myContext.dispatch({
-              type: APP_ACTIONS.NEW_MESSAGE,
-              payload: 'Baan has been updated',
-            });
-            setProcessingEdit(false);
-            props.setVisible(false);
-          }
-        });
+      dispatch(updatedBaan(newBaanPayload));
+      dispatch(baanListApi.endpoints.updatedBaan.initiate(newBaanPayload));
+      myContext.dispatch({
+        type: APP_ACTIONS.NEW_MESSAGE,
+        payload: 'Baan has been updated',
+      });
     } else {
-      apiService
-        .createBaan(props.bhaaiId, input)
-        .catch(error => {
-          if (error.type === 'NOT_AUTHENTICATED') {
-            myContext.dispatch({type: APP_ACTIONS.LOGOUT});
-          }
-
-          return null;
-        })
-        .then(data => {
-          if (data) {
-            myContext.dispatch({type: APP_ACTIONS.REFETCH_BAAN_LIST});
-            myContext.dispatch({
-              type: APP_ACTIONS.NEW_MESSAGE,
-              payload: 'Baan has been added',
-            });
-            setProcessingEdit(false);
-            props.setVisible(false);
-          }
-        });
+      dispatch(createdBaan(newBaanPayload));
+      dispatch(baanListApi.endpoints.createBaan.initiate(newBaanPayload));
+      myContext.dispatch({
+        type: APP_ACTIONS.NEW_MESSAGE,
+        payload: 'Baan has been created',
+      });
     }
+    setProcessingEdit(false);
+    props.setVisible(false);
   });
 
   const close = () => {
@@ -97,25 +86,21 @@ const AddBaan: React.FC<ComponentProps> = (props: ComponentProps) => {
   };
 
   const deleteBaan = () => {
-    setProcessingDelete(true);
-    apiService
-      .deleteBaan(props.data?._id as string, props.bhaaiId)
-      .catch(error => {
-        if (error.type === 'NOT_AUTHENTICATED') {
-          myContext.dispatch({type: APP_ACTIONS.LOGOUT});
-        }
-
-        return null;
-      })
-      .then(() => {
-        myContext.dispatch({type: APP_ACTIONS.REFETCH_BAAN_LIST});
-        myContext.dispatch({
-          type: APP_ACTIONS.NEW_MESSAGE,
-          payload: 'Baan has been deleted',
-        });
-        setProcessingDelete(false);
-        props.setVisible(false);
+    if (props.data) {
+      setProcessingDelete(true);
+      const baanPayload = {
+        bhaaiId: props.bhaaiId,
+        id: props.data?._id,
+      };
+      dispatch(deletedBaan(baanPayload));
+      dispatch(baanListApi.endpoints.deleteBaan.initiate(baanPayload));
+      myContext.dispatch({
+        type: APP_ACTIONS.NEW_MESSAGE,
+        payload: 'Baan has been deleted',
       });
+      setProcessingEdit(false);
+      props.setVisible(false);
+    }
   };
 
   return (

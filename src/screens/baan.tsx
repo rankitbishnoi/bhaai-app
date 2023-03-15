@@ -1,6 +1,5 @@
 import React, {useContext, useState} from 'react';
 import {TouchableOpacity, View} from 'react-native';
-import {apiService} from '../services/api.service';
 import {IconButton, Stack} from '@react-native-material/core';
 
 import useStyles from '../styles/baan';
@@ -9,77 +8,49 @@ import {Baan as BaanType} from '../types/Baan';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AddBaan from '../components/addBaan';
 import ProgressBar from '../components/ui/loader';
-import {useQuery} from 'react-query';
-import {BaanList} from '../types/BaanList';
-import {BhaaiTotal} from '../types/BhaaiTotal';
 import SwipeableList from '../components/swipeableList/swipeableList';
 import ScreenHeading from '../components/ui/screenHeading';
-import {AppContextState, APP_ACTIONS} from '../services/app.reducer';
+import {AppContextState} from '../services/app.reducer';
 import AppContext from '../services/storage';
+import {useAppDispatch, useAppSelector} from '../redux/hooks';
+import {
+  deletedBaan,
+  useGetBaanListQuery,
+} from '../redux/features/bhaai/baan-slice';
 
 const childPageStates = ['edit', 'add'];
 
 interface BaanProps {
   setBaanVisible: (visiblity: boolean) => any;
   bhaaiId: string;
+  title: string;
 }
 
-const Baan: React.FC<BaanProps> = ({bhaaiId, setBaanVisible}) => {
+const Baan: React.FC<BaanProps> = ({bhaaiId, setBaanVisible, title}) => {
   const myContext = useContext<AppContextState>(AppContext);
   const styles = useStyles(myContext.appSettings.theme);
   const stackBarStyles = useStackBarStyles(myContext.appSettings.theme);
   const [openDailog, setOpenDailog] = useState('');
   const [selectedBaan, setSelectedBaan] = useState({} as any);
-  const {data, isLoading} = useQuery(
-    ['baanList', bhaaiId, myContext.appSettings.queryState.baanList],
-    () =>
-      Promise.all([
-        apiService.getBaanList(bhaaiId).catch(error => {
-          if (error.type === 'NOT_AUTHENTICATED') {
-            myContext.dispatch({type: APP_ACTIONS.LOGOUT});
-          }
-
-          return [];
-        }),
-        apiService.getBhaai(bhaaiId, true).catch(error => {
-          if (error.type === 'NOT_AUTHENTICATED') {
-            myContext.dispatch({type: APP_ACTIONS.LOGOUT});
-          }
-
-          return {} as BhaaiTotal;
-        }),
-      ]).then(([baanList, bhaaiData]: [BaanList, BhaaiTotal]) => ({
-        baanList,
-        bhaaiData,
-      })),
+  const {isLoading, refetch} = useGetBaanListQuery();
+  const data = useAppSelector(state => state.baanList);
+  const baanList = data[bhaaiId] || [];
+  const baanListTotal = baanList.reduce(
+    (pre: number, cur: BaanType) => pre + cur.amount,
+    0,
   );
+  const dispatch = useAppDispatch();
 
   const editItem = (baan: BaanType) => {
     setSelectedBaan(baan);
     setOpenDailog('edit');
   };
 
-  const refresh = () => {
-    myContext.dispatch({type: APP_ACTIONS.REFETCH_BAAN_LIST});
-  };
-
-  const deleteBaan = async (id: string) => {
-    return apiService
-      .deleteBaan(id, bhaaiId)
-      .catch(error => {
-        if (error.type === 'NOT_AUTHENTICATED') {
-          myContext.dispatch({type: APP_ACTIONS.LOGOUT});
-        }
-
-        return null;
-      })
-      .then(() => {
-        if (data) {
-          const index = data?.baanList.findIndex(a => a._id === id);
-          data.baanList.splice(index, 1);
-        }
-        return true;
-      });
+  const deleteBaan = async (id: string): Promise<boolean> => {
+    return new Promise(res => {
+      dispatch(deletedBaan({bhaaiId, id}));
+      res(true);
+    });
   };
 
   return (
@@ -89,15 +60,15 @@ const Baan: React.FC<BaanProps> = ({bhaaiId, setBaanVisible}) => {
           {isLoading && (
             <ProgressBar height={5} indeterminate backgroundColor="#4a0072" />
           )}
-          {data?.baanList && data?.bhaaiData && (
+          {data && (
             <ScreenHeading
-              title={data.bhaaiData.marriage}
-              subtitle={`Rs: ${data.bhaaiData.total}, ${data.baanList.length} entries`}
+              title={title}
+              subtitle={`Rs: ${baanListTotal}, ${baanList.length} entries`}
             />
           )}
-          {data?.baanList && (
+          {data && (
             <SwipeableList
-              items={data.baanList.map(baan => {
+              items={baanList.map(baan => {
                 return {
                   title: `${baan.firstName} ${baan.lastName}${
                     baan.nickName ? '(' + baan.nickName + ')' : ''
@@ -119,7 +90,7 @@ const Baan: React.FC<BaanProps> = ({bhaaiId, setBaanVisible}) => {
               })}
               deleteItem={deleteBaan}
               refreshing={isLoading}
-              refresh={refresh}
+              refresh={refetch}
             />
           )}
           <Stack

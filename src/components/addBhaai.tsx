@@ -20,7 +20,9 @@ import {
   createdBhaai,
   updatedBhaai,
   deletedBhaai,
+  bhaaiListApi,
 } from '../redux/features/bhaai/bhaai-slice';
+import uuid from 'react-native-uuid';
 
 interface ComponentProps {
   setVisible: (visiblity: boolean) => any;
@@ -57,12 +59,23 @@ const AddBhaai: React.FC<ComponentProps> = (props: ComponentProps) => {
           _id: props.data?._id,
         }),
       );
+      dispatch(
+        bhaaiListApi.endpoints.updatedBhaai.initiate({
+          ...input,
+          _id: props.data?._id,
+        }),
+      );
       myContext.dispatch({
         type: APP_ACTIONS.NEW_MESSAGE,
         payload: 'Bhaai has been updated',
       });
     } else {
-      dispatch(createdBhaai(input));
+      const newBhaai = {
+        ...input,
+        _id: uuid.v4().toString(),
+      };
+      dispatch(createdBhaai(newBhaai));
+      dispatch(bhaaiListApi.endpoints.createBhaai.initiate(newBhaai));
       myContext.dispatch({
         type: APP_ACTIONS.NEW_MESSAGE,
         payload: 'Bhaai has been added',
@@ -77,14 +90,17 @@ const AddBhaai: React.FC<ComponentProps> = (props: ComponentProps) => {
   };
 
   const deleteBhaai = () => {
-    setProcessingDelete(true);
-    props.data && dispatch(deletedBhaai(props.data?._id));
-    myContext.dispatch({
-      type: APP_ACTIONS.NEW_MESSAGE,
-      payload: 'Bhaai has been deleted',
-    });
-    setProcessingDelete(false);
-    props.setVisible(false);
+    if (props.data) {
+      setProcessingDelete(true);
+      dispatch(deletedBhaai(props.data?._id));
+      dispatch(bhaaiListApi.endpoints.deleteBhaai.initiate(props.data?._id));
+      myContext.dispatch({
+        type: APP_ACTIONS.NEW_MESSAGE,
+        payload: 'Bhaai has been deleted',
+      });
+      setProcessingDelete(false);
+      props.setVisible(false);
+    }
   };
 
   return (

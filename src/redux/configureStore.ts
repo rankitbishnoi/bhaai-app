@@ -1,17 +1,26 @@
 import {configureStore} from '@reduxjs/toolkit';
 
 import monitorReducersEnhancer from './enhancers/monitorReducers';
+import {enableMapSet} from 'immer';
 import loggerMiddleware from './middleware/logger';
 import bhaaiReducer, {bhaaiListApi} from './features/bhaai/bhaai-slice';
+import baanReducer, {baanListApi} from './features/bhaai/baan-slice';
 import {persistStore} from 'redux-persist';
+
+enableMapSet();
 
 const storeBase = configureStore({
   reducer: {
     bhaaiList: bhaaiReducer,
+    baanList: baanReducer,
     [bhaaiListApi.reducerPath]: bhaaiListApi.reducer,
+    [baanListApi.reducerPath]: baanListApi.reducer,
   },
   middleware: getDefaultMiddleware =>
-    getDefaultMiddleware().concat(bhaaiListApi.middleware),
+    getDefaultMiddleware().concat(
+      bhaaiListApi.middleware,
+      baanListApi.middleware,
+    ),
   enhancers: [monitorReducersEnhancer],
 });
 

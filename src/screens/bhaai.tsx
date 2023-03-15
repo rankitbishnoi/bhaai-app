@@ -1,6 +1,5 @@
 import React, {useContext, useState} from 'react';
 import {TouchableOpacity, View} from 'react-native';
-import {apiService} from '../services/api.service';
 import {IconButton, Stack} from '@react-native-material/core';
 import useStyles from '../styles/bhaai';
 import useStackBarStyles from '../styles/stackBar';
@@ -12,7 +11,7 @@ import ProgressBar from '../components/ui/loader';
 import Search from './search';
 import SwipeableList from '../components/swipeableList/swipeableList';
 import ScreenHeading from '../components/ui/screenHeading';
-import {AppContextState, APP_ACTIONS} from '../services/app.reducer';
+import {AppContextState} from '../services/app.reducer';
 import AppContext from '../services/storage';
 import {useAppDispatch, useAppSelector} from '../redux/hooks';
 import {
@@ -30,7 +29,7 @@ const Bhaai: React.FC = () => {
   const [openDailog, setOpenDailog] = useState('');
   const data = useAppSelector(state => state.bhaaiList);
   const dispatch = useAppDispatch();
-  const {isLoading} = useGetBhaaiListQuery();
+  const {isLoading, refetch} = useGetBhaaiListQuery();
 
   const editItem = (bhaai: BhaaiType) => {
     setSelectedBhaai(bhaai);
@@ -40,10 +39,6 @@ const Bhaai: React.FC = () => {
   const openItem = (bhaai: BhaaiType) => {
     setSelectedBhaai(bhaai);
     setOpenDailog('baan-list');
-  };
-
-  const refresh = () => {
-    myContext.dispatch({type: APP_ACTIONS.REFETCH_BHAAI_LIST});
   };
 
   const deleteBhaai = async (id: string): Promise<boolean> => {
@@ -94,7 +89,7 @@ const Bhaai: React.FC = () => {
               })}
               deleteItem={deleteBhaai}
               refreshing={isLoading}
-              refresh={refresh}
+              refresh={refetch}
             />
           )}
           <Stack
@@ -149,6 +144,7 @@ const Bhaai: React.FC = () => {
       {openDailog === 'baan-list' && (
         <Baan
           bhaaiId={selectedBhaai._id}
+          title={selectedBhaai.marriage}
           setBaanVisible={value => setOpenDailog(value ? 'baan-list' : '')}
         />
       )}
