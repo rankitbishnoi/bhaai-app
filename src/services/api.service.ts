@@ -366,7 +366,6 @@ class ApiService {
         throw error.response.data;
       }
 
-      console.log(JSON.stringify(error));
       return returnObj;
     };
   }

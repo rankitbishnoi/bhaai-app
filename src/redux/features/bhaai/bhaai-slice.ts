@@ -1,33 +1,12 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
-import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {persistReducer} from 'redux-persist';
 
 import {Bhaai} from '../../../types/Bhaai';
 import {BhaaiList} from '../../../types/BhaaiList';
-import {apiService} from '../../../services/api.service';
-
-const persistConfig = {
-  key: 'bhaaiList',
-  storage: AsyncStorage,
-};
+import {ApiSlice} from '../api-slice';
 
 const initialState: BhaaiList = [];
 
-export const bhaaiListApi = createApi({
-  reducerPath: 'bhaaiListApi',
-  tagTypes: ['Bhaai'],
-  baseQuery: fetchBaseQuery({
-    baseUrl: apiService.baseURL,
-    prepareHeaders: headers => {
-      headers.set(
-        'authorization',
-        apiService.getHeaders().headers.authorization,
-      );
-
-      return headers;
-    },
-  }),
+export const bhaaiListApi = ApiSlice.injectEndpoints({
   endpoints: builder => ({
     getBhaaiList: builder.query<BhaaiList, void>({
       query: () => ({
@@ -56,6 +35,7 @@ export const bhaaiListApi = createApi({
       }),
     }),
   }),
+  overrideExisting: false,
 });
 
 export const {
@@ -95,14 +75,15 @@ const bhaaiSlice = createSlice({
         return payload;
       },
     );
+    builder.addMatcher(
+      bhaaiListApi.endpoints.createBhaai.matchRejected,
+      (_state, action) => {
+        console.log(_state, {action});
+      },
+    );
   },
 });
 
 export const {createdBhaai, deletedBhaai, updatedBhaai} = bhaaiSlice.actions;
-
-const reducer: typeof bhaaiSlice.reducer = persistReducer(
-  persistConfig,
-  bhaaiSlice.reducer,
-) as any;
 
 export default bhaaiSlice.reducer;

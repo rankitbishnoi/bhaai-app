@@ -1,33 +1,12 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
-import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {persistReducer} from 'redux-persist';
 
 import {Baan} from '../../../types/Baan';
 import {BaanList} from '../../../types/BaanList';
-import {apiService} from '../../../services/api.service';
-
-const persistConfig = {
-  key: 'baanList',
-  storage: AsyncStorage,
-};
+import {ApiSlice} from '../api-slice';
 
 const initialState: Record<string, Baan[]> = {};
 
-export const baanListApi = createApi({
-  reducerPath: 'baanListApi',
-  tagTypes: ['Baan'],
-  baseQuery: fetchBaseQuery({
-    baseUrl: apiService.baseURL,
-    prepareHeaders: headers => {
-      headers.set(
-        'authorization',
-        apiService.getHeaders().headers.authorization,
-      );
-
-      return headers;
-    },
-  }),
+export const baanListApi = ApiSlice.injectEndpoints({
   endpoints: builder => ({
     getBaanList: builder.query<BaanList, void>({
       query: () => ({
@@ -56,6 +35,7 @@ export const baanListApi = createApi({
       }),
     }),
   }),
+  overrideExisting: false,
 });
 
 export const {
@@ -125,10 +105,5 @@ const baanSlice = createSlice({
 });
 
 export const {createdBaan, deletedBaan, updatedBaan} = baanSlice.actions;
-
-const reducer: typeof baanSlice.reducer = persistReducer(
-  persistConfig,
-  baanSlice.reducer,
-) as any;
 
 export default baanSlice.reducer;

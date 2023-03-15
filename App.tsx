@@ -13,7 +13,8 @@ import {QueryClient, QueryClientProvider} from 'react-query';
 import {appReducer, themeColor} from './src/services/app.reducer';
 import {Appearance} from 'react-native';
 import {Provider as ReduxProvider} from 'react-redux';
-import {store} from './src/redux/configureStore';
+import {store, persistor} from './src/redux/configureStore';
+import {PersistGate} from 'redux-persist/integration/react';
 
 const App: React.FC = () => {
   const [appSettings, dispatch] = useReducer(appReducer, {
@@ -62,15 +63,17 @@ const App: React.FC = () => {
         }}>
         <AppContext.Provider value={{appSettings, dispatch}}>
           <ReduxProvider store={store}>
-            <View style={styles.root}>
-              <SafeAreaView style={styles.safeAreaView}>
-                {appSettings.isLoggedIn ? <Main /> : <Auth />}
-                <KeyboardAvoidingView
-                  behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-                  <MessagePopUp />
-                </KeyboardAvoidingView>
-              </SafeAreaView>
-            </View>
+            <PersistGate loading={null} persistor={persistor}>
+              <View style={styles.root}>
+                <SafeAreaView style={styles.safeAreaView}>
+                  {appSettings.isLoggedIn ? <Main /> : <Auth />}
+                  <KeyboardAvoidingView
+                    behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+                    <MessagePopUp />
+                  </KeyboardAvoidingView>
+                </SafeAreaView>
+              </View>
+            </PersistGate>
           </ReduxProvider>
         </AppContext.Provider>
       </Provider>
