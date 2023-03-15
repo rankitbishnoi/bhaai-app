@@ -12,6 +12,8 @@ import MessagePopUp from './src/components/ui/messagePopUp';
 import {QueryClient, QueryClientProvider} from 'react-query';
 import {appReducer, themeColor} from './src/services/app.reducer';
 import {Appearance} from 'react-native';
+import {Provider as ReduxProvider} from 'react-redux';
+import {store} from './src/redux/configureStore';
 
 const App: React.FC = () => {
   const [appSettings, dispatch] = useReducer(appReducer, {
@@ -59,15 +61,17 @@ const App: React.FC = () => {
           },
         }}>
         <AppContext.Provider value={{appSettings, dispatch}}>
-          <View style={styles.root}>
-            <SafeAreaView style={styles.safeAreaView}>
-              {appSettings.isLoggedIn ? <Main /> : <Auth />}
-              <KeyboardAvoidingView
-                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-                <MessagePopUp />
-              </KeyboardAvoidingView>
-            </SafeAreaView>
-          </View>
+          <ReduxProvider store={store}>
+            <View style={styles.root}>
+              <SafeAreaView style={styles.safeAreaView}>
+                {appSettings.isLoggedIn ? <Main /> : <Auth />}
+                <KeyboardAvoidingView
+                  behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+                  <MessagePopUp />
+                </KeyboardAvoidingView>
+              </SafeAreaView>
+            </View>
+          </ReduxProvider>
         </AppContext.Provider>
       </Provider>
     </QueryClientProvider>

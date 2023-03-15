@@ -10,11 +10,15 @@ import AddBhaai from '../components/addBhaai';
 import Baan from './baan';
 import ProgressBar from '../components/ui/loader';
 import Search from './search';
-import {useQuery} from 'react-query';
 import SwipeableList from '../components/swipeableList/swipeableList';
 import ScreenHeading from '../components/ui/screenHeading';
 import {AppContextState, APP_ACTIONS} from '../services/app.reducer';
 import AppContext from '../services/storage';
+import {useAppDispatch, useAppSelector} from '../redux/hooks';
+import {
+  useGetBhaaiListQuery,
+  deletedBhaai,
+} from '../redux/features/bhaai/bhaai-slice';
 
 const childPageStates = ['baan-list', 'search', 'edit', 'add'];
 
@@ -24,17 +28,9 @@ const Bhaai: React.FC = () => {
   const stackBarStyles = useStackBarStyles(myContext.appSettings.theme);
   const [selectedBhaai, setSelectedBhaai] = useState({} as any);
   const [openDailog, setOpenDailog] = useState('');
-  const {data, isLoading} = useQuery(
-    ['baanList', myContext.appSettings.queryState.bhaaiList],
-    () =>
-      apiService.getBhaaiList().catch(error => {
-        if (error.type === 'NOT_AUTHENTICATED') {
-          myContext.dispatch({type: APP_ACTIONS.LOGOUT});
-        }
-
-        return [];
-      }),
-  );
+  const data = useAppSelector(state => state.bhaaiList);
+  const dispatch = useAppDispatch();
+  const {isLoading} = useGetBhaaiListQuery();
 
   const editItem = (bhaai: BhaaiType) => {
     setSelectedBhaai(bhaai);
@@ -50,23 +46,11 @@ const Bhaai: React.FC = () => {
     myContext.dispatch({type: APP_ACTIONS.REFETCH_BHAAI_LIST});
   };
 
-  const deleteBhaai = async (id: string) => {
-    return apiService
-      .deleteBhaai(id)
-      .catch(error => {
-        if (error.type === 'NOT_AUTHENTICATED') {
-          myContext.dispatch({type: APP_ACTIONS.LOGOUT});
-        }
-
-        return null;
-      })
-      .then(() => {
-        if (data) {
-          const index = data?.findIndex(a => a._id === id);
-          data.splice(index, 1);
-        }
-        return true;
-      });
+  const deleteBhaai = async (id: string): Promise<boolean> => {
+    return new Promise(res => {
+      dispatch(deletedBhaai(id));
+      res(true);
+    });
   };
 
   return (

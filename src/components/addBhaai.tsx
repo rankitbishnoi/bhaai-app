@@ -7,7 +7,6 @@ import {
   Pressable,
   ScrollView,
 } from 'react-native';
-import {apiService} from '../services/api.service';
 import {BhaaiBase} from '../types/Bhaai';
 import useStyles from '../styles/bhaai';
 import DatePicker from 'react-native-date-picker';
@@ -16,6 +15,12 @@ import AppContext from '../services/storage';
 import SizedBox from './ui/sizedBox';
 import {AppContextState, APP_ACTIONS} from '../services/app.reducer';
 import ScreenHeading from './ui/screenHeading';
+import {useAppDispatch} from '../redux/hooks';
+import {
+  createdBhaai,
+  updatedBhaai,
+  deletedBhaai,
+} from '../redux/features/bhaai/bhaai-slice';
 
 interface ComponentProps {
   setVisible: (visiblity: boolean) => any;
@@ -28,6 +33,7 @@ const AddBhaai: React.FC<ComponentProps> = (props: ComponentProps) => {
   const [processingEdit, setProcessingEdit] = useState(false);
   const [processingDelete, setProcessingDelete] = useState(false);
   const [openDatePicker, setOpenDatePicker] = useState(false);
+  const dispatch = useAppDispatch();
   const styles = useStyles(myContext.appSettings.theme);
   const {
     control,
@@ -44,49 +50,26 @@ const AddBhaai: React.FC<ComponentProps> = (props: ComponentProps) => {
 
   const onSubmit = handleSubmit((input: BhaaiBase) => {
     setProcessingEdit(true);
-    if (props.type === 'EDIT') {
-      apiService
-        .updateBhaai(props.data?._id as string, input)
-        .catch(error => {
-          if (error.type === 'NOT_AUTHENTICATED') {
-            myContext.dispatch({type: APP_ACTIONS.LOGOUT});
-          }
-
-          return null;
-        })
-        .then(data => {
-          if (data) {
-            myContext.dispatch({type: APP_ACTIONS.REFETCH_BHAAI_LIST});
-            myContext.dispatch({
-              type: APP_ACTIONS.NEW_MESSAGE,
-              payload: 'Bhaai has been updated',
-            });
-            setProcessingEdit(false);
-            props.setVisible(false);
-          }
-        });
+    if (props.data && props.type === 'EDIT') {
+      dispatch(
+        updatedBhaai({
+          ...input,
+          _id: props.data?._id,
+        }),
+      );
+      myContext.dispatch({
+        type: APP_ACTIONS.NEW_MESSAGE,
+        payload: 'Bhaai has been updated',
+      });
     } else {
-      apiService
-        .createBhaai(input)
-        .catch(error => {
-          if (error.type === 'NOT_AUTHENTICATED') {
-            myContext.dispatch({type: APP_ACTIONS.LOGOUT});
-          }
-
-          return null;
-        })
-        .then(data => {
-          if (data) {
-            myContext.dispatch({type: APP_ACTIONS.REFETCH_BHAAI_LIST});
-            myContext.dispatch({
-              type: APP_ACTIONS.NEW_MESSAGE,
-              payload: 'Bhaai has been added',
-            });
-            setProcessingEdit(false);
-            props.setVisible(false);
-          }
-        });
+      dispatch(createdBhaai(input));
+      myContext.dispatch({
+        type: APP_ACTIONS.NEW_MESSAGE,
+        payload: 'Bhaai has been added',
+      });
     }
+    setProcessingEdit(false);
+    props.setVisible(false);
   });
 
   const close = () => {
@@ -95,24 +78,13 @@ const AddBhaai: React.FC<ComponentProps> = (props: ComponentProps) => {
 
   const deleteBhaai = () => {
     setProcessingDelete(true);
-    apiService
-      .deleteBhaai(props.data?._id as string)
-      .catch(error => {
-        if (error.type === 'NOT_AUTHENTICATED') {
-          myContext.dispatch({type: APP_ACTIONS.LOGOUT});
-        }
-
-        return null;
-      })
-      .then(() => {
-        myContext.dispatch({type: APP_ACTIONS.REFETCH_BHAAI_LIST});
-        myContext.dispatch({
-          type: APP_ACTIONS.NEW_MESSAGE,
-          payload: 'Bhaai has been deleted',
-        });
-        setProcessingDelete(false);
-        props.setVisible(false);
-      });
+    props.data && dispatch(deletedBhaai(props.data?._id));
+    myContext.dispatch({
+      type: APP_ACTIONS.NEW_MESSAGE,
+      payload: 'Bhaai has been deleted',
+    });
+    setProcessingDelete(false);
+    props.setVisible(false);
   };
 
   return (
