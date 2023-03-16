@@ -1,5 +1,5 @@
 import {Button, TextInput, Text} from '@react-native-material/core';
-import React, {useContext, useState} from 'react';
+import React, {useState} from 'react';
 import {Controller, useForm} from 'react-hook-form';
 import {
   KeyboardAvoidingView,
@@ -10,18 +10,17 @@ import {
 import {BaanBase} from '../types/Baan';
 import useStyles from '../styles/baan';
 import {Baan} from '../types/BaanList';
-import AppContext from '../services/storage';
 import SizedBox from './ui/sizedBox';
-import {AppContextState, APP_ACTIONS} from '../services/app.reducer';
 import ScreenHeading from './ui/screenHeading';
-import {useAppDispatch} from '../redux/hooks';
+import {useAppDispatch, useAppSelector} from '../redux/hooks';
 import {
   baanListApi,
   createdBaan,
   deletedBaan,
   updatedBaan,
-} from '../redux/features/bhaai/baan-slice';
+} from '../redux/features/slices/baan-slice';
 import uuid from 'react-native-uuid';
+import {createdMessages} from '../redux/features/slices/message-slice';
 
 interface ComponentProps {
   setVisible: (visiblity: boolean) => any;
@@ -31,8 +30,8 @@ interface ComponentProps {
 }
 
 const AddBaan: React.FC<ComponentProps> = (props: ComponentProps) => {
-  const myContext = useContext<AppContextState>(AppContext);
-  const styles = useStyles(myContext.appSettings.theme);
+  const theme = useAppSelector(state => state.theme.mode);
+  const styles = useStyles(theme);
   const [processingEdit, setProcessingEdit] = useState(false);
   const [processingDelete, setProcessingDelete] = useState(false);
   const dispatch = useAppDispatch();
@@ -65,17 +64,11 @@ const AddBaan: React.FC<ComponentProps> = (props: ComponentProps) => {
     if (props.type === 'EDIT') {
       dispatch(updatedBaan(newBaanPayload));
       dispatch(baanListApi.endpoints.updatedBaan.initiate(newBaanPayload));
-      myContext.dispatch({
-        type: APP_ACTIONS.NEW_MESSAGE,
-        payload: 'Baan has been updated',
-      });
+      dispatch(createdMessages('Baan has been updated'));
     } else {
       dispatch(createdBaan(newBaanPayload));
       dispatch(baanListApi.endpoints.createBaan.initiate(newBaanPayload));
-      myContext.dispatch({
-        type: APP_ACTIONS.NEW_MESSAGE,
-        payload: 'Baan has been created',
-      });
+      dispatch(createdMessages('Baan has been created'));
     }
     setProcessingEdit(false);
     props.setVisible(false);
@@ -94,10 +87,7 @@ const AddBaan: React.FC<ComponentProps> = (props: ComponentProps) => {
       };
       dispatch(deletedBaan(baanPayload));
       dispatch(baanListApi.endpoints.deleteBaan.initiate(baanPayload));
-      myContext.dispatch({
-        type: APP_ACTIONS.NEW_MESSAGE,
-        payload: 'Baan has been deleted',
-      });
+      dispatch(createdMessages('Baan has been deleted'));
       setProcessingEdit(false);
       props.setVisible(false);
     }

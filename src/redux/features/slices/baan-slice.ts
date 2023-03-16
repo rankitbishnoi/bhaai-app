@@ -3,6 +3,7 @@ import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 import {Baan} from '../../../types/Baan';
 import {BaanList} from '../../../types/BaanList';
 import {ApiSlice} from '../api-slice';
+import {revertAll} from '../actions/revertAll';
 
 const initialState: Record<string, Baan[]> = {};
 
@@ -13,6 +14,7 @@ export const baanListApi = ApiSlice.injectEndpoints({
         url: 'baan',
         method: 'GET',
       }),
+      providesTags: ['Baan'],
     }),
     createBaan: builder.mutation<Baan, {bhaaiId: string; body: Baan}>({
       query: data => ({
@@ -20,6 +22,7 @@ export const baanListApi = ApiSlice.injectEndpoints({
         method: 'POST',
         body: data.body,
       }),
+      invalidatesTags: ['Baan'],
     }),
     updatedBaan: builder.mutation<Baan, {bhaaiId: string; body: Baan}>({
       query: data => ({
@@ -27,12 +30,14 @@ export const baanListApi = ApiSlice.injectEndpoints({
         method: 'PUT',
         body: data.body,
       }),
+      invalidatesTags: ['Baan'],
     }),
     deleteBaan: builder.mutation<Baan, {bhaaiId: string; id: string}>({
       query: data => ({
         url: `bhaai/${data.bhaaiId}/baan/${data.id}`,
         method: 'DELETE',
       }),
+      invalidatesTags: ['Baan'],
     }),
   }),
   overrideExisting: false,
@@ -83,6 +88,7 @@ const baanSlice = createSlice({
     },
   },
   extraReducers: builder => {
+    builder.addCase(revertAll, () => initialState);
     builder.addMatcher(
       baanListApi.endpoints.getBaanList.matchFulfilled,
       (state, {payload}) => {

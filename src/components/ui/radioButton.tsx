@@ -1,7 +1,6 @@
-import React, {useContext} from 'react';
+import React from 'react';
 import {View} from 'react-native';
-import {AppContextState} from '../../services/app.reducer';
-import AppContext from '../../services/storage';
+import {useAppSelector} from '../../redux/hooks';
 import useStyles from '../../styles/radioButton';
 
 interface RadioButtonOptions {
@@ -13,8 +12,8 @@ const RadioButton: React.FC<RadioButtonOptions> = ({
   selected,
   styleInherited,
 }) => {
-  const myContext = useContext<AppContextState>(AppContext);
-  const styles = useStyles(myContext.appSettings.theme);
+  const theme = useAppSelector(state => state.theme.mode);
+  const styles = useStyles(theme);
 
   return (
     <View style={[styles.container, styleInherited]}>

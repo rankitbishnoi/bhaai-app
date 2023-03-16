@@ -24,6 +24,8 @@ import AddFromBaan from '../components/addFromBaan';
 import SwipeableList from '../components/swipeableList/swipeableList';
 import {AppContextState, APP_ACTIONS} from '../services/app.reducer';
 import ScreenHeading from '../components/ui/screenHeading';
+import {useAppDispatch, useAppSelector} from '../redux/hooks';
+import {logoutthunk} from '../redux/features/slices/profile-slice';
 
 const childPageStates = [
   'relative',
@@ -35,32 +37,29 @@ const childPageStates = [
 
 const Nimta: React.FC = () => {
   const myContext = useContext<AppContextState>(AppContext);
+  const theme = useAppSelector(state => state.theme.mode);
+  const selectedPariwar =
+    useAppSelector(state => state.profile.selectedPariwar) || '';
   const navigation = useNavigation();
-  const styles = useStyles(myContext.appSettings.theme);
-  const stackBarStyles = useStackBarStyles(myContext.appSettings.theme);
-  const buttonStyles = useButtonStyles(myContext.appSettings.theme);
+  const styles = useStyles(theme);
+  const stackBarStyles = useStackBarStyles(theme);
+  const buttonStyles = useButtonStyles(theme);
   const [openDailog, setOpenDailog] = useState('');
   const [selectedNimta, setSelectedNimta] = useState({} as any);
+  const dispatch = useAppDispatch();
   const {data, isLoading} = useQuery(
-    [
-      'nimtaList',
-      myContext.appSettings.selectedPariwar,
-      myContext.appSettings.queryState.nimtaList,
-    ],
+    ['nimtaList', selectedPariwar, myContext.appSettings.queryState.nimtaList],
     () =>
-      myContext.appSettings.selectedPariwar
-        ? apiService
-            .getNimtaList(myContext.appSettings.selectedPariwar)
-            .catch(error => {
-              if (error.type === 'NOT_AUTHENTICATED') {
-                myContext.dispatch({type: APP_ACTIONS.LOGOUT});
-              }
+      selectedPariwar
+        ? apiService.getNimtaList(selectedPariwar).catch(error => {
+            if (error.type === 'NOT_AUTHENTICATED') {
+              dispatch(logoutthunk());
+            }
 
-              return [];
-            })
+            return [];
+          })
         : [],
   );
-  const selectedPariwar = myContext.appSettings.selectedPariwar || '';
 
   const editItem = (nimta: NimtaType) => {
     setSelectedNimta(nimta);
@@ -92,7 +91,7 @@ const Nimta: React.FC = () => {
             title="Nimta List"
             subtitle={`${data ? data.length : 0} entries`}
           />
-          {!selectedPariwar && (
+          {selectedPariwar.length === 0 && (
             <TouchableOpacity
               onPress={() => {
                 navigation.navigate('profile' as never);
@@ -102,7 +101,7 @@ const Nimta: React.FC = () => {
               </View>
             </TouchableOpacity>
           )}
-          {selectedPariwar && data && (
+          {selectedPariwar.length !== 0 && data && (
             <SwipeableList
               items={data.map(nimta => {
                 return {

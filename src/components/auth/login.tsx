@@ -1,14 +1,15 @@
-import React, {useContext} from 'react';
+import React from 'react';
 import {Controller, useForm} from 'react-hook-form';
 import {Pressable, Text, TouchableOpacity, View} from 'react-native';
 import {apiService} from '../../services/api.service';
-import AppContext from '../../services/storage';
 import useStyles from '../../styles/auth';
 import SizedBox from '../ui/sizedBox';
 import useButtonStyles from '../../styles/button';
 import {TextInput} from '@react-native-material/core';
 import {validateEmail} from '../../services/helpers';
-import {AppContextState, APP_ACTIONS} from '../../services/app.reducer';
+import {useAppDispatch, useAppSelector} from '../../redux/hooks';
+import {login} from '../../redux/features/slices/profile-slice';
+import {createdMessages} from '../../redux/features/slices/message-slice';
 
 interface FormData {
   email: string;
@@ -16,7 +17,8 @@ interface FormData {
 }
 
 const Login: React.FC<{}> = ({}) => {
-  const myContext = useContext<AppContextState>(AppContext);
+  const theme = useAppSelector(state => state.theme.mode);
+  const dispatch = useAppDispatch();
   const {
     control,
     handleSubmit,
@@ -37,24 +39,20 @@ const Login: React.FC<{}> = ({}) => {
         password,
       })
       .catch(error => {
-        myContext.dispatch({
-          type: APP_ACTIONS.NEW_MESSAGE,
-          payload: error.response.data?.message || 'Unable to Login',
-        });
+        dispatch(
+          createdMessages(error.response.data?.message || 'Unable to Login'),
+        );
         return {access_token: ''};
       })
       .then(result => {
         if (result.access_token.length) {
-          myContext.dispatch({
-            type: APP_ACTIONS.LOGIN,
-            payload: result.access_token,
-          });
+          dispatch(login(result.access_token));
         }
       });
   });
 
-  const styles = useStyles(myContext.appSettings.theme);
-  const buttonStyles = useButtonStyles(myContext.appSettings.theme);
+  const styles = useStyles(theme);
+  const buttonStyles = useButtonStyles(theme);
 
   return (
     <>

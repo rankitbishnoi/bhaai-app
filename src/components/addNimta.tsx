@@ -14,6 +14,9 @@ import AppContext from '../services/storage';
 import SizedBox from './ui/sizedBox';
 import {AppContextState, APP_ACTIONS} from '../services/app.reducer';
 import ScreenHeading from './ui/screenHeading';
+import {useAppDispatch, useAppSelector} from '../redux/hooks';
+import {logoutthunk} from '../redux/features/slices/profile-slice';
+import {createdMessages} from '../redux/features/slices/message-slice';
 
 interface ComponentProps {
   pariwarId: string;
@@ -26,7 +29,9 @@ const AddNimta: React.FC<ComponentProps> = (props: ComponentProps) => {
   const [processingEdit, setProcessingEdit] = useState(false);
   const [processingDelete, setProcessingDelete] = useState(false);
   const myContext = useContext<AppContextState>(AppContext);
-  const styles = useStyles(myContext.appSettings.theme);
+  const theme = useAppSelector(state => state.theme.mode);
+  const dispatch = useAppDispatch();
+  const styles = useStyles(theme);
   const {
     control,
     handleSubmit,
@@ -47,10 +52,7 @@ const AddNimta: React.FC<ComponentProps> = (props: ComponentProps) => {
         .then(data => {
           if (data) {
             myContext.dispatch({type: APP_ACTIONS.REFETCH_NIMTA_LIST});
-            myContext.dispatch({
-              type: APP_ACTIONS.NEW_MESSAGE,
-              payload: 'Nimta has been updated',
-            });
+            dispatch(createdMessages('Nimta has been updated'));
             setProcessingEdit(false);
             props.setVisible(false);
           }
@@ -60,7 +62,7 @@ const AddNimta: React.FC<ComponentProps> = (props: ComponentProps) => {
         .createNimta(props.pariwarId, input)
         .catch(error => {
           if (error.type === 'NOT_AUTHENTICATED') {
-            myContext.dispatch({type: APP_ACTIONS.LOGOUT});
+            dispatch(logoutthunk());
           }
 
           return null;
@@ -68,10 +70,7 @@ const AddNimta: React.FC<ComponentProps> = (props: ComponentProps) => {
         .then(data => {
           if (data) {
             myContext.dispatch({type: APP_ACTIONS.REFETCH_NIMTA_LIST});
-            myContext.dispatch({
-              type: APP_ACTIONS.NEW_MESSAGE,
-              payload: 'Nimta has been added',
-            });
+            dispatch(createdMessages('Nimta has been added'));
             setProcessingEdit(false);
             props.setVisible(false);
           }
@@ -89,10 +88,7 @@ const AddNimta: React.FC<ComponentProps> = (props: ComponentProps) => {
       .deleteNimta(props.data?._id as string, props.pariwarId)
       .then(() => {
         myContext.dispatch({type: APP_ACTIONS.REFETCH_NIMTA_LIST});
-        myContext.dispatch({
-          type: APP_ACTIONS.NEW_MESSAGE,
-          payload: 'Nimta has been deleted',
-        });
+        dispatch(createdMessages('Nimta has been deleted'));
         setProcessingDelete(false);
         props.setVisible(false);
       });

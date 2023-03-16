@@ -19,6 +19,9 @@ import AppContext from '../services/storage';
 import useStackBarStyles from '../styles/stackBar';
 import {Controller, useForm} from 'react-hook-form';
 import {AppContextState, APP_ACTIONS} from '../services/app.reducer';
+import {useAppDispatch, useAppSelector} from '../redux/hooks';
+import {logoutthunk} from '../redux/features/slices/profile-slice';
+import {createdMessages} from '../redux/features/slices/message-slice';
 
 interface SearchProps {
   setSearchVisible: (visiblity: boolean) => any;
@@ -26,11 +29,13 @@ interface SearchProps {
 
 const Search: React.FC<SearchProps> = ({setSearchVisible}) => {
   const myContext = useContext<AppContextState>(AppContext);
-  const styles = useStyles(myContext.appSettings.theme);
-  const stackBarStyles = useStackBarStyles(myContext.appSettings.theme);
+  const theme = useAppSelector(state => state.theme.mode);
+  const styles = useStyles(theme);
+  const stackBarStyles = useStackBarStyles(theme);
   const [data, setData] = useState({} as any);
   const [loading, setLoading] = useState(false);
   const [giveBaanVisible, setGiveBaanVisible] = useState(false);
+  const dispatch = useAppDispatch();
 
   const [selectedBaan, setSelectedBaan] = useState({} as any);
   const {control, setFocus, register} = useForm<{
@@ -45,7 +50,7 @@ const Search: React.FC<SearchProps> = ({setSearchVisible}) => {
     setLoading(true);
     const baanList = await apiService.searchBaan(input).catch(error => {
       if (error.type === 'NOT_AUTHENTICATED') {
-        myContext.dispatch({type: APP_ACTIONS.LOGOUT});
+        dispatch(logoutthunk());
       }
 
       return [];
@@ -61,10 +66,7 @@ const Search: React.FC<SearchProps> = ({setSearchVisible}) => {
 
   const showMessage = (reason: string) => {
     if (reason === 'GIVEN') {
-      myContext.dispatch({
-        type: APP_ACTIONS.NEW_MESSAGE,
-        payload: 'Baan has been given',
-      });
+      dispatch(createdMessages('Baan has been given'));
     }
   };
 

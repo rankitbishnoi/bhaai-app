@@ -11,9 +11,9 @@ import {Relative, RelativeBase} from '../types/Relative';
 import {NimtaBase, NimtaList} from '../types/NimtaList';
 import {Pariwar, PariwarBase} from '../types/Pariwar';
 import {Profile} from '../types/Profile';
-import mmkv from './mmkv';
 import {RelativeList} from '../types/RelativeList';
 import {AddRelative} from '../types/AddRelative';
+import {store} from '../redux/configureStore';
 
 class ApiService {
   baseURL =
@@ -23,7 +23,7 @@ class ApiService {
   getHeaders() {
     return {
       headers: {
-        authorization: `Bearer ${mmkv.loadJWT()}`,
+        authorization: `Bearer ${store.getState().profile.token}`,
       },
     };
   }

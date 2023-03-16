@@ -29,6 +29,8 @@ import {
   MenuTrigger,
 } from 'react-native-popup-menu';
 import {AppContextState, APP_ACTIONS} from '../services/app.reducer';
+import {useAppDispatch, useAppSelector} from '../redux/hooks';
+import {logoutthunk} from '../redux/features/slices/profile-slice';
 
 const childPageStates = ['sort', 'filter'];
 
@@ -39,31 +41,33 @@ interface RelativeProps {
 
 const AddFromRelative: React.FC<RelativeProps> = ({setVisible, nimtaId}) => {
   const myContext = useContext<AppContextState>(AppContext);
-  const styles = useStyles(myContext.appSettings.theme);
-  const stackBarStyles = useStackBarStyles(myContext.appSettings.theme);
-  const buttonStyles = useButtonStyles(myContext.appSettings.theme);
+  const theme = useAppSelector(state => state.theme.mode);
+  const selectedPariwar =
+    useAppSelector(state => state.profile.selectedPariwar) || '';
+  const styles = useStyles(theme);
+  const stackBarStyles = useStackBarStyles(theme);
+  const buttonStyles = useButtonStyles(theme);
   const [openDailog, setOpenDailog] = useState('');
   const [sortBy, setSortBy] = useState('');
   const [selectedRelative, setSelectedRelatives] = useState([] as string[]);
   const [filterBy, setFilterBy] = useState({} as any);
   const [menuOpen, setMenuOpen] = useState(false);
+  const dispatch = useAppDispatch();
   let {data, isLoading} = useQuery(
     [
       'relativeList',
-      myContext.appSettings.selectedPariwar,
+      selectedPariwar,
       myContext.appSettings.queryState.relativeList,
     ],
     () =>
-      myContext.appSettings.selectedPariwar
-        ? apiService
-            .getRelativeList(myContext.appSettings.selectedPariwar)
-            .catch(error => {
-              if (error.type === 'NOT_AUTHENTICATED') {
-                myContext.dispatch({type: APP_ACTIONS.LOGOUT});
-              }
+      selectedPariwar.length
+        ? apiService.getRelativeList(selectedPariwar).catch(error => {
+            if (error.type === 'NOT_AUTHENTICATED') {
+              dispatch(logoutthunk());
+            }
 
-              return [];
-            })
+            return [];
+          })
         : [],
   );
 
@@ -156,11 +160,7 @@ const AddFromRelative: React.FC<RelativeProps> = ({setVisible, nimtaId}) => {
       baanIds: [],
     };
     apiService
-      .addRelativesInNimta(
-        nimtaId,
-        myContext.appSettings.selectedPariwar || '',
-        addRelativeData,
-      )
+      .addRelativesInNimta(nimtaId, selectedPariwar || '', addRelativeData)
       .then(() => {
         myContext.dispatch({type: APP_ACTIONS.REFETCH_NIMTA_LIST});
         setVisible('');

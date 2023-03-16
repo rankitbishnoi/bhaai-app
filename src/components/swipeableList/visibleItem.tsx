@@ -1,8 +1,7 @@
 import {ListItem} from '@react-native-material/core';
-import React, {useContext} from 'react';
+import React from 'react';
 import {Animated, TouchableHighlight, ListRenderItemInfo} from 'react-native';
-import {AppContextState} from '../../services/app.reducer';
-import AppContext from '../../services/storage';
+import {useAppSelector} from '../../redux/hooks';
 import useStyles from '../../styles/swipeableList';
 import SizedBox from '../ui/sizedBox';
 import {SwipeableListItem} from './swipeableList';
@@ -20,8 +19,8 @@ const VisibleItem: React.FC<VisibleItemOptions> = ({
   removeRow,
   rightActionState,
 }) => {
-  const myContext = useContext<AppContextState>(AppContext);
-  const styles = useStyles(myContext.appSettings.theme);
+  const theme = useAppSelector(state => state.theme.mode);
+  const styles = useStyles(theme);
 
   if (rightActionState) {
     Animated.timing(rowHeightAnimatedValue, {

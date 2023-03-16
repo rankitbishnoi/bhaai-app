@@ -3,6 +3,7 @@ import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 import {Bhaai} from '../../../types/Bhaai';
 import {BhaaiList} from '../../../types/BhaaiList';
 import {ApiSlice} from '../api-slice';
+import {revertAll} from '../actions/revertAll';
 
 const initialState: BhaaiList = [];
 
@@ -13,6 +14,7 @@ export const bhaaiListApi = ApiSlice.injectEndpoints({
         url: 'bhaai',
         method: 'GET',
       }),
+      providesTags: ['Bhaai'],
     }),
     createBhaai: builder.mutation<Bhaai, Bhaai>({
       query: body => ({
@@ -20,6 +22,7 @@ export const bhaaiListApi = ApiSlice.injectEndpoints({
         method: 'POST',
         body,
       }),
+      invalidatesTags: ['Bhaai'],
     }),
     updatedBhaai: builder.mutation<Bhaai, Bhaai>({
       query: body => ({
@@ -27,12 +30,14 @@ export const bhaaiListApi = ApiSlice.injectEndpoints({
         method: 'PUT',
         body,
       }),
+      invalidatesTags: ['Bhaai'],
     }),
     deleteBhaai: builder.mutation<Bhaai, string>({
       query: id => ({
         url: `bhaai/${id}`,
         method: 'DELETE',
       }),
+      invalidatesTags: ['Bhaai'],
     }),
   }),
   overrideExisting: false,
@@ -69,6 +74,7 @@ const bhaaiSlice = createSlice({
     },
   },
   extraReducers: builder => {
+    builder.addCase(revertAll, () => initialState);
     builder.addMatcher(
       bhaaiListApi.endpoints.getBhaaiList.matchFulfilled,
       (state, {payload}) => {

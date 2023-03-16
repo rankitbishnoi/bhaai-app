@@ -1,14 +1,14 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Alert, Animated, ListRenderItemInfo, View} from 'react-native';
 
 import {SwipeListView, SwipeRow} from 'react-native-swipe-list-view';
-import AppContext from '../../services/storage';
 import HiddenItemWithActions from './hiddenItemWithActions';
 import VisibleItem from './visibleItem';
 import useStyles from '../../styles/swipeableList';
 import {Text} from '@react-native-material/core';
 import {RefreshControl} from 'react-native-gesture-handler';
-import {AppContextState, APP_ACTIONS} from '../../services/app.reducer';
+import {createdMessages} from '../../redux/features/slices/message-slice';
+import {useAppDispatch, useAppSelector} from '../../redux/hooks';
 
 type RowMap<T> = {[open_cell_key: string]: SwipeRow<T>};
 
@@ -34,8 +34,9 @@ const SwipeableList: React.FC<SwipeableListOptions> = ({
   refresh,
   refreshing,
 }) => {
-  const myContext = useContext<AppContextState>(AppContext);
-  const styles = useStyles(myContext.appSettings.theme);
+  const theme = useAppSelector(state => state.theme.mode);
+  const dispatch = useAppDispatch();
+  const styles = useStyles(theme);
   const [listData, setListData] = useState([
     ...items,
     {
@@ -80,15 +81,9 @@ const SwipeableList: React.FC<SwipeableListOptions> = ({
               const prevIndex = listData.findIndex(item => item.key === rowKey);
               newData.splice(prevIndex, 1);
               setListData(newData);
-              myContext.dispatch({
-                type: APP_ACTIONS.NEW_MESSAGE,
-                payload: 'Item has been deleted',
-              });
+              dispatch(createdMessages('Item has been deleted'));
             } else {
-              myContext.dispatch({
-                type: APP_ACTIONS.NEW_MESSAGE,
-                payload: 'Unable to delete. Please try again',
-              });
+              dispatch(createdMessages('Unable to delete. Please try again'));
             }
             closeRow(rowMap, rowKey);
           });
@@ -107,15 +102,9 @@ const SwipeableList: React.FC<SwipeableListOptions> = ({
         const prevIndex = listData.findIndex(item => item.key === rowKey);
         newData.splice(prevIndex, 1);
         setListData(newData);
-        myContext.dispatch({
-          type: APP_ACTIONS.NEW_MESSAGE,
-          payload: 'Item has been deleted',
-        });
+        dispatch(createdMessages('Item has been deleted'));
       } else {
-        myContext.dispatch({
-          type: APP_ACTIONS.NEW_MESSAGE,
-          payload: 'Unable to delete. Please try again',
-        });
+        dispatch(createdMessages('Unable to delete. Please try again'));
       }
       closeRow(rowMap, rowKey);
     });

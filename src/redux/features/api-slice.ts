@@ -3,7 +3,8 @@ import {apiService} from '../../services/api.service';
 
 export const ApiSlice = createApi({
   reducerPath: 'baanListApi',
-  tagTypes: ['Baan'],
+  tagTypes: ['Baan', 'Bhaai', 'Profile'],
+  refetchOnReconnect: true,
   baseQuery: fetchBaseQuery({
     baseUrl: apiService.baseURL,
     prepareHeaders: headers => {

@@ -18,6 +18,8 @@ import SwipeableList from '../components/swipeableList/swipeableList';
 import {AppContextState, APP_ACTIONS} from '../services/app.reducer';
 import ScreenHeading from '../components/ui/screenHeading';
 import {callNumber} from '../services/callANumber';
+import {logoutthunk} from '../redux/features/slices/profile-slice';
+import {useAppDispatch, useAppSelector} from '../redux/hooks';
 
 const childPageStates = ['sort', 'filter', 'add', 'edit'];
 
@@ -35,37 +37,38 @@ const Relative: React.FC<RelativeProps> = ({
   setVisible,
 }) => {
   const myContext = useContext<AppContextState>(AppContext);
+  const theme = useAppSelector(state => state.theme.mode);
+  const selectedPariwar =
+    useAppSelector(state => state.profile.selectedPariwar) || '';
   const navigation = useNavigation();
-  const styles = useStyles(myContext.appSettings.theme);
-  const stackBarStyles = useStackBarStyles(myContext.appSettings.theme);
-  const buttonStyles = useButtonStyles(myContext.appSettings.theme);
+  const styles = useStyles(theme);
+  const stackBarStyles = useStackBarStyles(theme);
+  const buttonStyles = useButtonStyles(theme);
   const [openDailog, setOpenDailog] = useState('');
   const [sortBy, setSortBy] = useState('');
   const [filterBy, setFilterBy] = useState(null as any);
   const [selectedRelative, setSelectedRelative] = useState({} as any);
+  const dispatch = useAppDispatch();
   const relativeList = relatives || [];
   let {data, isLoading} = useQuery(
     [
       'relativeList',
-      myContext.appSettings.selectedPariwar,
+      selectedPariwar,
       myContext.appSettings.queryState.relativeList,
     ],
     () =>
       nimtaBase
         ? relativeList
-        : myContext.appSettings.selectedPariwar
-        ? apiService
-            .getRelativeList(myContext.appSettings.selectedPariwar)
-            .catch(error => {
-              if (error.type === 'NOT_AUTHENTICATED') {
-                myContext.dispatch({type: APP_ACTIONS.LOGOUT});
-              }
+        : selectedPariwar.length
+        ? apiService.getRelativeList(selectedPariwar).catch(error => {
+            if (error.type === 'NOT_AUTHENTICATED') {
+              dispatch(logoutthunk());
+            }
 
-              return [];
-            })
+            return [];
+          })
         : [],
   );
-  const selectedPariwar = myContext.appSettings.selectedPariwar || '';
 
   const filterList = useMemo(() => {
     if (!filterBy) {
@@ -175,7 +178,7 @@ const Relative: React.FC<RelativeProps> = ({
             title={nimtaBase ? 'Nimta Relatives' : 'Relatives'}
             subtitle={`${filterList ? filterList.length : 0} entries`}
           />
-          {!selectedPariwar && (
+          {selectedPariwar.length === 0 && (
             <TouchableOpacity
               onPress={() => {
                 navigation.navigate('profile' as never);
@@ -185,7 +188,7 @@ const Relative: React.FC<RelativeProps> = ({
               </View>
             </TouchableOpacity>
           )}
-          {selectedPariwar && data && (
+          {selectedPariwar.length !== 0 && data && (
             <>
               <SwipeableList
                 items={filterList.map(relative => {

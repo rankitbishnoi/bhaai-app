@@ -29,6 +29,8 @@ import {
   MenuTrigger,
 } from 'react-native-popup-menu';
 import {AppContextState, APP_ACTIONS} from '../services/app.reducer';
+import {useAppDispatch, useAppSelector} from '../redux/hooks';
+import {logoutthunk} from '../redux/features/slices/profile-slice';
 
 const childPageStates = ['sort', 'filter'];
 
@@ -39,20 +41,24 @@ interface BaanProps {
 
 const AddFromBaan: React.FC<BaanProps> = ({setVisible, nimtaId}) => {
   const myContext = useContext<AppContextState>(AppContext);
-  const styles = useStyles(myContext.appSettings.theme);
-  const stackBarStyles = useStackBarStyles(myContext.appSettings.theme);
-  const buttonStyles = useButtonStyles(myContext.appSettings.theme);
+  const theme = useAppSelector(state => state.theme.mode);
+  const selectedPariwar =
+    useAppSelector(state => state.profile.selectedPariwar) || '';
+  const styles = useStyles(theme);
+  const stackBarStyles = useStackBarStyles(theme);
+  const buttonStyles = useButtonStyles(theme);
   const [openDailog, setOpenDailog] = useState('');
   const [sortBy, setSortBy] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
   const [selectedBaan, setSelectedBaans] = useState([] as string[]);
   const [filterBy, setFilterBy] = useState(null as any);
+  const dispatch = useAppDispatch();
   let {data, isLoading} = useQuery(
     ['baanList', myContext.appSettings.queryState.baanList],
     () =>
       apiService.getBaanList().catch(error => {
         if (error.type === 'NOT_AUTHENTICATED') {
-          myContext.dispatch({type: APP_ACTIONS.LOGOUT});
+          dispatch(logoutthunk());
         }
 
         return [];
@@ -144,11 +150,7 @@ const AddFromBaan: React.FC<BaanProps> = ({setVisible, nimtaId}) => {
       relativeIds: [],
     };
     apiService
-      .addRelativesInNimta(
-        nimtaId,
-        myContext.appSettings.selectedPariwar || '',
-        addBaanData,
-      )
+      .addRelativesInNimta(nimtaId, selectedPariwar, addBaanData)
       .then(() => {
         myContext.dispatch({type: APP_ACTIONS.REFETCH_NIMTA_LIST});
         myContext.dispatch({type: APP_ACTIONS.REFETCH_RELATIVE_LIST});

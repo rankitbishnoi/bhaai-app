@@ -6,60 +6,51 @@ import {
   Switch,
   Text,
 } from '@react-native-material/core';
-import React, {useContext, useState} from 'react';
+import React, {useState} from 'react';
 import {ScrollView, TouchableOpacity, View} from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import {useQuery} from 'react-query';
 import AddPariwar from '../components/addPariwar';
 import ProgressBar from '../components/ui/loader';
 import RadioButton from '../components/ui/radioButton';
-import {apiService} from '../services/api.service';
-import mmkv from '../services/mmkv';
-import AppContext from '../services/storage';
 
 import useStyles from '../styles/profile';
 import useButtonStyles from '../styles/button';
 import useStackBarStyles from '../styles/stackBar';
 import {PariwarRole} from '../types/Profile';
+import {useAppDispatch, useAppSelector} from '../redux/hooks';
 import {
-  AppContextState,
-  APP_ACTIONS,
-  themeColor,
-} from '../services/app.reducer';
+  logoutthunk,
+  selectPariwar,
+  useGetProfileQuery,
+} from '../redux/features/slices/profile-slice';
+import {themeColor, toggleTheme} from '../redux/features/slices/theme-slice';
 
 const childPageStates = ['edit', 'add'];
 
 const Profile: React.FC = () => {
-  const myContext = useContext<AppContextState>(AppContext);
-  const styles = useStyles(myContext.appSettings.theme);
-  const stackBarStyles = useStackBarStyles(myContext.appSettings.theme);
-  const buttonStyles = useButtonStyles(myContext.appSettings.theme);
+  const theme = useAppSelector(state => state.theme.mode);
+  const styles = useStyles(theme);
+  const stackBarStyles = useStackBarStyles(theme);
+  const buttonStyles = useButtonStyles(theme);
   const [openDailog, setOpenDailog] = useState('');
   const [selectedRole, setSelectedRole] = useState({} as any);
-  const {data, isLoading, isError, error} = useQuery(
-    ['profile', myContext.appSettings.queryState.profile],
-    () => apiService.getProfile(),
-  );
-
-  const logout = () => {
-    mmkv.deleteJWT();
-    myContext.dispatch({type: APP_ACTIONS.LOGOUT});
-  };
-
-  const toggleTheme = () => {
-    myContext.dispatch({type: APP_ACTIONS.TOGGLE_THEME});
-  };
+  const dispatch = useAppDispatch();
+  const data = useAppSelector(state => state.profile.user);
+  const selectedPariwar =
+    useAppSelector(state => state.profile.selectedPariwar) || '';
+  const {isLoading, isError, error, refetch} = useGetProfileQuery();
 
   const selectPariwarRole = (id: string) => {
-    myContext.dispatch({
-      type: APP_ACTIONS.SELECT_PARIWAR,
-      payload: id,
-    });
+    dispatch(selectPariwar(id));
   };
 
   const editItem = (role: PariwarRole) => {
     setSelectedRole(role);
     setOpenDailog('edit');
+  };
+
+  const handleLogout = () => {
+    dispatch(logoutthunk());
   };
 
   return (
@@ -81,7 +72,7 @@ const Profile: React.FC = () => {
                   <Text style={styles.labelData}>{data?.phoneNumber}</Text>
                 </View>
               )}
-              <TouchableOpacity onPress={logout}>
+              <TouchableOpacity onPress={handleLogout}>
                 <View style={buttonStyles.buttonSecondary}>
                   <Text style={buttonStyles.buttonTitle}>logout</Text>
                 </View>
@@ -101,8 +92,10 @@ const Profile: React.FC = () => {
                     true: stackBarStyles.toggleColor.active,
                     false: stackBarStyles.toggleColor.inactive,
                   }}
-                  value={myContext.appSettings.theme === themeColor.DARK}
-                  onValueChange={toggleTheme}
+                  value={theme === themeColor.DARK}
+                  onValueChange={() => {
+                    dispatch(toggleTheme());
+                  }}
                 />
                 <Pressable onPress={() => setOpenDailog('addFromRelative')}>
                   <Text
@@ -137,10 +130,7 @@ const Profile: React.FC = () => {
                     leadingMode="icon"
                     leading={
                       <RadioButton
-                        selected={
-                          role.pariwarId._id ===
-                          myContext.appSettings.selectedPariwar
-                        }
+                        selected={role.pariwarId._id === selectedPariwar}
                       />
                     }
                     trailing={props => (
@@ -184,6 +174,7 @@ const Profile: React.FC = () => {
         <AddPariwar
           setVisible={value => setOpenDailog(value ? 'add' : '')}
           type="ADD"
+          refetch={refetch}
         />
       )}
       {openDailog === 'edit' && (
@@ -191,6 +182,7 @@ const Profile: React.FC = () => {
           setVisible={value => setOpenDailog(value ? 'edit' : '')}
           type="EDIT"
           data={selectedRole.pariwarId}
+          refetch={refetch}
         />
       )}
     </>

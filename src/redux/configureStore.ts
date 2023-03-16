@@ -1,7 +1,10 @@
 import {combineReducers, configureStore} from '@reduxjs/toolkit';
 
-import bhaaiReducer, {bhaaiListApi} from './features/bhaai/bhaai-slice';
-import baanReducer, {baanListApi} from './features/bhaai/baan-slice';
+import bhaaiReducer, {bhaaiListApi} from './features/slices/bhaai-slice';
+import baanReducer, {baanListApi} from './features/slices/baan-slice';
+import profileReducer, {profileApi} from './features/slices/profile-slice';
+import messageReducer from './features/slices/message-slice';
+import themeReducer from './features/slices/theme-slice';
 import {
   persistStore,
   persistReducer,
@@ -17,8 +20,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const rootReducers = combineReducers({
   bhaaiList: bhaaiReducer,
   baanList: baanReducer,
+  profile: profileReducer,
+  message: messageReducer,
+  theme: themeReducer,
   [bhaaiListApi.reducerPath]: bhaaiListApi.reducer,
   [baanListApi.reducerPath]: baanListApi.reducer,
+  [profileApi.reducerPath]: profileApi.reducer,
 });
 
 const persistedReducer = persistReducer(
@@ -26,6 +33,7 @@ const persistedReducer = persistReducer(
     key: 'root',
     version: 1,
     storage: AsyncStorage,
+    whitelist: ['bhaaiList', 'baanList', 'profile', 'message', 'theme'],
   },
   rootReducers,
 );

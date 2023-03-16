@@ -15,6 +15,9 @@ import SizedBox from './ui/sizedBox';
 import {validatePhoneNumber} from '../services/helpers';
 import {AppContextState, APP_ACTIONS} from '../services/app.reducer';
 import ScreenHeading from './ui/screenHeading';
+import {useAppDispatch, useAppSelector} from '../redux/hooks';
+import {logoutthunk} from '../redux/features/slices/profile-slice';
+import {createdMessages} from '../redux/features/slices/message-slice';
 
 interface ComponentProps {
   pariwarId: string;
@@ -27,7 +30,9 @@ const AddRelative: React.FC<ComponentProps> = (props: ComponentProps) => {
   const [processingEdit, setProcessingEdit] = useState(false);
   const [processingDelete, setProcessingDelete] = useState(false);
   const myContext = useContext<AppContextState>(AppContext);
-  const styles = useStyles(myContext.appSettings.theme);
+  const theme = useAppSelector(state => state.theme.mode);
+  const dispatch = useAppDispatch();
+  const styles = useStyles(theme);
   const {
     control,
     handleSubmit,
@@ -53,10 +58,7 @@ const AddRelative: React.FC<ComponentProps> = (props: ComponentProps) => {
         .then(data => {
           if (data) {
             myContext.dispatch({type: APP_ACTIONS.REFETCH_RELATIVE_LIST});
-            myContext.dispatch({
-              type: APP_ACTIONS.NEW_MESSAGE,
-              payload: 'Relative has been updated',
-            });
+            dispatch(createdMessages('Relative has been updated'));
             setProcessingEdit(false);
             props.setVisible('');
           }
@@ -66,7 +68,7 @@ const AddRelative: React.FC<ComponentProps> = (props: ComponentProps) => {
         .createRelative(props.pariwarId, input)
         .catch(error => {
           if (error.type === 'NOT_AUTHENTICATED') {
-            myContext.dispatch({type: APP_ACTIONS.LOGOUT});
+            dispatch(logoutthunk());
           }
 
           return null;
@@ -74,10 +76,7 @@ const AddRelative: React.FC<ComponentProps> = (props: ComponentProps) => {
         .then(data => {
           if (data) {
             myContext.dispatch({type: APP_ACTIONS.REFETCH_RELATIVE_LIST});
-            myContext.dispatch({
-              type: APP_ACTIONS.NEW_MESSAGE,
-              payload: 'Relative has been added',
-            });
+            dispatch(createdMessages('Relative has been added'));
             setProcessingEdit(false);
             props.setVisible('');
           }
@@ -95,10 +94,7 @@ const AddRelative: React.FC<ComponentProps> = (props: ComponentProps) => {
       .deleteRelative(props.data?._id as string, props.pariwarId)
       .then(() => {
         myContext.dispatch({type: APP_ACTIONS.REFETCH_RELATIVE_LIST});
-        myContext.dispatch({
-          type: APP_ACTIONS.NEW_MESSAGE,
-          payload: 'Relative has been deleted',
-        });
+        dispatch(createdMessages('Relative has been deleted'));
         setProcessingDelete(false);
         props.setVisible('');
       });

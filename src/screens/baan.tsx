@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react';
+import React, {useState} from 'react';
 import {TouchableOpacity, View} from 'react-native';
 import {IconButton, Stack} from '@react-native-material/core';
 
@@ -10,13 +10,11 @@ import AddBaan from '../components/addBaan';
 import ProgressBar from '../components/ui/loader';
 import SwipeableList from '../components/swipeableList/swipeableList';
 import ScreenHeading from '../components/ui/screenHeading';
-import {AppContextState} from '../services/app.reducer';
-import AppContext from '../services/storage';
 import {useAppDispatch, useAppSelector} from '../redux/hooks';
 import {
   deletedBaan,
   useGetBaanListQuery,
-} from '../redux/features/bhaai/baan-slice';
+} from '../redux/features/slices/baan-slice';
 
 const childPageStates = ['edit', 'add'];
 
@@ -27,9 +25,9 @@ interface BaanProps {
 }
 
 const Baan: React.FC<BaanProps> = ({bhaaiId, setBaanVisible, title}) => {
-  const myContext = useContext<AppContextState>(AppContext);
-  const styles = useStyles(myContext.appSettings.theme);
-  const stackBarStyles = useStackBarStyles(myContext.appSettings.theme);
+  const theme = useAppSelector(state => state.theme.mode);
+  const styles = useStyles(theme);
+  const stackBarStyles = useStackBarStyles(theme);
   const [openDailog, setOpenDailog] = useState('');
   const [selectedBaan, setSelectedBaan] = useState({} as any);
   const {isLoading, refetch} = useGetBaanListQuery();

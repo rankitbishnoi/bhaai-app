@@ -1,5 +1,5 @@
 import {Button, TextInput, Text} from '@react-native-material/core';
-import React, {useContext, useState} from 'react';
+import React, {useState} from 'react';
 import {Controller, useForm} from 'react-hook-form';
 import {
   KeyboardAvoidingView,
@@ -11,18 +11,17 @@ import {BhaaiBase} from '../types/Bhaai';
 import useStyles from '../styles/bhaai';
 import DatePicker from 'react-native-date-picker';
 import {Bhaai} from '../types/BhaaiList';
-import AppContext from '../services/storage';
 import SizedBox from './ui/sizedBox';
-import {AppContextState, APP_ACTIONS} from '../services/app.reducer';
 import ScreenHeading from './ui/screenHeading';
-import {useAppDispatch} from '../redux/hooks';
+import {useAppDispatch, useAppSelector} from '../redux/hooks';
 import {
   createdBhaai,
   updatedBhaai,
   deletedBhaai,
   bhaaiListApi,
-} from '../redux/features/bhaai/bhaai-slice';
+} from '../redux/features/slices/bhaai-slice';
 import uuid from 'react-native-uuid';
+import {createdMessages} from '../redux/features/slices/message-slice';
 
 interface ComponentProps {
   setVisible: (visiblity: boolean) => any;
@@ -31,12 +30,12 @@ interface ComponentProps {
 }
 
 const AddBhaai: React.FC<ComponentProps> = (props: ComponentProps) => {
-  const myContext = useContext<AppContextState>(AppContext);
+  const theme = useAppSelector(state => state.theme.mode);
   const [processingEdit, setProcessingEdit] = useState(false);
   const [processingDelete, setProcessingDelete] = useState(false);
   const [openDatePicker, setOpenDatePicker] = useState(false);
   const dispatch = useAppDispatch();
-  const styles = useStyles(myContext.appSettings.theme);
+  const styles = useStyles(theme);
   const {
     control,
     handleSubmit,
@@ -65,10 +64,7 @@ const AddBhaai: React.FC<ComponentProps> = (props: ComponentProps) => {
           _id: props.data?._id,
         }),
       );
-      myContext.dispatch({
-        type: APP_ACTIONS.NEW_MESSAGE,
-        payload: 'Bhaai has been updated',
-      });
+      dispatch(createdMessages('Bhaai has been updated'));
     } else {
       const newBhaai = {
         ...input,
@@ -76,10 +72,7 @@ const AddBhaai: React.FC<ComponentProps> = (props: ComponentProps) => {
       };
       dispatch(createdBhaai(newBhaai));
       dispatch(bhaaiListApi.endpoints.createBhaai.initiate(newBhaai));
-      myContext.dispatch({
-        type: APP_ACTIONS.NEW_MESSAGE,
-        payload: 'Bhaai has been added',
-      });
+      dispatch(createdMessages('Bhaai has been added'));
     }
     setProcessingEdit(false);
     props.setVisible(false);
@@ -94,10 +87,7 @@ const AddBhaai: React.FC<ComponentProps> = (props: ComponentProps) => {
       setProcessingDelete(true);
       dispatch(deletedBhaai(props.data?._id));
       dispatch(bhaaiListApi.endpoints.deleteBhaai.initiate(props.data?._id));
-      myContext.dispatch({
-        type: APP_ACTIONS.NEW_MESSAGE,
-        payload: 'Bhaai has been deleted',
-      });
+      dispatch(createdMessages('Bhaai has been deleted'));
       setProcessingDelete(false);
       props.setVisible(false);
     }

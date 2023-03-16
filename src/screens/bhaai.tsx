@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react';
+import React, {useState} from 'react';
 import {TouchableOpacity, View} from 'react-native';
 import {IconButton, Stack} from '@react-native-material/core';
 import useStyles from '../styles/bhaai';
@@ -11,23 +11,21 @@ import ProgressBar from '../components/ui/loader';
 import Search from './search';
 import SwipeableList from '../components/swipeableList/swipeableList';
 import ScreenHeading from '../components/ui/screenHeading';
-import {AppContextState} from '../services/app.reducer';
-import AppContext from '../services/storage';
 import {useAppDispatch, useAppSelector} from '../redux/hooks';
 import {
   useGetBhaaiListQuery,
   deletedBhaai,
-} from '../redux/features/bhaai/bhaai-slice';
+} from '../redux/features/slices/bhaai-slice';
 
 const childPageStates = ['baan-list', 'search', 'edit', 'add'];
 
 const Bhaai: React.FC = () => {
-  const myContext = useContext<AppContextState>(AppContext);
-  const styles = useStyles(myContext.appSettings.theme);
-  const stackBarStyles = useStackBarStyles(myContext.appSettings.theme);
+  const theme = useAppSelector(state => state.theme.mode);
+  const styles = useStyles(theme);
+  const stackBarStyles = useStackBarStyles(theme);
   const [selectedBhaai, setSelectedBhaai] = useState({} as any);
   const [openDailog, setOpenDailog] = useState('');
-  const data = useAppSelector(state => state.bhaaiList);
+  const {bhaaiList: data = []} = useAppSelector(state => state);
   const dispatch = useAppDispatch();
   const {isLoading, refetch} = useGetBhaaiListQuery();
 
