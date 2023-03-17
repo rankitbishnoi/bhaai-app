@@ -81,12 +81,6 @@ const bhaaiSlice = createSlice({
         return mergeModel<Bhaai>(state, payload);
       },
     );
-    builder.addMatcher(
-      bhaaiListApi.endpoints.createBhaai.matchRejected,
-      (_state, action) => {
-        console.log(_state, {action});
-      },
-    );
   },
 });
 

@@ -4,8 +4,9 @@ import {Baan} from '../../../types/Baan';
 import {BaanList} from '../../../types/BaanList';
 import {ApiSlice} from '../api-slice';
 import {revertAll} from '../actions/revertAll';
+import {createModel, mergeModel, Model} from '../helper';
 
-const initialState: Record<string, Baan[]> = {};
+const initialState: Record<string, Model<Baan>[]> = {};
 
 export const baanListApi = ApiSlice.injectEndpoints({
   endpoints: builder => ({
@@ -58,7 +59,7 @@ const baanSlice = createSlice({
     createdBaan(state, action: PayloadAction<{bhaaiId: string; body: Baan}>) {
       const list = state[action.payload.bhaaiId];
       if (list) {
-        list.push(action.payload.body);
+        list.push(createModel<Baan>(action.payload.body));
       }
     },
     // updateBaan
@@ -69,10 +70,14 @@ const baanSlice = createSlice({
           a => a._id === action.payload.body._id,
         );
         if (foundIndex > -1) {
-          list.splice(foundIndex, 1, {
-            ...action.payload.body,
-            bhaaiId: action.payload.bhaaiId,
-          });
+          list.splice(
+            foundIndex,
+            1,
+            createModel<Baan>({
+              ...action.payload.body,
+              bhaaiId: action.payload.bhaaiId,
+            }),
+          );
         }
       }
     },
@@ -91,9 +96,10 @@ const baanSlice = createSlice({
     builder.addCase(revertAll, () => initialState);
     builder.addMatcher(
       baanListApi.endpoints.getBaanList.matchFulfilled,
-      (_state, {payload}) => {
+      (state, {payload}) => {
+        const newData = mergeModel<Baan>(Object.values(state).flat(), payload);
         const list: any = {};
-        payload.forEach(a => {
+        newData.forEach(a => {
           if (!a.bhaaiId) {
             return;
           }

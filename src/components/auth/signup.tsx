@@ -8,7 +8,7 @@ import useButtonStyles from '../../styles/button';
 import {TextInput} from '@react-native-material/core';
 import {validateEmail, validatePhoneNumber} from '../../services/helpers';
 import {useAppDispatch, useAppSelector} from '../../redux/hooks';
-import {login} from '../../redux/features/slices/profile-slice';
+import {login, loginthunk} from '../../redux/features/slices/profile-slice';
 import {createdMessages} from '../../redux/features/slices/message-slice';
 
 interface FormData {
@@ -52,6 +52,7 @@ const Signup: React.FC<{}> = ({}) => {
         if (data) {
           apiService.login({email, password}).then(result => {
             dispatch(login(result.access_token));
+            dispatch(loginthunk(result.access_token));
           });
         }
       });

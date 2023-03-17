@@ -41,8 +41,6 @@ const VisibleItem: React.FC<VisibleItemOptions> = ({
 
   const onPress = () => data.item.onPress && data.item.onPress();
 
-  console.log('data.item.syncing', 'data.item.syncing', data.item.syncing);
-
   return (
     <>
       {data.item.key !== 'LAST_ITEM' ? (

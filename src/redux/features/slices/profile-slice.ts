@@ -14,6 +14,14 @@ export const logoutthunk = createAsyncThunk(
   },
 );
 
+export const loginthunk = createAsyncThunk(
+  'LOGIN_ACTION',
+  async (token: string, {dispatch}) => {
+    dispatch(login(token));
+    dispatch(profileApi.endpoints.getProfile.initiate(token));
+  },
+);
+
 const initialState: {
   user: Profile;
   isLoggedIn: boolean;
@@ -26,10 +34,15 @@ const initialState: {
 
 export const profileApi = ApiSlice.injectEndpoints({
   endpoints: builder => ({
-    getProfile: builder.query<Profile, void>({
-      query: () => ({
+    getProfile: builder.query<Profile, void | string>({
+      query: token => ({
         url: 'profile',
         method: 'GET',
+        headers: token
+          ? {
+              authorization: `Bearer ${token}`,
+            }
+          : undefined,
       }),
       providesTags: ['Profile'],
     }),
@@ -107,7 +120,6 @@ const pariwarSlice = createSlice({
     builder.addMatcher(
       profileApi.endpoints.getProfile.matchFulfilled,
       (state, {payload}) => {
-        console.log('state, {payload}', {payload});
         return {
           ...state,
           user: payload,

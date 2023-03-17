@@ -2,7 +2,7 @@ import React, {useMemo, useState} from 'react';
 import {TouchableOpacity, View} from 'react-native';
 import {IconButton, Stack, Text} from '@react-native-material/core';
 import useStyles from '../styles/relative';
-import {RelativeBase as RelativeType} from '../types/Relative';
+import {RelativeBase, Relative as RelativeType} from '../types/Relative';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AddRelative from '../components/addRelative';
 import ProgressBar from '../components/ui/loader';
@@ -18,8 +18,10 @@ import {useAppDispatch, useAppSelector} from '../redux/hooks';
 import {
   deletedRelative,
   relativeListApi,
+  updatedRelative,
   useGetRelativeListQuery,
 } from '../redux/features/slices/relative-slice';
+import {Model} from '../redux/features/helper';
 
 const childPageStates = ['sort', 'filter', 'add', 'edit'];
 
@@ -99,7 +101,7 @@ const Relative: React.FC<RelativeProps> = ({}) => {
     setOpenDailog('edit');
   };
 
-  const sortList = (by: keyof RelativeType = 'firstName') => {
+  const sortList = (by: keyof RelativeBase = 'firstName') => {
     filterList?.sort((a, b) => {
       if (a[by] < b[by]) {
         return -1;
@@ -122,6 +124,15 @@ const Relative: React.FC<RelativeProps> = ({}) => {
       }),
     );
     return true;
+  };
+
+  const sync = (item: Model<RelativeType>) => {
+    const newBaanPayload = {
+      pariwarId: selectedPariwar,
+      body: item,
+    };
+    dispatch(updatedRelative(newBaanPayload));
+    dispatch(relativeListApi.endpoints.createRelative.initiate(newBaanPayload));
   };
 
   return (
@@ -161,6 +172,9 @@ const Relative: React.FC<RelativeProps> = ({}) => {
                     subtitle: `Mobile: ${
                       relative.phoneNumber || 'not available'
                     }`,
+                    notSynced: relative.notSynced,
+                    syncing: relative.syncing,
+                    sync: () => sync(relative),
                     leading: (
                       <TouchableOpacity onPress={() => editItem(relative)}>
                         <Ionicons

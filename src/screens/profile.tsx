@@ -38,7 +38,7 @@ const Profile: React.FC = () => {
   const data = useAppSelector(state => state.profile.user);
   const selectedPariwar =
     useAppSelector(state => state.profile.selectedPariwar) || '';
-  const {isLoading, isError, error, refetch} = useGetProfileQuery();
+  const {isLoading, refetch} = useGetProfileQuery();
 
   const selectPariwarRole = (id: string) => {
     dispatch(selectPariwar(id));
@@ -119,7 +119,6 @@ const Profile: React.FC = () => {
                     </View>
                   </TouchableOpacity>
                 )}
-                {isError && <Text>Error: {(error as any).message}</Text>}
                 {data?.pariwarRoles.map((role: PariwarRole) => (
                   <ListItem
                     onPress={() => selectPariwarRole(role.pariwarId._id)}

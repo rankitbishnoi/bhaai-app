@@ -5,8 +5,9 @@ import {NimtaList} from '../../../types/NimtaList';
 import {ApiSlice} from '../api-slice';
 import {revertAll} from '../actions/revertAll';
 import {AddRelative} from '../../../types/AddRelative';
+import {createModel, mergeModel, Model} from '../helper';
 
-const initialState: Nimta[] = [];
+const initialState: Model<Nimta>[] = [];
 
 export const nimtaListApi = ApiSlice.injectEndpoints({
   endpoints: builder => ({
@@ -81,10 +82,12 @@ const nimtaSlice = createSlice({
       state,
       action: PayloadAction<{pariwarId: string; body: Nimta1}>,
     ) {
-      state.push({
-        ...action.payload.body,
-        relative: [],
-      });
+      state.push(
+        createModel<Nimta>({
+          ...action.payload.body,
+          relative: [],
+        }),
+      );
     },
     // updateNimta
     updatedNimta(
@@ -95,10 +98,14 @@ const nimtaSlice = createSlice({
         a => a._id === action.payload.body._id,
       );
       if (foundIndex > -1) {
-        state.splice(foundIndex, 1, {
-          ...action.payload.body,
-          relative: state[foundIndex].relative,
-        });
+        state.splice(
+          foundIndex,
+          1,
+          createModel<Nimta>({
+            ...action.payload.body,
+            relative: state[foundIndex].relative,
+          }),
+        );
       }
     },
     // deleteNimta
@@ -116,8 +123,8 @@ const nimtaSlice = createSlice({
     builder.addCase(revertAll, () => initialState);
     builder.addMatcher(
       nimtaListApi.endpoints.getNimtaList.matchFulfilled,
-      (_state, {payload}) => {
-        return payload;
+      (state, {payload}) => {
+        return mergeModel<Nimta>(state, payload);
       },
     );
   },

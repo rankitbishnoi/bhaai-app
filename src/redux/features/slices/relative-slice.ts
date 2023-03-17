@@ -4,8 +4,9 @@ import {Relative} from '../../../types/Relative';
 import {RelativeList} from '../../../types/RelativeList';
 import {ApiSlice} from '../api-slice';
 import {revertAll} from '../actions/revertAll';
+import {createModel, mergeModel, Model} from '../helper';
 
-const initialState: Relative[] = [];
+const initialState: Model<Relative>[] = [];
 
 export const relativeListApi = ApiSlice.injectEndpoints({
   endpoints: builder => ({
@@ -67,7 +68,7 @@ const relativeSlice = createSlice({
       state,
       action: PayloadAction<{pariwarId: string; body: Relative}>,
     ) {
-      state.push(action.payload.body);
+      state.push(createModel<Relative>(action.payload.body));
     },
     // updateRelative
     updatedRelative(
@@ -78,7 +79,7 @@ const relativeSlice = createSlice({
         a => a._id === action.payload.body._id,
       );
       if (foundIndex > -1) {
-        state.splice(foundIndex, 1, action.payload.body);
+        state.splice(foundIndex, 1, createModel<Relative>(action.payload.body));
       }
     },
     // deleteRelative
@@ -96,8 +97,8 @@ const relativeSlice = createSlice({
     builder.addCase(revertAll, () => initialState);
     builder.addMatcher(
       relativeListApi.endpoints.getRelativeList.matchFulfilled,
-      (_state, {payload}) => {
-        return payload;
+      (state, {payload}) => {
+        return mergeModel<Relative>(state, payload);
       },
     );
   },

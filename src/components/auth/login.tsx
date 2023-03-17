@@ -8,7 +8,7 @@ import useButtonStyles from '../../styles/button';
 import {TextInput} from '@react-native-material/core';
 import {validateEmail} from '../../services/helpers';
 import {useAppDispatch, useAppSelector} from '../../redux/hooks';
-import {login} from '../../redux/features/slices/profile-slice';
+import {login, loginthunk} from '../../redux/features/slices/profile-slice';
 import {createdMessages} from '../../redux/features/slices/message-slice';
 
 interface FormData {
@@ -47,6 +47,7 @@ const Login: React.FC<{}> = ({}) => {
       .then(result => {
         if (result.access_token.length) {
           dispatch(login(result.access_token));
+          dispatch(loginthunk(result.access_token));
         }
       });
   });

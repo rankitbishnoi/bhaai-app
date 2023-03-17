@@ -14,8 +14,10 @@ import {useAppDispatch, useAppSelector} from '../redux/hooks';
 import {
   baanListApi,
   deletedBaan,
+  updatedBaan,
   useGetBaanListQuery,
 } from '../redux/features/slices/baan-slice';
+import {Model} from '../redux/features/helper';
 
 const childPageStates = ['edit', 'add'];
 
@@ -56,6 +58,15 @@ const Baan: React.FC<BaanProps> = ({bhaaiId, setBaanVisible, title}) => {
     return true;
   };
 
+  const sync = (item: Model<BaanType>) => {
+    const newBaanPayload = {
+      bhaaiId,
+      body: item,
+    };
+    dispatch(updatedBaan(newBaanPayload));
+    dispatch(baanListApi.endpoints.createBaan.initiate(newBaanPayload));
+  };
+
   return (
     <>
       {!childPageStates.includes(openDailog) && (
@@ -80,6 +91,9 @@ const Baan: React.FC<BaanProps> = ({bhaaiId, setBaanVisible, title}) => {
                   }, ${baan.address}`,
                   key: baan._id,
                   subtitle: `Rs: ${baan.amount}`,
+                  notSynced: baan.notSynced,
+                  syncing: baan.syncing,
+                  sync: () => sync(baan),
                   leading: (
                     <TouchableOpacity onPress={() => editItem(baan)}>
                       <Ionicons

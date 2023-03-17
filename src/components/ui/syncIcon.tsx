@@ -23,8 +23,6 @@ export const LoadingSpinner = React.memo(
       easing: Easing.linear,
     });
 
-    console.log(rotate);
-
     if (rotate) {
       spinValue.value = withRepeat(
         withTiming(72000, {

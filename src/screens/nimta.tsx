@@ -24,8 +24,10 @@ import NimtaRelativeList from './nimtaRelativeList';
 import {
   deletedNimta,
   nimtaListApi,
+  updatedNimta,
   useGetNimtaListQuery,
 } from '../redux/features/slices/nimta-slice';
+import {Model} from '../redux/features/helper';
 
 const childPageStates = [
   'relative',
@@ -65,6 +67,15 @@ const Nimta: React.FC = () => {
     return true;
   };
 
+  const sync = (item: Model<NimtaType>) => {
+    const newBaanPayload = {
+      pariwarId: selectedPariwar,
+      body: item,
+    };
+    dispatch(updatedNimta(newBaanPayload));
+    dispatch(nimtaListApi.endpoints.createNimta.initiate(newBaanPayload));
+  };
+
   return (
     <>
       {!childPageStates.includes(openDailog) && (
@@ -93,6 +104,9 @@ const Nimta: React.FC = () => {
                   title: nimta.name,
                   key: nimta._id,
                   subtitle: `Relatives: ${nimta.relative.length}`,
+                  notSynced: nimta.notSynced,
+                  syncing: nimta.syncing,
+                  sync: () => sync(nimta),
                   onPress: () => {
                     setSelectedNimta(nimta);
                     setOpenDailog('relative');
