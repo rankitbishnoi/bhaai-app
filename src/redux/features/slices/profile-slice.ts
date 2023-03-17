@@ -47,6 +47,14 @@ export const profileApi = ApiSlice.injectEndpoints({
       }),
       providesTags: ['Profile'],
     }),
+    updatedProfile: builder.mutation<Profile, Partial<Profile>>({
+      query: body => ({
+        url: 'profile',
+        method: 'PUT',
+        body,
+      }),
+      invalidatesTags: ['Profile'],
+    }),
     createPariwar: builder.mutation<Pariwar, Pariwar>({
       query: body => ({
         url: 'pariwar',
@@ -79,6 +87,7 @@ export const {
   useCreatePariwarMutation,
   useDeletePariwarMutation,
   useUpdatedPariwarMutation,
+  useUpdatedProfileMutation,
 } = profileApi;
 
 const pariwarSlice = createSlice({
@@ -89,7 +98,10 @@ const pariwarSlice = createSlice({
     updateAvatar(state, action: PayloadAction<string>) {
       return {
         ...state,
-        avatar: action.payload,
+        user: {
+          ...state.user,
+          avatar: action.payload,
+        },
       };
     },
     // login

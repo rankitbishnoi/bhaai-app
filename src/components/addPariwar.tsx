@@ -56,7 +56,6 @@ const AddPariwar: React.FC<ComponentProps> = (props: ComponentProps) => {
       dispatch(createdMessages('Pariwar has been created'));
     }
     setProcessingEdit(false);
-    setProcessingEdit(true);
     props.setVisible(false);
   });
 

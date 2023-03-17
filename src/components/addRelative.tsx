@@ -76,7 +76,6 @@ const AddRelative: React.FC<ComponentProps> = (props: ComponentProps) => {
       dispatch(createdMessages('Relative has been created'));
     }
     setProcessingEdit(false);
-    setProcessingEdit(true);
     props.setVisible('');
   });
 

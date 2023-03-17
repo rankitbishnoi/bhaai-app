@@ -108,7 +108,6 @@ export const Avatar = (props: AvatarProps) => {
 const avatarStyles = StyleSheet.create({
   container: {
     alignSelf: 'center',
-    marginTop: 20,
   },
   avatar: {
     paddingTop: 20,

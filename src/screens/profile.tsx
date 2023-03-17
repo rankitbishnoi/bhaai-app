@@ -20,6 +20,7 @@ import {PariwarRole} from '../types/Profile';
 import {useAppDispatch, useAppSelector} from '../redux/hooks';
 import {
   logoutthunk,
+  profileApi,
   selectPariwar,
   updateAvatar,
   useGetProfileQuery,
@@ -27,8 +28,16 @@ import {
 import {themeColor, toggleTheme} from '../redux/features/slices/theme-slice';
 import {Avatar} from '../components/ui/avatar';
 import {ImageOrVideo} from 'react-native-image-crop-picker';
+import {
+  Menu,
+  MenuOption,
+  MenuOptions,
+  MenuProvider,
+  MenuTrigger,
+} from 'react-native-popup-menu';
+import EditProfile from '../components/editProfile';
 
-const childPageStates = ['edit', 'add'];
+const childPageStates = ['edit', 'add', 'edit-profile'];
 
 const Profile: React.FC = () => {
   const theme = useAppSelector(state => state.theme.mode);
@@ -36,10 +45,10 @@ const Profile: React.FC = () => {
   const stackBarStyles = useStackBarStyles(theme);
   const buttonStyles = useButtonStyles(theme);
   const [openDailog, setOpenDailog] = useState('');
+  const [menuOpen, setMenuOpen] = useState(false);
   const [selectedRole, setSelectedRole] = useState({} as any);
   const dispatch = useAppDispatch();
   const data = useAppSelector(state => state.profile.user);
-  const avatar = useAppSelector(state => state.profile.avatar);
   const selectedPariwar =
     useAppSelector(state => state.profile.selectedPariwar) || '';
   const {isLoading, refetch} = useGetProfileQuery();
@@ -59,6 +68,9 @@ const Profile: React.FC = () => {
 
   const onAvatarChange = (image: ImageOrVideo) => {
     dispatch(updateAvatar(image.path));
+    dispatch(
+      profileApi.endpoints.updatedProfile.initiate({avatar: image.path}),
+    );
   };
 
   return (
@@ -69,12 +81,82 @@ const Profile: React.FC = () => {
             <ProgressBar height={5} indeterminate backgroundColor="#4a0072" />
           )}
           {data && (
-            <>
+            <MenuProvider>
+              <Stack style={stackBarStyles.left} right={10} top={10}>
+                <Menu
+                  style={stackBarStyles.empty}
+                  onClose={() => {
+                    setMenuOpen(false);
+                  }}
+                  onOpen={() => {
+                    setMenuOpen(true);
+                  }}>
+                  <MenuTrigger>
+                    <Ionicons
+                      style={stackBarStyles.left}
+                      size={24}
+                      color={stackBarStyles.iconColor.color}
+                      name={
+                        menuOpen
+                          ? 'ellipsis-horizontal'
+                          : 'ellipsis-horizontal-outline'
+                      }
+                    />
+                  </MenuTrigger>
+                  <MenuOptions
+                    customStyles={{
+                      optionsContainer: {
+                        backgroundColor: stackBarStyles.popUp.back,
+                        borderRadius: 5,
+                      },
+                      optionWrapper: {
+                        padding: 10,
+                      },
+                      optionTouchable: {
+                        activeOpacity: 70,
+                      },
+                      optionText: {
+                        color: stackBarStyles.popUp.front,
+                      },
+                    }}>
+                    <MenuOption
+                      onSelect={() => {
+                        setOpenDailog('edit-profile');
+                      }}
+                      text="edit profile"
+                    />
+                  </MenuOptions>
+                </Menu>
+              </Stack>
               <Avatar
                 onChange={onAvatarChange}
                 name={data?.email}
-                source={{uri: avatar}}
+                source={{uri: data.avatar}}
               />
+              {data?.firstName && (
+                <View style={styles.labelContainer}>
+                  <Text style={styles.label}>Name:</Text>
+                  <Text
+                    style={{
+                      ...styles.labelData,
+                      ...styles.labelDataCapitalize,
+                    }}>
+                    {data?.firstName} {data?.lastName}
+                  </Text>
+                </View>
+              )}
+              {data?.phoneNumber && (
+                <View style={styles.labelContainer}>
+                  <Text style={styles.label}>Mobile:</Text>
+                  <Text
+                    style={{
+                      ...styles.labelData,
+                      ...styles.labelDataCapitalize,
+                    }}>
+                    {data?.phoneNumber}
+                  </Text>
+                </View>
+              )}
               <View style={styles.labelContainer}>
                 <Text style={styles.label}>Email:</Text>
                 <Text style={styles.labelData}>{data?.email}</Text>
@@ -178,9 +260,15 @@ const Profile: React.FC = () => {
                   style={stackBarStyles.fab}
                 />
               </Stack>
-            </>
+            </MenuProvider>
           )}
         </View>
+      )}
+      {openDailog === 'edit-profile' && (
+        <EditProfile
+          setVisible={value => setOpenDailog(value ? 'add' : '')}
+          data={data}
+        />
       )}
       {openDailog === 'add' && (
         <AddPariwar

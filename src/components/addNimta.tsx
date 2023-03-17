@@ -66,7 +66,6 @@ const AddNimta: React.FC<ComponentProps> = (props: ComponentProps) => {
       dispatch(createdMessages('Nimta has been created'));
     }
     setProcessingEdit(false);
-    setProcessingEdit(true);
     props.setVisible(false);
   });
 
