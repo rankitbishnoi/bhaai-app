@@ -2,44 +2,43 @@ import React, {useMemo, useState} from 'react';
 import {TouchableOpacity, View} from 'react-native';
 import {IconButton, Stack, Text} from '@react-native-material/core';
 import useStyles from '../styles/relative';
-import {RelativeBase as RelativeType} from '../types/Relative';
+import {Relative1 as RelativeType} from '../types/Relative';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AddRelative from '../components/addRelative';
-import ProgressBar from '../components/ui/loader';
 import useButtonStyles from '../styles/button';
 import useStackBarStyles from '../styles/stackBar';
-import {useNavigation} from '@react-navigation/native';
 import SortRelative from '../components/sortRelative';
 import FilterRelative from '../components/filterRelative';
 import SwipeableList from '../components/swipeableList/swipeableList';
 import ScreenHeading from '../components/ui/screenHeading';
 import {callNumber} from '../services/callANumber';
 import {useAppDispatch, useAppSelector} from '../redux/hooks';
-import {
-  deletedRelative,
-  relativeListApi,
-  useGetRelativeListQuery,
-} from '../redux/features/slices/relative-slice';
+import {nimtaListApi} from '../redux/features/slices/nimta-slice';
 
-const childPageStates = ['sort', 'filter', 'add', 'edit'];
+const childPageStates = ['sort', 'filter'];
 
-interface RelativeProps {}
+interface NimtaRelativeListProps {
+  setVisible: (visiblity: string) => any;
+  relatives: RelativeType[];
+  nimtaId: string;
+}
 
-const Relative: React.FC<RelativeProps> = ({}) => {
+const NimtaRelativeList: React.FC<NimtaRelativeListProps> = ({
+  nimtaId,
+  relatives: data,
+  setVisible,
+}) => {
   const theme = useAppSelector(state => state.theme.mode);
   const selectedPariwar =
     useAppSelector(state => state.profile.selectedPariwar) || '';
-  const navigation = useNavigation();
   const styles = useStyles(theme);
+  const dispatch = useAppDispatch();
   const stackBarStyles = useStackBarStyles(theme);
   const buttonStyles = useButtonStyles(theme);
   const [openDailog, setOpenDailog] = useState('');
   const [sortBy, setSortBy] = useState('');
   const [filterBy, setFilterBy] = useState(null as any);
   const [selectedRelative, setSelectedRelative] = useState({} as any);
-  const dispatch = useAppDispatch();
-  const {isLoading, refetch} = useGetRelativeListQuery(selectedPariwar);
-  const data = useAppSelector(state => state.relativeList);
 
   const filterList = useMemo(() => {
     if (!filterBy) {
@@ -114,13 +113,15 @@ const Relative: React.FC<RelativeProps> = ({}) => {
   };
 
   const deleteRelative = (id: string) => {
-    dispatch(deletedRelative({pariwarId: selectedPariwar, id}));
     dispatch(
-      relativeListApi.endpoints.deleteRelative.initiate({
+      nimtaListApi.endpoints.removeRelativeFromNimta.initiate({
+        nimtaId,
         pariwarId: selectedPariwar,
         id,
       }),
     );
+    const index = data.findIndex(a => a._id === id);
+    data.splice(index, 1);
     return true;
   };
 
@@ -128,24 +129,11 @@ const Relative: React.FC<RelativeProps> = ({}) => {
     <>
       {!childPageStates.includes(openDailog) && (
         <View style={styles.container}>
-          {isLoading && (
-            <ProgressBar height={5} indeterminate backgroundColor="#4a0072" />
-          )}
           <ScreenHeading
-            title={'Relatives'}
+            title={'Nimta Relatives'}
             subtitle={`${filterList ? filterList.length : 0} entries`}
           />
-          {selectedPariwar.length === 0 && (
-            <TouchableOpacity
-              onPress={() => {
-                navigation.navigate('profile' as never);
-              }}>
-              <View style={buttonStyles.button}>
-                <Text style={buttonStyles.buttonTitle}>select pariwar</Text>
-              </View>
-            </TouchableOpacity>
-          )}
-          {selectedPariwar.length !== 0 && data && (
+          {data && (
             <>
               <SwipeableList
                 items={filterList.map(relative => {
@@ -183,15 +171,28 @@ const Relative: React.FC<RelativeProps> = ({}) => {
                   };
                 })}
                 deleteItem={deleteRelative}
-                refreshing={isLoading}
-                refresh={refetch}
+                refreshing={false}
+                refresh={() => {}}
               />
               <Stack
                 style={stackBarStyles.stackBarBottom}
                 fill
                 bottom={0}
                 spacing={0}>
-                <View style={stackBarStyles.fab} />
+                <IconButton
+                  onPress={() => {
+                    setVisible && setVisible('');
+                  }}
+                  icon={props => (
+                    <Ionicons
+                      name="arrow-back-outline"
+                      {...props}
+                      color={stackBarStyles.iconColor.color}
+                    />
+                  )}
+                  color="secondary"
+                  style={stackBarStyles.fab}
+                />
                 <View
                   style={{...buttonStyles.buttonGroup, ...styles.sortFilter}}>
                   <TouchableOpacity
@@ -230,11 +231,11 @@ const Relative: React.FC<RelativeProps> = ({}) => {
                 </View>
                 <IconButton
                   onPress={() => {
-                    setOpenDailog('add');
+                    setVisible && setVisible('addFromRelative');
                   }}
                   icon={props => (
                     <Ionicons
-                      name="add"
+                      name="person-add-outline"
                       {...props}
                       color={stackBarStyles.iconColor.color}
                     />
@@ -246,13 +247,6 @@ const Relative: React.FC<RelativeProps> = ({}) => {
             </>
           )}
         </View>
-      )}
-      {openDailog === 'add' && (
-        <AddRelative
-          setVisible={setOpenDailog}
-          type="ADD"
-          pariwarId={selectedPariwar}
-        />
       )}
       {openDailog === 'edit' && (
         <AddRelative
@@ -280,4 +274,4 @@ const Relative: React.FC<RelativeProps> = ({}) => {
   );
 };
 
-export default Relative;
+export default NimtaRelativeList;

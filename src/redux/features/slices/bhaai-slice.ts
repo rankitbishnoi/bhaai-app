@@ -1,15 +1,15 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 
 import {Bhaai} from '../../../types/Bhaai';
-import {BhaaiList} from '../../../types/BhaaiList';
 import {ApiSlice} from '../api-slice';
 import {revertAll} from '../actions/revertAll';
+import {createModel, mergeModel, Model} from '../helper';
 
-const initialState: BhaaiList = [];
+const initialState: Model<Bhaai>[] = [];
 
 export const bhaaiListApi = ApiSlice.injectEndpoints({
   endpoints: builder => ({
-    getBhaaiList: builder.query<BhaaiList, void>({
+    getBhaaiList: builder.query<Bhaai[], void>({
       query: () => ({
         url: 'bhaai',
         method: 'GET',
@@ -56,13 +56,13 @@ const bhaaiSlice = createSlice({
   reducers: {
     // createBhaai
     createdBhaai(state, action: PayloadAction<Bhaai>) {
-      state.push(action.payload);
+      state.push(createModel<Bhaai>(action.payload));
     },
     // updateBhaai
     updatedBhaai(state, action: PayloadAction<Bhaai>) {
       const foundIndex = state.findIndex(a => a._id === action.payload._id);
       if (foundIndex > -1) {
-        state.splice(foundIndex, 1, action.payload);
+        state.splice(foundIndex, 1, createModel<Bhaai>(action.payload));
       }
     },
     // deleteBhaai
@@ -78,7 +78,7 @@ const bhaaiSlice = createSlice({
     builder.addMatcher(
       bhaaiListApi.endpoints.getBhaaiList.matchFulfilled,
       (state, {payload}) => {
-        return payload;
+        return mergeModel<Bhaai>(state, payload);
       },
     );
     builder.addMatcher(

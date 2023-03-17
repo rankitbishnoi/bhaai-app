@@ -91,7 +91,7 @@ const baanSlice = createSlice({
     builder.addCase(revertAll, () => initialState);
     builder.addMatcher(
       baanListApi.endpoints.getBaanList.matchFulfilled,
-      (state, {payload}) => {
+      (_state, {payload}) => {
         const list: any = {};
         payload.forEach(a => {
           if (!a.bhaaiId) {

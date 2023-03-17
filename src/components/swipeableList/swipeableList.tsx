@@ -18,14 +18,17 @@ export interface SwipeableListItem {
   subtitle: string;
   leading?: React.ReactElement;
   trailing?: React.ReactElement;
+  notSynced?: boolean;
+  syncing?: boolean;
   onPress?: () => any;
+  sync?: () => void;
 }
 
 interface SwipeableListOptions {
   items: SwipeableListItem[];
   refresh: () => any;
   refreshing: boolean;
-  deleteItem: (id: string) => Promise<boolean>;
+  deleteItem: (id: string) => boolean;
 }
 
 const SwipeableList: React.FC<SwipeableListOptions> = ({
@@ -75,18 +78,17 @@ const SwipeableList: React.FC<SwipeableListOptions> = ({
       {
         text: 'yes',
         onPress: () => {
-          deleteItem(rowKey).then(result => {
-            if (result) {
-              const newData = [...listData];
-              const prevIndex = listData.findIndex(item => item.key === rowKey);
-              newData.splice(prevIndex, 1);
-              setListData(newData);
-              dispatch(createdMessages('Item has been deleted'));
-            } else {
-              dispatch(createdMessages('Unable to delete. Please try again'));
-            }
-            closeRow(rowMap, rowKey);
-          });
+          const result = deleteItem(rowKey);
+          if (result) {
+            const newData = [...listData];
+            const prevIndex = listData.findIndex(item => item.key === rowKey);
+            newData.splice(prevIndex, 1);
+            setListData(newData);
+            dispatch(createdMessages('Item has been deleted'));
+          } else {
+            dispatch(createdMessages('Unable to delete. Please try again'));
+          }
+          closeRow(rowMap, rowKey);
         },
       },
     ]);
@@ -96,18 +98,17 @@ const SwipeableList: React.FC<SwipeableListOptions> = ({
     rowMap: RowMap<SwipeableListItem>,
     rowKey: string,
   ) => {
-    deleteItem(rowKey).then(result => {
-      if (result) {
-        const newData = [...listData];
-        const prevIndex = listData.findIndex(item => item.key === rowKey);
-        newData.splice(prevIndex, 1);
-        setListData(newData);
-        dispatch(createdMessages('Item has been deleted'));
-      } else {
-        dispatch(createdMessages('Unable to delete. Please try again'));
-      }
-      closeRow(rowMap, rowKey);
-    });
+    const result = deleteItem(rowKey);
+    if (result) {
+      const newData = [...listData];
+      const prevIndex = listData.findIndex(item => item.key === rowKey);
+      newData.splice(prevIndex, 1);
+      setListData(newData);
+      dispatch(createdMessages('Item has been deleted'));
+    } else {
+      dispatch(createdMessages('Unable to delete. Please try again'));
+    }
+    closeRow(rowMap, rowKey);
   };
 
   const renderItem = (

@@ -12,6 +12,4 @@ export interface RelativeBase {
     address: string;
     nickName: string;
     phoneNumber: string;
-    details: string;
-    assignTo: string;
 }

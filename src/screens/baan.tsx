@@ -12,6 +12,7 @@ import SwipeableList from '../components/swipeableList/swipeableList';
 import ScreenHeading from '../components/ui/screenHeading';
 import {useAppDispatch, useAppSelector} from '../redux/hooks';
 import {
+  baanListApi,
   deletedBaan,
   useGetBaanListQuery,
 } from '../redux/features/slices/baan-slice';
@@ -44,11 +45,15 @@ const Baan: React.FC<BaanProps> = ({bhaaiId, setBaanVisible, title}) => {
     setOpenDailog('edit');
   };
 
-  const deleteBaan = async (id: string): Promise<boolean> => {
-    return new Promise(res => {
-      dispatch(deletedBaan({bhaaiId, id}));
-      res(true);
-    });
+  const deleteBaan = (id: string) => {
+    dispatch(deletedBaan({bhaaiId, id}));
+    dispatch(
+      baanListApi.endpoints.deleteBaan.initiate({
+        bhaaiId,
+        id,
+      }),
+    );
+    return true;
   };
 
   return (

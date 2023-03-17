@@ -2,6 +2,10 @@ import {combineReducers, configureStore} from '@reduxjs/toolkit';
 
 import bhaaiReducer, {bhaaiListApi} from './features/slices/bhaai-slice';
 import baanReducer, {baanListApi} from './features/slices/baan-slice';
+import nimtaReducer, {nimtaListApi} from './features/slices/nimta-slice';
+import relativeReducer, {
+  relativeListApi,
+} from './features/slices/relative-slice';
 import profileReducer, {profileApi} from './features/slices/profile-slice';
 import messageReducer from './features/slices/message-slice';
 import themeReducer from './features/slices/theme-slice';
@@ -21,10 +25,14 @@ const rootReducers = combineReducers({
   bhaaiList: bhaaiReducer,
   baanList: baanReducer,
   profile: profileReducer,
+  relativeList: relativeReducer,
+  nimtaList: nimtaReducer,
   message: messageReducer,
   theme: themeReducer,
   [bhaaiListApi.reducerPath]: bhaaiListApi.reducer,
   [baanListApi.reducerPath]: baanListApi.reducer,
+  [relativeListApi.reducerPath]: relativeListApi.reducer,
+  [nimtaListApi.reducerPath]: nimtaListApi.reducer,
   [profileApi.reducerPath]: profileApi.reducer,
 });
 
@@ -33,7 +41,14 @@ const persistedReducer = persistReducer(
     key: 'root',
     version: 1,
     storage: AsyncStorage,
-    whitelist: ['bhaaiList', 'baanList', 'profile', 'message', 'theme'],
+    whitelist: [
+      'bhaaiList',
+      'baanList',
+      'relativeList',
+      'profile',
+      'message',
+      'theme',
+    ],
   },
   rootReducers,
 );
@@ -45,7 +60,12 @@ export const store = configureStore({
       serializableCheck: {
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
       },
-    }).concat(baanListApi.middleware, bhaaiListApi.middleware),
+    }).concat(
+      baanListApi.middleware,
+      bhaaiListApi.middleware,
+      relativeListApi.middleware,
+      nimtaListApi.middleware,
+    ),
 });
 
 export const persistor = persistStore(store);

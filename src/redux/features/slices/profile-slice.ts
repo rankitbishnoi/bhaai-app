@@ -1,4 +1,5 @@
 import {createAsyncThunk, createSlice, PayloadAction} from '@reduxjs/toolkit';
+import {Pariwar} from '../../../types/Pariwar';
 
 import {Profile} from '../../../types/Profile';
 import {revertAll} from '../actions/revertAll';
@@ -32,11 +33,39 @@ export const profileApi = ApiSlice.injectEndpoints({
       }),
       providesTags: ['Profile'],
     }),
+    createPariwar: builder.mutation<Pariwar, Pariwar>({
+      query: body => ({
+        url: 'pariwar',
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['Profile'],
+    }),
+    updatedPariwar: builder.mutation<Pariwar, Pariwar>({
+      query: body => ({
+        url: `pariwar/${body._id}`,
+        method: 'PUT',
+        body,
+      }),
+      invalidatesTags: ['Profile'],
+    }),
+    deletePariwar: builder.mutation<Pariwar, string>({
+      query: id => ({
+        url: `pariwar/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Profile'],
+    }),
   }),
   overrideExisting: false,
 });
 
-export const {useGetProfileQuery} = profileApi;
+export const {
+  useGetProfileQuery,
+  useCreatePariwarMutation,
+  useDeletePariwarMutation,
+  useUpdatedPariwarMutation,
+} = profileApi;
 
 const pariwarSlice = createSlice({
   name: 'profile',

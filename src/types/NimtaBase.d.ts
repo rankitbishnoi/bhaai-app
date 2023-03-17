@@ -7,5 +7,4 @@
 
 export interface NimtaBase {
     name: string;
-    relative: string[];
 }

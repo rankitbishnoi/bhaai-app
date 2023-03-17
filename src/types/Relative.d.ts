@@ -5,8 +5,8 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
-export type Relative = Relative1 & Relative2;
-export type Relative1 = RelativeBase;
+export type Relative = Relative1 & Relative3;
+export type Relative1 = RelativeBase & Relative2;
 
 export interface RelativeBase {
     firstName: string;
@@ -15,10 +15,12 @@ export interface RelativeBase {
     address: string;
     nickName: string;
     phoneNumber: string;
-    details: string;
-    assignTo: string;
 }
 export interface Relative2 {
     _id: string;
     pariwarId: string;
+}
+export interface Relative3 {
+    details?: string;
+    assignTo?: string;
 }

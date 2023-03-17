@@ -5,13 +5,15 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
-export type Nimta = Nimta1 & Nimta2;
-export type Nimta1 = NimtaBase;
+export type Nimta = Nimta1 & Nimta3;
+export type Nimta1 = NimtaBase & Nimta2;
 
 export interface NimtaBase {
     name: string;
-    relative: string[];
 }
 export interface Nimta2 {
     _id: string;
+}
+export interface Nimta3 {
+    relative: string[];
 }

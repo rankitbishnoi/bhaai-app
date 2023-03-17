@@ -15,7 +15,10 @@ import {useAppDispatch, useAppSelector} from '../redux/hooks';
 import {
   useGetBhaaiListQuery,
   deletedBhaai,
+  bhaaiListApi,
+  updatedBhaai,
 } from '../redux/features/slices/bhaai-slice';
+import {Model} from '../redux/features/helper';
 
 const childPageStates = ['baan-list', 'search', 'edit', 'add'];
 
@@ -39,11 +42,15 @@ const Bhaai: React.FC = () => {
     setOpenDailog('baan-list');
   };
 
-  const deleteBhaai = async (id: string): Promise<boolean> => {
-    return new Promise(res => {
-      dispatch(deletedBhaai(id));
-      res(true);
-    });
+  const deleteBhaai = (id: string) => {
+    dispatch(deletedBhaai(id));
+    dispatch(bhaaiListApi.endpoints.deleteBhaai.initiate(id));
+    return true;
+  };
+
+  const sync = (item: Model<BhaaiType>) => {
+    dispatch(updatedBhaai(item));
+    dispatch(bhaaiListApi.endpoints.createBhaai.initiate(item));
   };
 
   return (
@@ -65,6 +72,9 @@ const Bhaai: React.FC = () => {
                   key: bhaaiItem._id,
                   onPress: () => openItem(bhaaiItem),
                   subtitle: new Date(bhaaiItem.date).toDateString(),
+                  notSynced: bhaaiItem.notSynced,
+                  syncing: bhaaiItem.syncing,
+                  sync: () => sync(bhaaiItem),
                   leading: (
                     <TouchableOpacity onPress={() => editItem(bhaaiItem)}>
                       <Ionicons

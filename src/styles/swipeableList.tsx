@@ -12,6 +12,15 @@ export default function useStyles(colorScheme: string) {
     backTextWhite: {
       color: theme.frontColor,
     },
+    iconColor: {
+      color: theme.primary,
+    },
+    noIconColor: {
+      width: 25,
+    },
+    trailing: {
+      flexDirection: 'row',
+    },
     noItems: {
       color: theme.frontColorInvert,
       fontSize: 14,
