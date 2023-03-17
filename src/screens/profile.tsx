@@ -21,9 +21,12 @@ import {useAppDispatch, useAppSelector} from '../redux/hooks';
 import {
   logoutthunk,
   selectPariwar,
+  updateAvatar,
   useGetProfileQuery,
 } from '../redux/features/slices/profile-slice';
 import {themeColor, toggleTheme} from '../redux/features/slices/theme-slice';
+import {Avatar} from '../components/ui/avatar';
+import {ImageOrVideo} from 'react-native-image-crop-picker';
 
 const childPageStates = ['edit', 'add'];
 
@@ -36,6 +39,7 @@ const Profile: React.FC = () => {
   const [selectedRole, setSelectedRole] = useState({} as any);
   const dispatch = useAppDispatch();
   const data = useAppSelector(state => state.profile.user);
+  const avatar = useAppSelector(state => state.profile.avatar);
   const selectedPariwar =
     useAppSelector(state => state.profile.selectedPariwar) || '';
   const {isLoading, refetch} = useGetProfileQuery();
@@ -53,6 +57,10 @@ const Profile: React.FC = () => {
     dispatch(logoutthunk());
   };
 
+  const onAvatarChange = (image: ImageOrVideo) => {
+    dispatch(updateAvatar(image.path));
+  };
+
   return (
     <>
       {!childPageStates.includes(openDailog) && (
@@ -62,6 +70,11 @@ const Profile: React.FC = () => {
           )}
           {data && (
             <>
+              <Avatar
+                onChange={onAvatarChange}
+                name={data?.email}
+                source={{uri: avatar}}
+              />
               <View style={styles.labelContainer}>
                 <Text style={styles.label}>Email:</Text>
                 <Text style={styles.labelData}>{data?.email}</Text>

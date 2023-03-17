@@ -24,6 +24,7 @@ export const loginthunk = createAsyncThunk(
 
 const initialState: {
   user: Profile;
+  avatar: string;
   isLoggedIn: boolean;
   token: string | null;
   selectedPariwar: string | null;
@@ -84,6 +85,13 @@ const pariwarSlice = createSlice({
   name: 'profile',
   initialState,
   reducers: {
+    // update avatar
+    updateAvatar(state, action: PayloadAction<string>) {
+      return {
+        ...state,
+        avatar: action.payload,
+      };
+    },
     // login
     login(state, action: PayloadAction<string>) {
       return {
@@ -129,7 +137,7 @@ const pariwarSlice = createSlice({
   },
 });
 
-export const {updatedProfile, login, logout, selectPariwar} =
+export const {updatedProfile, login, logout, selectPariwar, updateAvatar} =
   pariwarSlice.actions;
 
 export default pariwarSlice.reducer;
