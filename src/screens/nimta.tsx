@@ -49,7 +49,8 @@ const Nimta: React.FC = () => {
   const [selectedNimta, setSelectedNimta] = useState({} as any);
   const dispatch = useAppDispatch();
   const {isLoading, refetch} = useGetNimtaListQuery(selectedPariwar);
-  const data = useAppSelector(state => state.nimtaList);
+  const nimtaList = useAppSelector(state => state.nimtaList);
+  const data = nimtaList[selectedPariwar] || [];
 
   const editItem = (nimta: NimtaType) => {
     setSelectedNimta(nimta);

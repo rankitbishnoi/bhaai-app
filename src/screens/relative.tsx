@@ -41,7 +41,11 @@ const Relative: React.FC<RelativeProps> = ({}) => {
   const [selectedRelative, setSelectedRelative] = useState({} as any);
   const dispatch = useAppDispatch();
   const {isLoading, refetch} = useGetRelativeListQuery(selectedPariwar);
-  const data = useAppSelector(state => state.relativeList);
+  const relativeList = useAppSelector(state => state.relativeList);
+  const data = useMemo(
+    () => relativeList[selectedPariwar] || [],
+    [selectedPariwar, relativeList],
+  );
 
   const filterList = useMemo(() => {
     if (!filterBy) {

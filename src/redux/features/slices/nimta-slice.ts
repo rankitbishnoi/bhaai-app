@@ -1,17 +1,16 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 
 import {Nimta, Nimta1} from '../../../types/Nimta';
-import {NimtaList} from '../../../types/NimtaList';
 import {ApiSlice} from '../api-slice';
 import {revertAll} from '../actions/revertAll';
 import {AddRelative} from '../../../types/AddRelative';
 import {createModel, mergeModel, Model} from '../helper';
 
-const initialState: Model<Nimta>[] = [];
+const initialState: Record<string, Model<Nimta>[]> = {};
 
 export const nimtaListApi = ApiSlice.injectEndpoints({
   endpoints: builder => ({
-    getNimtaList: builder.query<NimtaList, string>({
+    getNimtaList: builder.query<Nimta[], string>({
       query: pariwarId => ({
         url: `pariwar/${pariwarId}/nimta`,
         method: 'GET',
@@ -82,30 +81,37 @@ const nimtaSlice = createSlice({
       state,
       action: PayloadAction<{pariwarId: string; body: Nimta1}>,
     ) {
-      state.push(
-        createModel<Nimta>({
-          ...action.payload.body,
-          relative: [],
-        }),
-      );
+      const list = state[action.payload.pariwarId];
+      if (list) {
+        list.push(
+          createModel<Nimta>({
+            ...action.payload.body,
+            relative: [],
+          }),
+        );
+      }
     },
     // updateNimta
     updatedNimta(
       state,
       action: PayloadAction<{pariwarId: string; body: Nimta1}>,
     ) {
-      const foundIndex = state.findIndex(
-        a => a._id === action.payload.body._id,
-      );
-      if (foundIndex > -1) {
-        state.splice(
-          foundIndex,
-          1,
-          createModel<Nimta>({
-            ...action.payload.body,
-            relative: state[foundIndex].relative,
-          }),
+      const list = state[action.payload.pariwarId];
+      if (list) {
+        const foundIndex = list.findIndex(
+          a => a._id === action.payload.body._id,
         );
+        if (foundIndex > -1) {
+          list.splice(
+            foundIndex,
+            1,
+            createModel<Nimta>({
+              ...action.payload.body,
+              relative: list[foundIndex].relative,
+              pariwarId: action.payload.pariwarId,
+            }),
+          );
+        }
       }
     },
     // deleteNimta
@@ -113,9 +119,12 @@ const nimtaSlice = createSlice({
       state,
       action: PayloadAction<{pariwarId: string; id: string}>,
     ) {
-      const foundIndex = state.findIndex(a => a._id === action.payload.id);
-      if (foundIndex > -1) {
-        state.splice(foundIndex, 1);
+      const list = state[action.payload.pariwarId];
+      if (list) {
+        const foundIndex = list.findIndex(a => a._id === action.payload.id);
+        if (foundIndex > -1) {
+          list.splice(foundIndex, 1);
+        }
       }
     },
   },
@@ -123,8 +132,30 @@ const nimtaSlice = createSlice({
     builder.addCase(revertAll, () => initialState);
     builder.addMatcher(
       nimtaListApi.endpoints.getNimtaList.matchFulfilled,
-      (state, {payload}) => {
-        return mergeModel<Nimta>(state, payload);
+      (state, {payload, meta}) => {
+        const newData = mergeModel<Nimta>(
+          state[meta.arg.originalArgs] || [],
+          payload,
+        );
+        const list: any = {};
+        [
+          ...newData,
+          ...Object.keys(state)
+            .filter(id => id !== meta.arg.originalArgs)
+            .map(id => state[id])
+            .flat(),
+        ].forEach(a => {
+          if (!a.pariwarId) {
+            return;
+          }
+
+          if (list[a.pariwarId]) {
+            list[a.pariwarId].push(a);
+          } else {
+            list[a.pariwarId] = [a];
+          }
+        });
+        return list;
       },
     );
   },

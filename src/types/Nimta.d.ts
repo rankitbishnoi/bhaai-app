@@ -13,6 +13,7 @@ export interface NimtaBase {
 }
 export interface Nimta2 {
     _id: string;
+    pariwarId: string;
 }
 export interface Nimta3 {
     relative: string[];

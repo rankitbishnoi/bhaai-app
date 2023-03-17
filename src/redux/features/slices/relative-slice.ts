@@ -6,7 +6,7 @@ import {ApiSlice} from '../api-slice';
 import {revertAll} from '../actions/revertAll';
 import {createModel, mergeModel, Model} from '../helper';
 
-const initialState: Model<Relative>[] = [];
+const initialState: Record<string, Model<Relative>[]> = {};
 
 export const relativeListApi = ApiSlice.injectEndpoints({
   endpoints: builder => ({
@@ -68,18 +68,31 @@ const relativeSlice = createSlice({
       state,
       action: PayloadAction<{pariwarId: string; body: Relative}>,
     ) {
-      state.push(createModel<Relative>(action.payload.body));
+      const list = state[action.payload.pariwarId];
+      if (list) {
+        list.push(createModel<Relative>(action.payload.body));
+      }
     },
     // updateRelative
     updatedRelative(
       state,
       action: PayloadAction<{pariwarId: string; body: Relative}>,
     ) {
-      const foundIndex = state.findIndex(
-        a => a._id === action.payload.body._id,
-      );
-      if (foundIndex > -1) {
-        state.splice(foundIndex, 1, createModel<Relative>(action.payload.body));
+      const list = state[action.payload.pariwarId];
+      if (list) {
+        const foundIndex = list.findIndex(
+          a => a._id === action.payload.body._id,
+        );
+        if (foundIndex > -1) {
+          list.splice(
+            foundIndex,
+            1,
+            createModel<Relative>({
+              ...action.payload.body,
+              pariwarId: action.payload.pariwarId,
+            }),
+          );
+        }
       }
     },
     // deleteRelative
@@ -87,9 +100,12 @@ const relativeSlice = createSlice({
       state,
       action: PayloadAction<{pariwarId: string; id: string}>,
     ) {
-      const foundIndex = state.findIndex(a => a._id === action.payload.id);
-      if (foundIndex > -1) {
-        state.splice(foundIndex, 1);
+      const list = state[action.payload.pariwarId];
+      if (list) {
+        const foundIndex = list.findIndex(a => a._id === action.payload.id);
+        if (foundIndex > -1) {
+          list.splice(foundIndex, 1);
+        }
       }
     },
   },
@@ -97,8 +113,30 @@ const relativeSlice = createSlice({
     builder.addCase(revertAll, () => initialState);
     builder.addMatcher(
       relativeListApi.endpoints.getRelativeList.matchFulfilled,
-      (state, {payload}) => {
-        return mergeModel<Relative>(state, payload);
+      (state, {payload, meta}) => {
+        const newData = mergeModel<Relative>(
+          state[meta.arg.originalArgs] || [],
+          payload,
+        );
+        const list: any = {};
+        [
+          ...newData,
+          ...Object.keys(state)
+            .filter(id => id !== meta.arg.originalArgs)
+            .map(id => state[id])
+            .flat(),
+        ].forEach(a => {
+          if (!a.pariwarId) {
+            return;
+          }
+
+          if (list[a.pariwarId]) {
+            list[a.pariwarId].push(a);
+          } else {
+            list[a.pariwarId] = [a];
+          }
+        });
+        return list;
       },
     );
   },
