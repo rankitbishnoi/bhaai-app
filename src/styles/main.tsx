@@ -16,5 +16,22 @@ export default function useStyles(colorScheme: string) {
       active: theme.primary,
       inactive: theme.primaryBlur,
     },
+    root: {
+      backgroundColor: theme.backgroundScreen,
+      flex: 1,
+    },
+    safeAreaView: {
+      flex: 1,
+    },
+    content: {
+      flex: 1,
+      justifyContent: 'center',
+      paddingHorizontal: 16,
+      paddingVertical: 32,
+    },
+    list: {
+      backgroundColor: theme.backgroundSecondary,
+      color: theme.frontColor,
+    },
   });
 }

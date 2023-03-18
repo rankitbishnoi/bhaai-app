@@ -1,5 +1,5 @@
 import {Button, TextInput, Text} from '@react-native-material/core';
-import React, {useContext, useState} from 'react';
+import React, {useState} from 'react';
 import {Controller, useForm} from 'react-hook-form';
 import {
   KeyboardAvoidingView,
@@ -7,26 +7,29 @@ import {
   Pressable,
   ScrollView,
 } from 'react-native';
-import {apiService} from '../services/api.service';
 import {PariwarBase} from '../types/Pariwar';
 import useStyles from '../styles/bhaai';
 import {Pariwar} from '../types/PariwarList';
 import SizedBox from './ui/sizedBox';
 import ScreenHeading from './ui/screenHeading';
-import {AppContextState, APP_ACTIONS} from '../services/app.reducer';
-import AppContext from '../services/storage';
+import {useAppDispatch, useAppSelector} from '../redux/hooks';
+import {profileApi} from '../redux/features/slices/profile-slice';
+import {createdMessages} from '../redux/features/slices/message-slice';
+import uuid from 'react-native-uuid';
 
 interface ComponentProps {
   setVisible: (visiblity: boolean) => any;
+  refetch: () => any;
   type?: 'EDIT' | 'ADD';
   data?: Pariwar;
 }
 
 const AddPariwar: React.FC<ComponentProps> = (props: ComponentProps) => {
-  const myContext = useContext<AppContextState>(AppContext);
   const [processingEdit, setProcessingEdit] = useState(false);
   const [processingDelete, setProcessingDelete] = useState(false);
-  const styles = useStyles(myContext.appSettings.theme);
+  const theme = useAppSelector(state => state.theme.mode);
+  const dispatch = useAppDispatch();
+  const styles = useStyles(theme);
   const {
     control,
     handleSubmit,
@@ -41,49 +44,19 @@ const AddPariwar: React.FC<ComponentProps> = (props: ComponentProps) => {
 
   const onSubmit = handleSubmit((input: PariwarBase) => {
     setProcessingEdit(true);
+    const newBaanPayload = {
+      ...input,
+      _id: props.data?._id || uuid.v4().toString(),
+    };
     if (props.type === 'EDIT') {
-      apiService
-        .updatePariwar(props.data?._id as string, input)
-        .catch(error => {
-          if (error.type === 'NOT_AUTHENTICATED') {
-            myContext.dispatch({type: APP_ACTIONS.LOGOUT});
-          }
-
-          return null;
-        })
-        .then(data => {
-          if (data) {
-            myContext.dispatch({type: APP_ACTIONS.REFETCH_PROFILE});
-            myContext.dispatch({
-              type: APP_ACTIONS.NEW_MESSAGE,
-              payload: 'Pariwar has been updated',
-            });
-            setProcessingEdit(false);
-            props.setVisible(false);
-          }
-        });
+      dispatch(profileApi.endpoints.updatedPariwar.initiate(newBaanPayload));
+      dispatch(createdMessages('Pariwar has been updated'));
     } else {
-      apiService
-        .createPariwar(input)
-        .catch(error => {
-          if (error.type === 'NOT_AUTHENTICATED') {
-            myContext.dispatch({type: APP_ACTIONS.LOGOUT});
-          }
-
-          return null;
-        })
-        .then(data => {
-          if (data) {
-            myContext.dispatch({type: APP_ACTIONS.REFETCH_PROFILE});
-            myContext.dispatch({
-              type: APP_ACTIONS.NEW_MESSAGE,
-              payload: 'Pariwar has been added',
-            });
-            setProcessingEdit(false);
-            props.setVisible(false);
-          }
-        });
+      dispatch(profileApi.endpoints.createPariwar.initiate(newBaanPayload));
+      dispatch(createdMessages('Pariwar has been created'));
     }
+    setProcessingEdit(false);
+    props.setVisible(false);
   });
 
   const close = () => {
@@ -91,25 +64,13 @@ const AddPariwar: React.FC<ComponentProps> = (props: ComponentProps) => {
   };
 
   const deletePariwar = () => {
-    setProcessingDelete(true);
-    apiService
-      .deletePariwar(props.data?._id as string)
-      .catch(error => {
-        if (error.type === 'NOT_AUTHENTICATED') {
-          myContext.dispatch({type: APP_ACTIONS.LOGOUT});
-        }
-
-        return null;
-      })
-      .then(() => {
-        myContext.dispatch({type: APP_ACTIONS.REFETCH_PROFILE});
-        myContext.dispatch({
-          type: APP_ACTIONS.NEW_MESSAGE,
-          payload: 'Pariwar has been deleted',
-        });
-        setProcessingDelete(false);
-        props.setVisible(false);
-      });
+    if (props.data) {
+      setProcessingDelete(true);
+      dispatch(profileApi.endpoints.deletePariwar.initiate(props.data?._id));
+      dispatch(createdMessages('Pariwar has been deleted'));
+      setProcessingDelete(false);
+      props.setVisible(false);
+    }
   };
 
   return (

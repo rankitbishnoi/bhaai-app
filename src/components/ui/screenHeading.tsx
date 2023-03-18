@@ -1,7 +1,6 @@
 import {Stack, Text} from '@react-native-material/core';
-import React, {useContext} from 'react';
-import {AppContextState} from '../../services/app.reducer';
-import AppContext from '../../services/storage';
+import React from 'react';
+import {useAppSelector} from '../../redux/hooks';
 import useStyles from '../../styles/screenHeading';
 
 interface Props {
@@ -10,8 +9,8 @@ interface Props {
 }
 
 const ScreenHeading: React.FC<Props> = ({title, subtitle}) => {
-  const myContext = useContext<AppContextState>(AppContext);
-  const styles = useStyles(myContext.appSettings.theme);
+  const theme = useAppSelector(state => state.theme.mode);
+  const styles = useStyles(theme);
   return (
     <Stack m={4} spacing={4}>
       <Text style={styles.heading} variant="button">

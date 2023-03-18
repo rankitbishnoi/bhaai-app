@@ -6,60 +6,71 @@ import {
   Switch,
   Text,
 } from '@react-native-material/core';
-import React, {useContext, useState} from 'react';
+import React, {useState} from 'react';
 import {ScrollView, TouchableOpacity, View} from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import {useQuery} from 'react-query';
 import AddPariwar from '../components/addPariwar';
 import ProgressBar from '../components/ui/loader';
 import RadioButton from '../components/ui/radioButton';
-import {apiService} from '../services/api.service';
-import mmkv from '../services/mmkv';
-import AppContext from '../services/storage';
 
 import useStyles from '../styles/profile';
 import useButtonStyles from '../styles/button';
 import useStackBarStyles from '../styles/stackBar';
 import {PariwarRole} from '../types/Profile';
+import {useAppDispatch, useAppSelector} from '../redux/hooks';
 import {
-  AppContextState,
-  APP_ACTIONS,
-  themeColor,
-} from '../services/app.reducer';
+  logoutthunk,
+  profileApi,
+  selectPariwar,
+  updateAvatar,
+  useGetProfileQuery,
+} from '../redux/features/slices/profile-slice';
+import {themeColor, toggleTheme} from '../redux/features/slices/theme-slice';
+import {Avatar} from '../components/ui/avatar';
+import {ImageOrVideo} from 'react-native-image-crop-picker';
+import {
+  Menu,
+  MenuOption,
+  MenuOptions,
+  MenuProvider,
+  MenuTrigger,
+} from 'react-native-popup-menu';
+import EditProfile from '../components/editProfile';
 
-const childPageStates = ['edit', 'add'];
+const childPageStates = ['edit', 'add', 'edit-profile'];
 
 const Profile: React.FC = () => {
-  const myContext = useContext<AppContextState>(AppContext);
-  const styles = useStyles(myContext.appSettings.theme);
-  const stackBarStyles = useStackBarStyles(myContext.appSettings.theme);
-  const buttonStyles = useButtonStyles(myContext.appSettings.theme);
+  const theme = useAppSelector(state => state.theme.mode);
+  const styles = useStyles(theme);
+  const stackBarStyles = useStackBarStyles(theme);
+  const buttonStyles = useButtonStyles(theme);
   const [openDailog, setOpenDailog] = useState('');
+  const [menuOpen, setMenuOpen] = useState(false);
   const [selectedRole, setSelectedRole] = useState({} as any);
-  const {data, isLoading, isError, error} = useQuery(
-    ['profile', myContext.appSettings.queryState.profile],
-    () => apiService.getProfile(),
-  );
-
-  const logout = () => {
-    mmkv.deleteJWT();
-    myContext.dispatch({type: APP_ACTIONS.LOGOUT});
-  };
-
-  const toggleTheme = () => {
-    myContext.dispatch({type: APP_ACTIONS.TOGGLE_THEME});
-  };
+  const dispatch = useAppDispatch();
+  const data = useAppSelector(state => state.profile.user);
+  const selectedPariwar =
+    useAppSelector(state => state.profile.selectedPariwar) || '';
+  const {isLoading, refetch} = useGetProfileQuery();
 
   const selectPariwarRole = (id: string) => {
-    myContext.dispatch({
-      type: APP_ACTIONS.SELECT_PARIWAR,
-      payload: id,
-    });
+    dispatch(selectPariwar(id));
   };
 
   const editItem = (role: PariwarRole) => {
     setSelectedRole(role);
     setOpenDailog('edit');
+  };
+
+  const handleLogout = () => {
+    dispatch(logoutthunk());
+  };
+
+  const onAvatarChange = (image: ImageOrVideo) => {
+    dispatch(updateAvatar(image.path));
+    dispatch(
+      profileApi.endpoints.updatedProfile.initiate({avatar: image.path}),
+    );
   };
 
   return (
@@ -70,7 +81,82 @@ const Profile: React.FC = () => {
             <ProgressBar height={5} indeterminate backgroundColor="#4a0072" />
           )}
           {data && (
-            <>
+            <MenuProvider>
+              <Stack style={stackBarStyles.left} right={10} top={10}>
+                <Menu
+                  style={stackBarStyles.empty}
+                  onClose={() => {
+                    setMenuOpen(false);
+                  }}
+                  onOpen={() => {
+                    setMenuOpen(true);
+                  }}>
+                  <MenuTrigger>
+                    <Ionicons
+                      style={stackBarStyles.left}
+                      size={24}
+                      color={stackBarStyles.iconColor.color}
+                      name={
+                        menuOpen
+                          ? 'ellipsis-horizontal'
+                          : 'ellipsis-horizontal-outline'
+                      }
+                    />
+                  </MenuTrigger>
+                  <MenuOptions
+                    customStyles={{
+                      optionsContainer: {
+                        backgroundColor: stackBarStyles.popUp.back,
+                        borderRadius: 5,
+                      },
+                      optionWrapper: {
+                        padding: 10,
+                      },
+                      optionTouchable: {
+                        activeOpacity: 70,
+                      },
+                      optionText: {
+                        color: stackBarStyles.popUp.front,
+                      },
+                    }}>
+                    <MenuOption
+                      onSelect={() => {
+                        setOpenDailog('edit-profile');
+                      }}
+                      text="edit profile"
+                    />
+                  </MenuOptions>
+                </Menu>
+              </Stack>
+              <Avatar
+                onChange={onAvatarChange}
+                name={data?.email}
+                source={{uri: data.avatar}}
+              />
+              {data?.firstName && (
+                <View style={styles.labelContainer}>
+                  <Text style={styles.label}>Name:</Text>
+                  <Text
+                    style={{
+                      ...styles.labelData,
+                      ...styles.labelDataCapitalize,
+                    }}>
+                    {data?.firstName} {data?.lastName}
+                  </Text>
+                </View>
+              )}
+              {data?.phoneNumber && (
+                <View style={styles.labelContainer}>
+                  <Text style={styles.label}>Mobile:</Text>
+                  <Text
+                    style={{
+                      ...styles.labelData,
+                      ...styles.labelDataCapitalize,
+                    }}>
+                    {data?.phoneNumber}
+                  </Text>
+                </View>
+              )}
               <View style={styles.labelContainer}>
                 <Text style={styles.label}>Email:</Text>
                 <Text style={styles.labelData}>{data?.email}</Text>
@@ -81,7 +167,7 @@ const Profile: React.FC = () => {
                   <Text style={styles.labelData}>{data?.phoneNumber}</Text>
                 </View>
               )}
-              <TouchableOpacity onPress={logout}>
+              <TouchableOpacity onPress={handleLogout}>
                 <View style={buttonStyles.buttonSecondary}>
                   <Text style={buttonStyles.buttonTitle}>logout</Text>
                 </View>
@@ -101,8 +187,10 @@ const Profile: React.FC = () => {
                     true: stackBarStyles.toggleColor.active,
                     false: stackBarStyles.toggleColor.inactive,
                   }}
-                  value={myContext.appSettings.theme === themeColor.DARK}
-                  onValueChange={toggleTheme}
+                  value={theme === themeColor.DARK}
+                  onValueChange={() => {
+                    dispatch(toggleTheme());
+                  }}
                 />
                 <Pressable onPress={() => setOpenDailog('addFromRelative')}>
                   <Text
@@ -126,7 +214,6 @@ const Profile: React.FC = () => {
                     </View>
                   </TouchableOpacity>
                 )}
-                {isError && <Text>Error: {(error as any).message}</Text>}
                 {data?.pariwarRoles.map((role: PariwarRole) => (
                   <ListItem
                     onPress={() => selectPariwarRole(role.pariwarId._id)}
@@ -137,10 +224,7 @@ const Profile: React.FC = () => {
                     leadingMode="icon"
                     leading={
                       <RadioButton
-                        selected={
-                          role.pariwarId._id ===
-                          myContext.appSettings.selectedPariwar
-                        }
+                        selected={role.pariwarId._id === selectedPariwar}
                       />
                     }
                     trailing={props => (
@@ -176,14 +260,21 @@ const Profile: React.FC = () => {
                   style={stackBarStyles.fab}
                 />
               </Stack>
-            </>
+            </MenuProvider>
           )}
         </View>
+      )}
+      {openDailog === 'edit-profile' && (
+        <EditProfile
+          setVisible={value => setOpenDailog(value ? 'add' : '')}
+          data={data}
+        />
       )}
       {openDailog === 'add' && (
         <AddPariwar
           setVisible={value => setOpenDailog(value ? 'add' : '')}
           type="ADD"
+          refetch={refetch}
         />
       )}
       {openDailog === 'edit' && (
@@ -191,6 +282,7 @@ const Profile: React.FC = () => {
           setVisible={value => setOpenDailog(value ? 'edit' : '')}
           type="EDIT"
           data={selectedRole.pariwarId}
+          refetch={refetch}
         />
       )}
     </>

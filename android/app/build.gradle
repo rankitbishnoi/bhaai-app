@@ -93,12 +93,14 @@ android {
     ndkVersion rootProject.ext.ndkVersion
 
     compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion = rootProject.ext.buildToolsVersion
 
     namespace "com.bhaai"
     defaultConfig {
         applicationId "com.bhaai"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
+        vectorDrawables.useSupportLibrary true
         versionCode 1
         versionName "1.0"
     }

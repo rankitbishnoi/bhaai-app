@@ -1,6 +1,5 @@
-import React, {useContext, useState} from 'react';
+import React, {useState} from 'react';
 import {Pressable, TouchableOpacity, View} from 'react-native';
-import {apiService} from '../services/api.service';
 import {
   Divider,
   IconButton,
@@ -14,16 +13,21 @@ import {Nimta as NimtaType} from '../types/Nimta';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AddNimta from '../components/addNimta';
 import ProgressBar from '../components/ui/loader';
-import AppContext from '../services/storage';
-import {useQuery} from 'react-query';
 import useButtonStyles from '../styles/button';
 import {useNavigation} from '@react-navigation/native';
-import Relative from './relative';
 import AddFromRelative from '../components/addFromRelative';
 import AddFromBaan from '../components/addFromBaan';
 import SwipeableList from '../components/swipeableList/swipeableList';
-import {AppContextState, APP_ACTIONS} from '../services/app.reducer';
 import ScreenHeading from '../components/ui/screenHeading';
+import {useAppDispatch, useAppSelector} from '../redux/hooks';
+import NimtaRelativeList from './nimtaRelativeList';
+import {
+  deletedNimta,
+  nimtaListApi,
+  updatedNimta,
+  useGetNimtaListQuery,
+} from '../redux/features/slices/nimta-slice';
+import {Model} from '../redux/features/helper';
 
 const childPageStates = [
   'relative',
@@ -34,51 +38,43 @@ const childPageStates = [
 ];
 
 const Nimta: React.FC = () => {
-  const myContext = useContext<AppContextState>(AppContext);
+  const theme = useAppSelector(state => state.theme.mode);
+  const selectedPariwar =
+    useAppSelector(state => state.profile.selectedPariwar) || '';
   const navigation = useNavigation();
-  const styles = useStyles(myContext.appSettings.theme);
-  const stackBarStyles = useStackBarStyles(myContext.appSettings.theme);
-  const buttonStyles = useButtonStyles(myContext.appSettings.theme);
+  const styles = useStyles(theme);
+  const stackBarStyles = useStackBarStyles(theme);
+  const buttonStyles = useButtonStyles(theme);
   const [openDailog, setOpenDailog] = useState('');
   const [selectedNimta, setSelectedNimta] = useState({} as any);
-  const {data, isLoading} = useQuery(
-    [
-      'nimtaList',
-      myContext.appSettings.selectedPariwar,
-      myContext.appSettings.queryState.nimtaList,
-    ],
-    () =>
-      myContext.appSettings.selectedPariwar
-        ? apiService
-            .getNimtaList(myContext.appSettings.selectedPariwar)
-            .catch(error => {
-              if (error.type === 'NOT_AUTHENTICATED') {
-                myContext.dispatch({type: APP_ACTIONS.LOGOUT});
-              }
-
-              return [];
-            })
-        : [],
-  );
-  const selectedPariwar = myContext.appSettings.selectedPariwar || '';
+  const dispatch = useAppDispatch();
+  const {isLoading, refetch} = useGetNimtaListQuery(selectedPariwar);
+  const nimtaList = useAppSelector(state => state.nimtaList);
+  const data = nimtaList[selectedPariwar] || [];
 
   const editItem = (nimta: NimtaType) => {
     setSelectedNimta(nimta);
     setOpenDailog('edit');
   };
 
-  const refresh = () => {
-    myContext.dispatch({type: APP_ACTIONS.REFETCH_NIMTA_LIST});
+  const deleteNimta = (id: string) => {
+    dispatch(deletedNimta({pariwarId: selectedPariwar, id}));
+    dispatch(
+      nimtaListApi.endpoints.deleteNimta.initiate({
+        pariwarId: selectedPariwar,
+        id,
+      }),
+    );
+    return true;
   };
 
-  const deleteNimta = async (id: string) => {
-    return apiService.deleteNimta(id, selectedPariwar).then(() => {
-      if (data) {
-        const index = data?.findIndex(a => a._id === id);
-        data.splice(index, 1);
-      }
-      return true;
-    });
+  const sync = (item: Model<NimtaType>) => {
+    const newBaanPayload = {
+      pariwarId: selectedPariwar,
+      body: item,
+    };
+    dispatch(updatedNimta(newBaanPayload));
+    dispatch(nimtaListApi.endpoints.createNimta.initiate(newBaanPayload));
   };
 
   return (
@@ -92,7 +88,7 @@ const Nimta: React.FC = () => {
             title="Nimta List"
             subtitle={`${data ? data.length : 0} entries`}
           />
-          {!selectedPariwar && (
+          {selectedPariwar.length === 0 && (
             <TouchableOpacity
               onPress={() => {
                 navigation.navigate('profile' as never);
@@ -102,13 +98,16 @@ const Nimta: React.FC = () => {
               </View>
             </TouchableOpacity>
           )}
-          {selectedPariwar && data && (
+          {selectedPariwar.length !== 0 && data && (
             <SwipeableList
               items={data.map(nimta => {
                 return {
                   title: nimta.name,
                   key: nimta._id,
                   subtitle: `Relatives: ${nimta.relative.length}`,
+                  notSynced: nimta.notSynced,
+                  syncing: nimta.syncing,
+                  sync: () => sync(nimta),
                   onPress: () => {
                     setSelectedNimta(nimta);
                     setOpenDailog('relative');
@@ -139,7 +138,7 @@ const Nimta: React.FC = () => {
               })}
               deleteItem={deleteNimta}
               refreshing={isLoading}
-              refresh={refresh}
+              refresh={refetch}
             />
           )}
           <Stack
@@ -181,9 +180,8 @@ const Nimta: React.FC = () => {
         />
       )}
       {openDailog === 'relative' && (
-        <Relative
+        <NimtaRelativeList
           relatives={selectedNimta.relative}
-          nimtaBase={true}
           nimtaId={selectedNimta._id}
           setVisible={value => setOpenDailog(value)}
         />

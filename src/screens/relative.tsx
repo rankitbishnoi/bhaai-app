@@ -1,71 +1,51 @@
-import React, {useContext, useMemo, useState} from 'react';
+import React, {useMemo, useState} from 'react';
 import {TouchableOpacity, View} from 'react-native';
-import {apiService} from '../services/api.service';
 import {IconButton, Stack, Text} from '@react-native-material/core';
 import useStyles from '../styles/relative';
-import {Relative as RelativeType} from '../types/Relative';
+import {RelativeBase, Relative as RelativeType} from '../types/Relative';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AddRelative from '../components/addRelative';
 import ProgressBar from '../components/ui/loader';
-import AppContext from '../services/storage';
-import {useQuery} from 'react-query';
 import useButtonStyles from '../styles/button';
 import useStackBarStyles from '../styles/stackBar';
 import {useNavigation} from '@react-navigation/native';
 import SortRelative from '../components/sortRelative';
 import FilterRelative from '../components/filterRelative';
 import SwipeableList from '../components/swipeableList/swipeableList';
-import {AppContextState, APP_ACTIONS} from '../services/app.reducer';
 import ScreenHeading from '../components/ui/screenHeading';
 import {callNumber} from '../services/callANumber';
+import {useAppDispatch, useAppSelector} from '../redux/hooks';
+import {
+  deletedRelative,
+  relativeListApi,
+  updatedRelative,
+  useGetRelativeListQuery,
+} from '../redux/features/slices/relative-slice';
+import {Model} from '../redux/features/helper';
 
 const childPageStates = ['sort', 'filter', 'add', 'edit'];
 
-interface RelativeProps {
-  setVisible?: (visiblity: string) => any;
-  relatives?: RelativeType[];
-  nimtaId?: string;
-  nimtaBase?: boolean;
-}
+interface RelativeProps {}
 
-const Relative: React.FC<RelativeProps> = ({
-  nimtaId,
-  nimtaBase,
-  relatives,
-  setVisible,
-}) => {
-  const myContext = useContext<AppContextState>(AppContext);
+const Relative: React.FC<RelativeProps> = ({}) => {
+  const theme = useAppSelector(state => state.theme.mode);
+  const selectedPariwar =
+    useAppSelector(state => state.profile.selectedPariwar) || '';
   const navigation = useNavigation();
-  const styles = useStyles(myContext.appSettings.theme);
-  const stackBarStyles = useStackBarStyles(myContext.appSettings.theme);
-  const buttonStyles = useButtonStyles(myContext.appSettings.theme);
+  const styles = useStyles(theme);
+  const stackBarStyles = useStackBarStyles(theme);
+  const buttonStyles = useButtonStyles(theme);
   const [openDailog, setOpenDailog] = useState('');
   const [sortBy, setSortBy] = useState('');
   const [filterBy, setFilterBy] = useState(null as any);
   const [selectedRelative, setSelectedRelative] = useState({} as any);
-  const relativeList = relatives || [];
-  let {data, isLoading} = useQuery(
-    [
-      'relativeList',
-      myContext.appSettings.selectedPariwar,
-      myContext.appSettings.queryState.relativeList,
-    ],
-    () =>
-      nimtaBase
-        ? relativeList
-        : myContext.appSettings.selectedPariwar
-        ? apiService
-            .getRelativeList(myContext.appSettings.selectedPariwar)
-            .catch(error => {
-              if (error.type === 'NOT_AUTHENTICATED') {
-                myContext.dispatch({type: APP_ACTIONS.LOGOUT});
-              }
-
-              return [];
-            })
-        : [],
+  const dispatch = useAppDispatch();
+  const {isLoading, refetch} = useGetRelativeListQuery(selectedPariwar);
+  const relativeList = useAppSelector(state => state.relativeList);
+  const data = useMemo(
+    () => relativeList[selectedPariwar] || [],
+    [selectedPariwar, relativeList],
   );
-  const selectedPariwar = myContext.appSettings.selectedPariwar || '';
 
   const filterList = useMemo(() => {
     if (!filterBy) {
@@ -125,7 +105,7 @@ const Relative: React.FC<RelativeProps> = ({
     setOpenDailog('edit');
   };
 
-  const sortList = (by: keyof RelativeType = 'firstName') => {
+  const sortList = (by: keyof RelativeBase = 'firstName') => {
     filterList?.sort((a, b) => {
       if (a[by] < b[by]) {
         return -1;
@@ -139,29 +119,24 @@ const Relative: React.FC<RelativeProps> = ({
     setSortBy(by);
   };
 
-  const deleteRelative = async (id: string) => {
-    if (nimtaBase && nimtaId) {
-      return apiService
-        .removeRelativeFromNimta(id, nimtaId, selectedPariwar)
-        .then(() => {
-          if (relatives) {
-            const index = relatives?.findIndex(a => a._id === id);
-            relatives.splice(index, 1);
-          }
-          return true;
-        });
-    }
-    return apiService.deleteRelative(id, selectedPariwar).then(() => {
-      if (data) {
-        const index = data?.findIndex(a => a._id === id);
-        data.splice(index, 1);
-      }
-      return true;
-    });
+  const deleteRelative = (id: string) => {
+    dispatch(deletedRelative({pariwarId: selectedPariwar, id}));
+    dispatch(
+      relativeListApi.endpoints.deleteRelative.initiate({
+        pariwarId: selectedPariwar,
+        id,
+      }),
+    );
+    return true;
   };
 
-  const refresh = () => {
-    myContext.dispatch({type: APP_ACTIONS.REFETCH_RELATIVE_LIST});
+  const sync = (item: Model<RelativeType>) => {
+    const newBaanPayload = {
+      pariwarId: selectedPariwar,
+      body: item,
+    };
+    dispatch(updatedRelative(newBaanPayload));
+    dispatch(relativeListApi.endpoints.createRelative.initiate(newBaanPayload));
   };
 
   return (
@@ -172,10 +147,10 @@ const Relative: React.FC<RelativeProps> = ({
             <ProgressBar height={5} indeterminate backgroundColor="#4a0072" />
           )}
           <ScreenHeading
-            title={nimtaBase ? 'Nimta Relatives' : 'Relatives'}
+            title={'Relatives'}
             subtitle={`${filterList ? filterList.length : 0} entries`}
           />
-          {!selectedPariwar && (
+          {selectedPariwar.length === 0 && (
             <TouchableOpacity
               onPress={() => {
                 navigation.navigate('profile' as never);
@@ -185,7 +160,7 @@ const Relative: React.FC<RelativeProps> = ({
               </View>
             </TouchableOpacity>
           )}
-          {selectedPariwar && data && (
+          {selectedPariwar.length !== 0 && data && (
             <>
               <SwipeableList
                 items={filterList.map(relative => {
@@ -201,6 +176,9 @@ const Relative: React.FC<RelativeProps> = ({
                     subtitle: `Mobile: ${
                       relative.phoneNumber || 'not available'
                     }`,
+                    notSynced: relative.notSynced,
+                    syncing: relative.syncing,
+                    sync: () => sync(relative),
                     leading: (
                       <TouchableOpacity onPress={() => editItem(relative)}>
                         <Ionicons
@@ -224,30 +202,14 @@ const Relative: React.FC<RelativeProps> = ({
                 })}
                 deleteItem={deleteRelative}
                 refreshing={isLoading}
-                refresh={refresh}
+                refresh={refetch}
               />
               <Stack
                 style={stackBarStyles.stackBarBottom}
                 fill
                 bottom={0}
                 spacing={0}>
-                {!!nimtaBase && (
-                  <IconButton
-                    onPress={() => {
-                      setVisible && setVisible('');
-                    }}
-                    icon={props => (
-                      <Ionicons
-                        name="arrow-back-outline"
-                        {...props}
-                        color={stackBarStyles.iconColor.color}
-                      />
-                    )}
-                    color="secondary"
-                    style={stackBarStyles.fab}
-                  />
-                )}
-                {!nimtaBase && <View style={stackBarStyles.fab} />}
+                <View style={stackBarStyles.fab} />
                 <View
                   style={{...buttonStyles.buttonGroup, ...styles.sortFilter}}>
                   <TouchableOpacity
@@ -284,38 +246,20 @@ const Relative: React.FC<RelativeProps> = ({
                     </View>
                   </TouchableOpacity>
                 </View>
-                {!!nimtaBase && (
-                  <IconButton
-                    onPress={() => {
-                      setVisible && setVisible('addFromRelative');
-                    }}
-                    icon={props => (
-                      <Ionicons
-                        name="person-add-outline"
-                        {...props}
-                        color={stackBarStyles.iconColor.color}
-                      />
-                    )}
-                    color="secondary"
-                    style={stackBarStyles.fab}
-                  />
-                )}
-                {!nimtaBase && (
-                  <IconButton
-                    onPress={() => {
-                      setOpenDailog('add');
-                    }}
-                    icon={props => (
-                      <Ionicons
-                        name="add"
-                        {...props}
-                        color={stackBarStyles.iconColor.color}
-                      />
-                    )}
-                    color="secondary"
-                    style={stackBarStyles.fab}
-                  />
-                )}
+                <IconButton
+                  onPress={() => {
+                    setOpenDailog('add');
+                  }}
+                  icon={props => (
+                    <Ionicons
+                      name="add"
+                      {...props}
+                      color={stackBarStyles.iconColor.color}
+                    />
+                  )}
+                  color="secondary"
+                  style={stackBarStyles.fab}
+                />
               </Stack>
             </>
           )}

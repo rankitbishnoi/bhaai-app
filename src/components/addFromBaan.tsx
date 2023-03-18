@@ -1,6 +1,5 @@
-import React, {useContext, useMemo, useState} from 'react';
+import React, {useMemo, useState} from 'react';
 import {ScrollView, TouchableOpacity, View} from 'react-native';
-import {apiService} from '../services/api.service';
 import {
   Divider,
   IconButton,
@@ -13,8 +12,6 @@ import useStyles from '../styles/baan';
 import {BaanBase as BaanType} from '../types/Baan';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import ProgressBar from './ui/loader';
-import AppContext from '../services/storage';
-import {useQuery} from 'react-query';
 import useButtonStyles from '../styles/button';
 import useStackBarStyles from '../styles/stackBar';
 import SortBaan from './sortRelative';
@@ -28,7 +25,9 @@ import {
   MenuProvider,
   MenuTrigger,
 } from 'react-native-popup-menu';
-import {AppContextState, APP_ACTIONS} from '../services/app.reducer';
+import {useAppDispatch, useAppSelector} from '../redux/hooks';
+import {useGetBaanListQuery} from '../redux/features/slices/baan-slice';
+import {nimtaListApi} from '../redux/features/slices/nimta-slice';
 
 const childPageStates = ['sort', 'filter'];
 
@@ -38,34 +37,29 @@ interface BaanProps {
 }
 
 const AddFromBaan: React.FC<BaanProps> = ({setVisible, nimtaId}) => {
-  const myContext = useContext<AppContextState>(AppContext);
-  const styles = useStyles(myContext.appSettings.theme);
-  const stackBarStyles = useStackBarStyles(myContext.appSettings.theme);
-  const buttonStyles = useButtonStyles(myContext.appSettings.theme);
+  const theme = useAppSelector(state => state.theme.mode);
+  const selectedPariwar =
+    useAppSelector(state => state.profile.selectedPariwar) || '';
+  const styles = useStyles(theme);
+  const stackBarStyles = useStackBarStyles(theme);
+  const buttonStyles = useButtonStyles(theme);
   const [openDailog, setOpenDailog] = useState('');
   const [sortBy, setSortBy] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
   const [selectedBaan, setSelectedBaans] = useState([] as string[]);
   const [filterBy, setFilterBy] = useState(null as any);
-  let {data, isLoading} = useQuery(
-    ['baanList', myContext.appSettings.queryState.baanList],
-    () =>
-      apiService.getBaanList().catch(error => {
-        if (error.type === 'NOT_AUTHENTICATED') {
-          myContext.dispatch({type: APP_ACTIONS.LOGOUT});
-        }
-
-        return [];
-      }),
-  );
+  const {isLoading} = useGetBaanListQuery();
+  const dispatch = useAppDispatch();
+  const data = useAppSelector(state => state.baanList);
+  const baanList = Object.values(data).flat();
 
   const filterList = useMemo(() => {
     if (!filterBy) {
-      return data ? data : [];
+      return baanList ? baanList : [];
     }
 
-    return data
-      ? data.filter(a => {
+    return baanList
+      ? baanList.filter(a => {
           let truthy = true;
           if (filterBy.firstName?.length) {
             truthy =
@@ -106,7 +100,7 @@ const AddFromBaan: React.FC<BaanProps> = ({setVisible, nimtaId}) => {
           return truthy;
         })
       : [];
-  }, [data, filterBy]);
+  }, [baanList, filterBy]);
 
   const sortList = (by: keyof BaanType = 'firstName') => {
     filterList?.sort((a, b) => {
@@ -131,7 +125,7 @@ const AddFromBaan: React.FC<BaanProps> = ({setVisible, nimtaId}) => {
   };
 
   const selectAll = () => {
-    data && setSelectedBaans(data.map(a => a._id));
+    baanList && setSelectedBaans(baanList.map(a => a._id));
   };
 
   const deselectAll = () => {
@@ -143,17 +137,14 @@ const AddFromBaan: React.FC<BaanProps> = ({setVisible, nimtaId}) => {
       baanIds: selectedBaan,
       relativeIds: [],
     };
-    apiService
-      .addRelativesInNimta(
-        nimtaId,
-        myContext.appSettings.selectedPariwar || '',
-        addBaanData,
-      )
-      .then(() => {
-        myContext.dispatch({type: APP_ACTIONS.REFETCH_NIMTA_LIST});
-        myContext.dispatch({type: APP_ACTIONS.REFETCH_RELATIVE_LIST});
-        setVisible('');
-      });
+    dispatch(
+      nimtaListApi.endpoints.addBaanAndRelativeInNimta.initiate({
+        id: nimtaId,
+        pariwarId: selectedPariwar,
+        body: addBaanData,
+      }),
+    );
+    setVisible('');
   };
 
   return (

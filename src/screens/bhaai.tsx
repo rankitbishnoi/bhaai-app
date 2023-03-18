@@ -1,6 +1,5 @@
-import React, {useContext, useState} from 'react';
+import React, {useState} from 'react';
 import {TouchableOpacity, View} from 'react-native';
-import {apiService} from '../services/api.service';
 import {IconButton, Stack} from '@react-native-material/core';
 import useStyles from '../styles/bhaai';
 import useStackBarStyles from '../styles/stackBar';
@@ -10,31 +9,28 @@ import AddBhaai from '../components/addBhaai';
 import Baan from './baan';
 import ProgressBar from '../components/ui/loader';
 import Search from './search';
-import {useQuery} from 'react-query';
 import SwipeableList from '../components/swipeableList/swipeableList';
 import ScreenHeading from '../components/ui/screenHeading';
-import {AppContextState, APP_ACTIONS} from '../services/app.reducer';
-import AppContext from '../services/storage';
+import {useAppDispatch, useAppSelector} from '../redux/hooks';
+import {
+  useGetBhaaiListQuery,
+  deletedBhaai,
+  bhaaiListApi,
+  updatedBhaai,
+} from '../redux/features/slices/bhaai-slice';
+import {Model} from '../redux/features/helper';
 
 const childPageStates = ['baan-list', 'search', 'edit', 'add'];
 
 const Bhaai: React.FC = () => {
-  const myContext = useContext<AppContextState>(AppContext);
-  const styles = useStyles(myContext.appSettings.theme);
-  const stackBarStyles = useStackBarStyles(myContext.appSettings.theme);
+  const theme = useAppSelector(state => state.theme.mode);
+  const styles = useStyles(theme);
+  const stackBarStyles = useStackBarStyles(theme);
   const [selectedBhaai, setSelectedBhaai] = useState({} as any);
   const [openDailog, setOpenDailog] = useState('');
-  const {data, isLoading} = useQuery(
-    ['baanList', myContext.appSettings.queryState.bhaaiList],
-    () =>
-      apiService.getBhaaiList().catch(error => {
-        if (error.type === 'NOT_AUTHENTICATED') {
-          myContext.dispatch({type: APP_ACTIONS.LOGOUT});
-        }
-
-        return [];
-      }),
-  );
+  const {bhaaiList: data = []} = useAppSelector(state => state);
+  const dispatch = useAppDispatch();
+  const {isLoading, refetch} = useGetBhaaiListQuery();
 
   const editItem = (bhaai: BhaaiType) => {
     setSelectedBhaai(bhaai);
@@ -46,27 +42,15 @@ const Bhaai: React.FC = () => {
     setOpenDailog('baan-list');
   };
 
-  const refresh = () => {
-    myContext.dispatch({type: APP_ACTIONS.REFETCH_BHAAI_LIST});
+  const deleteBhaai = (id: string) => {
+    dispatch(deletedBhaai(id));
+    dispatch(bhaaiListApi.endpoints.deleteBhaai.initiate(id));
+    return true;
   };
 
-  const deleteBhaai = async (id: string) => {
-    return apiService
-      .deleteBhaai(id)
-      .catch(error => {
-        if (error.type === 'NOT_AUTHENTICATED') {
-          myContext.dispatch({type: APP_ACTIONS.LOGOUT});
-        }
-
-        return null;
-      })
-      .then(() => {
-        if (data) {
-          const index = data?.findIndex(a => a._id === id);
-          data.splice(index, 1);
-        }
-        return true;
-      });
+  const sync = (item: Model<BhaaiType>) => {
+    dispatch(updatedBhaai(item));
+    dispatch(bhaaiListApi.endpoints.createBhaai.initiate(item));
   };
 
   return (
@@ -88,6 +72,9 @@ const Bhaai: React.FC = () => {
                   key: bhaaiItem._id,
                   onPress: () => openItem(bhaaiItem),
                   subtitle: new Date(bhaaiItem.date).toDateString(),
+                  notSynced: bhaaiItem.notSynced,
+                  syncing: bhaaiItem.syncing,
+                  sync: () => sync(bhaaiItem),
                   leading: (
                     <TouchableOpacity onPress={() => editItem(bhaaiItem)}>
                       <Ionicons
@@ -110,7 +97,7 @@ const Bhaai: React.FC = () => {
               })}
               deleteItem={deleteBhaai}
               refreshing={isLoading}
-              refresh={refresh}
+              refresh={refetch}
             />
           )}
           <Stack
@@ -165,6 +152,7 @@ const Bhaai: React.FC = () => {
       {openDailog === 'baan-list' && (
         <Baan
           bhaaiId={selectedBhaai._id}
+          title={selectedBhaai.marriage}
           setBaanVisible={value => setOpenDailog(value ? 'baan-list' : '')}
         />
       )}

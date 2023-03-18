@@ -35,6 +35,9 @@ export default function useStyles(colorScheme: string) {
       fontSize: 16,
       lineHeight: 20,
     },
+    labelDataCapitalize: {
+      textTransform: 'capitalize',
+    },
     labelData: {
       alignSelf: 'flex-end',
       color: theme.primary,

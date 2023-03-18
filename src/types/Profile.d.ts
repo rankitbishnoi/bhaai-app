@@ -13,6 +13,9 @@ export type PariwarRole = PariwarRole1 & PariwarRole2;
 export type PariwarRole1 = PariwarRoleBase;
 
 export interface CustomerBase {
+    firstName?: string;
+    lastName?: string;
+    avatar?: string;
     email: string;
     phoneNumber?: string;
     password: string;

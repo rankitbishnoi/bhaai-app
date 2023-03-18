@@ -1,13 +1,12 @@
 import {Button, Text} from '@react-native-material/core';
-import React, {useContext} from 'react';
+import React from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
   TouchableOpacity,
   View,
 } from 'react-native';
-import {AppContextState} from '../services/app.reducer';
-import AppContext from '../services/storage';
+import {useAppSelector} from '../redux/hooks';
 import useStyles from '../styles/profile';
 import {BaanBase} from '../types/Baan';
 import {Relative} from '../types/Relative';
@@ -25,8 +24,8 @@ interface ComponentProps {
 }
 
 const SortRelative: React.FC<ComponentProps> = (props: ComponentProps) => {
-  const myContext = useContext<AppContextState>(AppContext);
-  const styles = useStyles(myContext.appSettings.theme);
+  const theme = useAppSelector(state => state.theme.mode);
+  const styles = useStyles(theme);
 
   const close = () => {
     props.setSortBy();

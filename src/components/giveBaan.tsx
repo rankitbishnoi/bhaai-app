@@ -1,5 +1,5 @@
 import {Button, TextInput, Text} from '@react-native-material/core';
-import React, {useContext, useState} from 'react';
+import React, {useState} from 'react';
 import {Controller, useForm} from 'react-hook-form';
 import {
   KeyboardAvoidingView,
@@ -7,9 +7,8 @@ import {
   Pressable,
   ScrollView,
 } from 'react-native';
+import {useAppSelector} from '../redux/hooks';
 import {apiService} from '../services/api.service';
-import {AppContextState} from '../services/app.reducer';
-import AppContext from '../services/storage';
 import useStyles from '../styles/bhaai';
 import {Baan as BaanType} from '../types/BaanList';
 import ScreenHeading from './ui/screenHeading';
@@ -22,9 +21,9 @@ interface ComponentProps {
 }
 
 const GiveBaan: React.FC<ComponentProps> = (props: ComponentProps) => {
-  const myContext = useContext<AppContextState>(AppContext);
+  const theme = useAppSelector(state => state.theme.mode);
   const [processing, setProcessing] = useState(false);
-  const styles = useStyles(myContext.appSettings.theme);
+  const styles = useStyles(theme);
   const {
     control,
     handleSubmit,

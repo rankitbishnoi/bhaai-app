@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react';
+import React, {useState} from 'react';
 import {
   View,
   TouchableOpacity,
@@ -14,27 +14,20 @@ import Signup from '../components/auth/signup';
 import useStyles from '../styles/auth';
 import useStackBarStyles from '../styles/stackBar';
 import useButtonStyles from '../styles/button';
-import AppContext from '../services/storage';
-import {
-  AppContextState,
-  APP_ACTIONS,
-  themeColor,
-} from '../services/app.reducer';
 import {Stack, Text} from '@react-native-material/core';
+import {useAppDispatch, useAppSelector} from '../redux/hooks';
+import {themeColor, toggleTheme} from '../redux/features/slices/theme-slice';
 
 const Auth: React.FC = () => {
-  const myContext = useContext<AppContextState>(AppContext);
-  const styles = useStyles(myContext.appSettings.theme);
-  const stackBarStyles = useStackBarStyles(myContext.appSettings.theme);
-  const buttonStyles = useButtonStyles(myContext.appSettings.theme);
+  const theme = useAppSelector(state => state.theme.mode);
+  const dispatch = useAppDispatch();
+  const styles = useStyles(theme);
+  const stackBarStyles = useStackBarStyles(theme);
+  const buttonStyles = useButtonStyles(theme);
   const [login, setLogin] = useState(true);
 
   const handleToggle = () => {
     setLogin((current: any) => !current);
-  };
-
-  const toggleTheme = () => {
-    myContext.dispatch({type: APP_ACTIONS.TOGGLE_THEME});
   };
 
   return (
@@ -63,12 +56,12 @@ const Auth: React.FC = () => {
       <SizedBox height={60} />
       <Stack style={stackBarStyles.stackBarBottom} fill top={8} spacing={0}>
         <View style={stackBarStyles.fab} />
-        <Pressable onPress={toggleTheme} style={stackBarStyles.fab}>
+        <Pressable
+          onPress={() => dispatch(toggleTheme())}
+          style={stackBarStyles.fab}>
           <Text variant="button">
             {`${
-              myContext.appSettings.theme === themeColor.LIGHT
-                ? themeColor.DARK
-                : themeColor.LIGHT
+              theme === themeColor.LIGHT ? themeColor.DARK : themeColor.LIGHT
             } mode`}
           </Text>
         </Pressable>

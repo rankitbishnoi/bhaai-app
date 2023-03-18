@@ -1,5 +1,5 @@
 import {Button, TextInput, Text} from '@react-native-material/core';
-import React, {useContext, useState} from 'react';
+import React, {useState} from 'react';
 import {Controller, useForm} from 'react-hook-form';
 import {
   KeyboardAvoidingView,
@@ -7,14 +7,20 @@ import {
   Pressable,
   ScrollView,
 } from 'react-native';
-import {apiService} from '../services/api.service';
 import {Relative, RelativeBase} from '../types/Relative';
 import useStyles from '../styles/relative';
-import AppContext from '../services/storage';
 import SizedBox from './ui/sizedBox';
 import {validatePhoneNumber} from '../services/helpers';
-import {AppContextState, APP_ACTIONS} from '../services/app.reducer';
 import ScreenHeading from './ui/screenHeading';
+import {useAppDispatch, useAppSelector} from '../redux/hooks';
+import {createdMessages} from '../redux/features/slices/message-slice';
+import uuid from 'react-native-uuid';
+import {
+  createdRelative,
+  deletedRelative,
+  relativeListApi,
+  updatedRelative,
+} from '../redux/features/slices/relative-slice';
 
 interface ComponentProps {
   pariwarId: string;
@@ -26,8 +32,9 @@ interface ComponentProps {
 const AddRelative: React.FC<ComponentProps> = (props: ComponentProps) => {
   const [processingEdit, setProcessingEdit] = useState(false);
   const [processingDelete, setProcessingDelete] = useState(false);
-  const myContext = useContext<AppContextState>(AppContext);
-  const styles = useStyles(myContext.appSettings.theme);
+  const theme = useAppSelector(state => state.theme.mode);
+  const dispatch = useAppDispatch();
+  const styles = useStyles(theme);
   const {
     control,
     handleSubmit,
@@ -47,42 +54,29 @@ const AddRelative: React.FC<ComponentProps> = (props: ComponentProps) => {
 
   const onSubmit = handleSubmit((input: RelativeBase) => {
     setProcessingEdit(true);
+    const newBaanPayload = {
+      pariwarId: props.pariwarId,
+      body: {
+        ...input,
+        pariwarId: props.pariwarId,
+        _id: props.data?._id || uuid.v4().toString(),
+      },
+    };
     if (props.type === 'EDIT') {
-      apiService
-        .updateRelative(props.data?._id as string, props.pariwarId, input)
-        .then(data => {
-          if (data) {
-            myContext.dispatch({type: APP_ACTIONS.REFETCH_RELATIVE_LIST});
-            myContext.dispatch({
-              type: APP_ACTIONS.NEW_MESSAGE,
-              payload: 'Relative has been updated',
-            });
-            setProcessingEdit(false);
-            props.setVisible('');
-          }
-        });
+      dispatch(updatedRelative(newBaanPayload));
+      dispatch(
+        relativeListApi.endpoints.updatedRelative.initiate(newBaanPayload),
+      );
+      dispatch(createdMessages('Relative has been updated'));
     } else {
-      apiService
-        .createRelative(props.pariwarId, input)
-        .catch(error => {
-          if (error.type === 'NOT_AUTHENTICATED') {
-            myContext.dispatch({type: APP_ACTIONS.LOGOUT});
-          }
-
-          return null;
-        })
-        .then(data => {
-          if (data) {
-            myContext.dispatch({type: APP_ACTIONS.REFETCH_RELATIVE_LIST});
-            myContext.dispatch({
-              type: APP_ACTIONS.NEW_MESSAGE,
-              payload: 'Relative has been added',
-            });
-            setProcessingEdit(false);
-            props.setVisible('');
-          }
-        });
+      dispatch(createdRelative(newBaanPayload));
+      dispatch(
+        relativeListApi.endpoints.createRelative.initiate(newBaanPayload),
+      );
+      dispatch(createdMessages('Relative has been created'));
     }
+    setProcessingEdit(false);
+    props.setVisible('');
   });
 
   const close = () => {
@@ -90,18 +84,18 @@ const AddRelative: React.FC<ComponentProps> = (props: ComponentProps) => {
   };
 
   const deleteRelative = () => {
-    setProcessingDelete(true);
-    apiService
-      .deleteRelative(props.data?._id as string, props.pariwarId)
-      .then(() => {
-        myContext.dispatch({type: APP_ACTIONS.REFETCH_RELATIVE_LIST});
-        myContext.dispatch({
-          type: APP_ACTIONS.NEW_MESSAGE,
-          payload: 'Relative has been deleted',
-        });
-        setProcessingDelete(false);
-        props.setVisible('');
-      });
+    if (props.data) {
+      setProcessingDelete(true);
+      const baanPayload = {
+        pariwarId: props.pariwarId,
+        id: props.data?._id,
+      };
+      dispatch(deletedRelative(baanPayload));
+      dispatch(relativeListApi.endpoints.deleteRelative.initiate(baanPayload));
+      dispatch(createdMessages('Relative has been deleted'));
+      setProcessingEdit(false);
+      props.setVisible('');
+    }
   };
 
   return (

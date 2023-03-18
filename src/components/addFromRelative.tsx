@@ -1,6 +1,5 @@
-import React, {useContext, useMemo, useState} from 'react';
+import React, {useMemo, useState} from 'react';
 import {ScrollView, TouchableOpacity, View} from 'react-native';
-import {apiService} from '../services/api.service';
 import {
   Divider,
   IconButton,
@@ -10,11 +9,9 @@ import {
 } from '@react-native-material/core';
 
 import useStyles from '../styles/relative';
-import {Relative as RelativeType} from '../types/Relative';
+import {RelativeBase as RelativeType} from '../types/Relative';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import ProgressBar from './ui/loader';
-import AppContext from '../services/storage';
-import {useQuery} from 'react-query';
 import useButtonStyles from '../styles/button';
 import useStackBarStyles from '../styles/stackBar';
 import SortRelative from './sortRelative';
@@ -28,7 +25,9 @@ import {
   MenuProvider,
   MenuTrigger,
 } from 'react-native-popup-menu';
-import {AppContextState, APP_ACTIONS} from '../services/app.reducer';
+import {useAppDispatch, useAppSelector} from '../redux/hooks';
+import {useGetRelativeListQuery} from '../redux/features/slices/relative-slice';
+import {nimtaListApi} from '../redux/features/slices/nimta-slice';
 
 const childPageStates = ['sort', 'filter'];
 
@@ -38,34 +37,20 @@ interface RelativeProps {
 }
 
 const AddFromRelative: React.FC<RelativeProps> = ({setVisible, nimtaId}) => {
-  const myContext = useContext<AppContextState>(AppContext);
-  const styles = useStyles(myContext.appSettings.theme);
-  const stackBarStyles = useStackBarStyles(myContext.appSettings.theme);
-  const buttonStyles = useButtonStyles(myContext.appSettings.theme);
+  const theme = useAppSelector(state => state.theme.mode);
+  const selectedPariwar =
+    useAppSelector(state => state.profile.selectedPariwar) || '';
+  const styles = useStyles(theme);
+  const stackBarStyles = useStackBarStyles(theme);
+  const buttonStyles = useButtonStyles(theme);
   const [openDailog, setOpenDailog] = useState('');
   const [sortBy, setSortBy] = useState('');
   const [selectedRelative, setSelectedRelatives] = useState([] as string[]);
   const [filterBy, setFilterBy] = useState({} as any);
   const [menuOpen, setMenuOpen] = useState(false);
-  let {data, isLoading} = useQuery(
-    [
-      'relativeList',
-      myContext.appSettings.selectedPariwar,
-      myContext.appSettings.queryState.relativeList,
-    ],
-    () =>
-      myContext.appSettings.selectedPariwar
-        ? apiService
-            .getRelativeList(myContext.appSettings.selectedPariwar)
-            .catch(error => {
-              if (error.type === 'NOT_AUTHENTICATED') {
-                myContext.dispatch({type: APP_ACTIONS.LOGOUT});
-              }
-
-              return [];
-            })
-        : [],
-  );
+  const dispatch = useAppDispatch();
+  const {isLoading} = useGetRelativeListQuery(selectedPariwar);
+  const data = useAppSelector(state => state.relativeList);
 
   const filterList = useMemo(() => {
     if (!filterBy) {
@@ -155,16 +140,14 @@ const AddFromRelative: React.FC<RelativeProps> = ({setVisible, nimtaId}) => {
       relativeIds: selectedRelative,
       baanIds: [],
     };
-    apiService
-      .addRelativesInNimta(
-        nimtaId,
-        myContext.appSettings.selectedPariwar || '',
-        addRelativeData,
-      )
-      .then(() => {
-        myContext.dispatch({type: APP_ACTIONS.REFETCH_NIMTA_LIST});
-        setVisible('');
-      });
+    dispatch(
+      nimtaListApi.endpoints.addBaanAndRelativeInNimta.initiate({
+        id: nimtaId,
+        pariwarId: selectedPariwar,
+        body: addRelativeData,
+      }),
+    );
+    setVisible('');
   };
 
   return (

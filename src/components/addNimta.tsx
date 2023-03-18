@@ -1,5 +1,5 @@
 import {Button, TextInput, Text} from '@react-native-material/core';
-import React, {useContext, useState} from 'react';
+import React, {useState} from 'react';
 import {Controller, useForm} from 'react-hook-form';
 import {
   KeyboardAvoidingView,
@@ -7,13 +7,19 @@ import {
   Pressable,
   ScrollView,
 } from 'react-native';
-import {apiService} from '../services/api.service';
 import {Nimta, NimtaBase} from '../types/Nimta';
 import useStyles from '../styles/nimta';
-import AppContext from '../services/storage';
 import SizedBox from './ui/sizedBox';
-import {AppContextState, APP_ACTIONS} from '../services/app.reducer';
 import ScreenHeading from './ui/screenHeading';
+import {useAppDispatch, useAppSelector} from '../redux/hooks';
+import {createdMessages} from '../redux/features/slices/message-slice';
+import {
+  createdNimta,
+  deletedNimta,
+  nimtaListApi,
+  updatedNimta,
+} from '../redux/features/slices/nimta-slice';
+import uuid from 'react-native-uuid';
 
 interface ComponentProps {
   pariwarId: string;
@@ -25,8 +31,9 @@ interface ComponentProps {
 const AddNimta: React.FC<ComponentProps> = (props: ComponentProps) => {
   const [processingEdit, setProcessingEdit] = useState(false);
   const [processingDelete, setProcessingDelete] = useState(false);
-  const myContext = useContext<AppContextState>(AppContext);
-  const styles = useStyles(myContext.appSettings.theme);
+  const theme = useAppSelector(state => state.theme.mode);
+  const dispatch = useAppDispatch();
+  const styles = useStyles(theme);
   const {
     control,
     handleSubmit,
@@ -41,42 +48,25 @@ const AddNimta: React.FC<ComponentProps> = (props: ComponentProps) => {
 
   const onSubmit = handleSubmit((input: NimtaBase) => {
     setProcessingEdit(true);
+    const newBaanPayload = {
+      pariwarId: props.pariwarId,
+      body: {
+        ...input,
+        pariwarId: props.pariwarId,
+        _id: props.data?._id || uuid.v4().toString(),
+      },
+    };
     if (props.type === 'EDIT') {
-      apiService
-        .updateNimta(props.data?._id as string, props.pariwarId, input)
-        .then(data => {
-          if (data) {
-            myContext.dispatch({type: APP_ACTIONS.REFETCH_NIMTA_LIST});
-            myContext.dispatch({
-              type: APP_ACTIONS.NEW_MESSAGE,
-              payload: 'Nimta has been updated',
-            });
-            setProcessingEdit(false);
-            props.setVisible(false);
-          }
-        });
+      dispatch(updatedNimta(newBaanPayload));
+      dispatch(nimtaListApi.endpoints.updatedNimta.initiate(newBaanPayload));
+      dispatch(createdMessages('Nimta has been updated'));
     } else {
-      apiService
-        .createNimta(props.pariwarId, input)
-        .catch(error => {
-          if (error.type === 'NOT_AUTHENTICATED') {
-            myContext.dispatch({type: APP_ACTIONS.LOGOUT});
-          }
-
-          return null;
-        })
-        .then(data => {
-          if (data) {
-            myContext.dispatch({type: APP_ACTIONS.REFETCH_NIMTA_LIST});
-            myContext.dispatch({
-              type: APP_ACTIONS.NEW_MESSAGE,
-              payload: 'Nimta has been added',
-            });
-            setProcessingEdit(false);
-            props.setVisible(false);
-          }
-        });
+      dispatch(createdNimta(newBaanPayload));
+      dispatch(nimtaListApi.endpoints.createNimta.initiate(newBaanPayload));
+      dispatch(createdMessages('Nimta has been created'));
     }
+    setProcessingEdit(false);
+    props.setVisible(false);
   });
 
   const close = () => {
@@ -84,18 +74,18 @@ const AddNimta: React.FC<ComponentProps> = (props: ComponentProps) => {
   };
 
   const deleteNimta = () => {
-    setProcessingDelete(true);
-    apiService
-      .deleteNimta(props.data?._id as string, props.pariwarId)
-      .then(() => {
-        myContext.dispatch({type: APP_ACTIONS.REFETCH_NIMTA_LIST});
-        myContext.dispatch({
-          type: APP_ACTIONS.NEW_MESSAGE,
-          payload: 'Nimta has been deleted',
-        });
-        setProcessingDelete(false);
-        props.setVisible(false);
-      });
+    if (props.data) {
+      setProcessingDelete(true);
+      const baanPayload = {
+        pariwarId: props.pariwarId,
+        id: props.data?._id,
+      };
+      dispatch(deletedNimta(baanPayload));
+      dispatch(nimtaListApi.endpoints.deleteNimta.initiate(baanPayload));
+      dispatch(createdMessages('Nimta has been deleted'));
+      setProcessingEdit(false);
+      props.setVisible(false);
+    }
   };
 
   return (

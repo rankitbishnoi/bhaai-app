@@ -1,10 +1,16 @@
-import {ListItem} from '@react-native-material/core';
-import React, {useContext} from 'react';
-import {Animated, TouchableHighlight, ListRenderItemInfo} from 'react-native';
-import {AppContextState} from '../../services/app.reducer';
-import AppContext from '../../services/storage';
+import {ListItem, Stack} from '@react-native-material/core';
+import React from 'react';
+import {
+  Animated,
+  TouchableHighlight,
+  ListRenderItemInfo,
+  View,
+  Pressable,
+} from 'react-native';
+import {useAppSelector} from '../../redux/hooks';
 import useStyles from '../../styles/swipeableList';
 import SizedBox from '../ui/sizedBox';
+import {LoadingSpinner} from '../ui/syncIcon';
 import {SwipeableListItem} from './swipeableList';
 
 interface VisibleItemOptions {
@@ -20,8 +26,8 @@ const VisibleItem: React.FC<VisibleItemOptions> = ({
   removeRow,
   rightActionState,
 }) => {
-  const myContext = useContext<AppContextState>(AppContext);
-  const styles = useStyles(myContext.appSettings.theme);
+  const theme = useAppSelector(state => state.theme.mode);
+  const styles = useStyles(theme);
 
   if (rightActionState) {
     Animated.timing(rowHeightAnimatedValue, {
@@ -51,7 +57,22 @@ const VisibleItem: React.FC<VisibleItemOptions> = ({
               elevation={4}
               leadingMode="icon"
               leading={data.item.leading}
-              trailing={data.item.trailing}
+              trailing={
+                <Stack style={styles.trailing}>
+                  {data.item.notSynced === true ? (
+                    <Pressable onPress={data.item.sync}>
+                      <LoadingSpinner
+                        rotate={data.item.syncing === true}
+                        size={24}
+                        color={styles.iconColor.color}
+                      />
+                    </Pressable>
+                  ) : (
+                    <View style={styles.noIconColor} />
+                  )}
+                  {data.item.trailing}
+                </Stack>
+              }
             />
           </TouchableHighlight>
         </Animated.View>

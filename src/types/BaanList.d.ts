@@ -19,5 +19,5 @@ export interface BaanBase {
 }
 export interface Baan2 {
     _id: string;
-    BhaaiId?: string;
+    bhaaiId?: string;
 }
