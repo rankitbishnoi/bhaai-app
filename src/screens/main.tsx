@@ -6,6 +6,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import Bhaai from './bhaai';
 import Profile from './profile';
 import Nimta from './nimta';
+import Event from './event';
 import Relative from './relative';
 import useStyles from '../styles/main';
 import {useAppSelector} from '../redux/hooks';
@@ -51,6 +52,10 @@ const Main: React.FC = () => {
         iconName = focused ? 'people-circle' : 'people-circle-outline';
       }
 
+      if (route.name === 'event') {
+        iconName = focused ? 'calendar' : 'calendar-outline';
+      }
+
       return <Ionicons name={iconName} size={size} color={color} />;
     },
     tabBarStyle: {
@@ -94,6 +99,7 @@ const Main: React.FC = () => {
                 <Tab.Screen name="home" component={Bhaai} />
                 <Tab.Screen name="nimta" component={Nimta} />
                 <Tab.Screen name="relative" component={Relative} />
+                <Tab.Screen name="event" component={Event} />
                 <Tab.Screen name="profile" component={Profile} />
               </Tab.Navigator>
             </NavigationContainer>

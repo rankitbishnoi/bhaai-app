@@ -3,6 +3,7 @@ import {combineReducers, configureStore} from '@reduxjs/toolkit';
 import bhaaiReducer, {bhaaiListApi} from './features/slices/bhaai-slice';
 import baanReducer, {baanListApi} from './features/slices/baan-slice';
 import nimtaReducer, {nimtaListApi} from './features/slices/nimta-slice';
+import eventReducer from './features/slices/event-slice';
 import relativeReducer, {
   relativeListApi,
 } from './features/slices/relative-slice';
@@ -26,6 +27,7 @@ const rootReducers = combineReducers({
   baanList: baanReducer,
   profile: profileReducer,
   relativeList: relativeReducer,
+  eventList: eventReducer,
   nimtaList: nimtaReducer,
   message: messageReducer,
   theme: themeReducer,
@@ -45,6 +47,7 @@ const persistedReducer = persistReducer(
       'bhaaiList',
       'baanList',
       'relativeList',
+      'eventList',
       'profile',
       'message',
       'theme',
